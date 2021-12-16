@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MembersService } from "../members.service";
+import { MemberService } from "../member.service";
 
 @Component({
   selector: 'app-serverset',
@@ -8,14 +8,17 @@ import { MembersService } from "../members.service";
 })
 export class ServersetComponent implements OnInit {
 
-  selectedPage: string = "solo";
+  selectedPage: string = "bulk";
+  lock: boolean = false;
+
+
 
   switchTo(page: string): void {
     this.selectedPage = page;
     return;
   }
 
-  constructor(private membersService: MembersService) { }
+  constructor(private membersService: MemberService) { }
 
   ngOnInit(): void {
     //TODO

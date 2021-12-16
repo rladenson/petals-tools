@@ -2,7 +2,22 @@
   <h3>Settings For All Members</h3>
   Note that these are only for the server whose id you put above!
   <br>
-  <button onclick='viewAll()'>View All Member Serversettings</button>
-  <button onclick='clearAll()'>Clear All Member Serversettings</button>
-  <p id='staying_content'></p>
+  <button (click)='viewAll()'>View All Member Serversettings</button>
+  <button (click)='clearAll()'>Clear All Member Serversettings</button>
+  <table mat-table [dataSource]="list">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let pkMember">{{pkMember.name}}</td>
+    </ng-container>
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let pkMember">{{pkMember.id}}</td>
+    </ng-container>
+    <ng-container matColumnDef="displayname">
+      <th mat-header-cell *matHeaderCellDef>Displayname</th>
+      <td mat-cell *matCellDef="let pkMember">{{pkMember.display_name}}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
 </div>
