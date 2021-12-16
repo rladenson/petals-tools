@@ -1,0 +1,14 @@
+
+
+#all, button {
+  position: relative;
+  font-size: 14pt;
+}
+
+select, input {
+  font-size: 12pt;
+}
+
+#content {
+  font-size: 18pt;
+}
