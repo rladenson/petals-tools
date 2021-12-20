@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable, Output} from '@angular/core';
 import { PKMember } from "./PKMember";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import { Observable, throwError as observableThrowError } from 'rxjs';
@@ -11,6 +11,15 @@ export class MemberService {
   //TODO
   lock: boolean = false;
   private apiURL = 'https://api.pluralkit.me/v2/systems/@me/members';
+  it: number = 0;
+
+  @Output() memberEmitter: EventEmitter<any> = new EventEmitter<any>();
+
+  doAnEmit(value: any) {
+    this.it++;
+    this.memberEmitter.emit(this.it);
+    this.memberEmitter.emit(value);
+  }
 
   // async getList(): PKMember[] {
   //

@@ -1,7 +1,4 @@
 
-table, th, td {
-  //border:2px solid black;
-}
 table {
   width: 100%;
   background-color: rgba(256,256,256,0.1);
@@ -21,12 +18,18 @@ select, input {
 }
 
 .mat-column-name, .mat-column-id, .mat-column-displayname {
-  border-right: 0.2em solid rgba(0,0,0,0.12);
+  border-right: 0.2em solid rgba(0,0,0,0.2);
   padding-left: 1em;
 }
 
-
-.mat-column-name {
-  border-left: 0.2em solid rgba(0,0,0,0.12);
+mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  border-bottom-color: rgba(0, 0, 0, 0.2);
 }
 
+.mat-column-name {
+  border-left: 0.2em solid rgba(0,0,0,0.2);
+}
+
+.mat-paginator   {
+  background-color: rgba(256,256,256,0.2);
+}
