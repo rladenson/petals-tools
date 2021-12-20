@@ -15,6 +15,13 @@ export class MemberService {
 
   @Output() memberEmitter: EventEmitter<any> = new EventEmitter<any>();
 
+  get(key: string): any {
+    return localStorage.getItem(key);
+  }
+  set(key: string, value: any): void {
+    localStorage.setItem(key, value);
+  }
+
   doAnEmit(value: any) {
     this.it++;
     this.memberEmitter.emit(this.it);
@@ -40,7 +47,8 @@ export class MemberService {
 
   waitFetch(/*url: string, args: any*/): Observable<PKMember[]> {
     const headers = new HttpHeaders()
-      .set('Authorization', 'ARJeOGMMLk5TrE1JhdtDDeDmdMnxbx08Zj/InvSELmUJ1uNgPgkRU8ej1tPw2SPy');
+      .set('Authorization', this.get('token'));
+    //TODO vvv
     //while (this.lock) await this.wait(1);
     //this.lock = true;
     //setTimeout(() => this.lock = false, 500);
@@ -49,7 +57,13 @@ export class MemberService {
       .pipe(map(data => data), catchError(this.handleError));
   }
 
+  getSystemList() {
+
+  }
+
   private handleError(res: HttpErrorResponse | any) {
+    //TODO send to serverset and turn into snackbar
+    //TODO get more error detail
     console.error(res.error || res.body.error);
     return observableThrowError(res.error || 'Server error');
   }

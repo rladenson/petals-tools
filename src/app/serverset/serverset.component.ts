@@ -11,6 +11,13 @@ export class ServersetComponent implements OnInit {
   selectedPage: string = "bulk";
   lock: boolean = false;
 
+  saveToken(event: any) {
+    this.memberService.set('token', event.originalTarget.value);
+  }
+  saveServerID(event: any) {
+    this.memberService.set('serverID', event.originalTarget.value);
+  }
+
 
 
   switchTo(page: string): void {
@@ -18,7 +25,7 @@ export class ServersetComponent implements OnInit {
     return;
   }
 
-  constructor(private membersService: MemberService) { }
+  constructor(private memberService: MemberService) { }
 
   ngOnInit(): void {
     //TODO

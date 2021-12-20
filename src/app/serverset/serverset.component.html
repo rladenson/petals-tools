@@ -10,12 +10,12 @@
   <h1>Change Server Settings</h1>
   <mat-form-field>
     <mat-label>Token</mat-label>
-    <input matInput>
+    <input matInput (change)="this.saveToken($event)">
   </mat-form-field>
   <br>
   <mat-form-field>
     <mat-label>Server ID (or message link)</mat-label>
-    <input matInput>
+    <input matInput (change)="this.saveServerID($event)">
   </mat-form-field>
   <br><br>
 

@@ -3,6 +3,7 @@ import { PKMember } from "../PKMember";
 import { MemberService } from "../member.service";
 import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
+import {MatPaginator} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-bulk-settings',
@@ -12,7 +13,7 @@ import {MatTableDataSource} from "@angular/material/table";
 export class BulkSettingsComponent implements AfterViewInit {
 
   data: MatTableDataSource<PKMember> = new MatTableDataSource();
-  @Input() recentMember: any;
+  recentMember: any;
 
   viewAll(): void {
     this.getList();
@@ -28,6 +29,7 @@ export class BulkSettingsComponent implements AfterViewInit {
   }
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   displayedColumns: string[] = ['name', 'id', 'displayname'];
 
@@ -36,6 +38,7 @@ export class BulkSettingsComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.data.sort = this.sort;
     this.memberService.memberEmitter.subscribe(member => this.gotMember(member));
+    this.data.paginator = this.paginator;
   }
 
   gotMember(member: any): void {
