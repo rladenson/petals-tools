@@ -14,18 +14,21 @@ export class BulkSettingsComponent implements AfterViewInit {
 
   data: MatTableDataSource<PKMember> = new MatTableDataSource();
   recentMember: any;
+  value: number = 0;
+  inProgress: boolean = false;
 
   viewAll(): void {
-    this.getList();
+    this.memberService.getServerSettings('aobyr');
   }
 
   clearAll() {
-    this.memberService.doAnEmit(1);
+    //TODO
+
   }
 
   getList(): void {
     this.memberService.waitFetch()
-      .subscribe(data => this.data.data = data);
+      .then(data => this.data.data = data);
   }
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -37,13 +40,23 @@ export class BulkSettingsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.data.sort = this.sort;
-    this.memberService.memberEmitter.subscribe(member => this.gotMember(member));
     this.data.paginator = this.paginator;
+    this.memberService.memberEmitter.subscribe(member => console.log(member));
+    this.memberService.progressEmitter.subscribe(progress => this.updateProgress(progress));
   }
 
   gotMember(member: any): void {
-    this.recentMember = member;
-    console.log(member);
+    if(member === 'done') {
+      console.log("done");
+    } else {
+      //member.subscribe((member: any) => console.log(member));
+      console.log(member);
+    }
+
+  }
+
+  updateProgress(progress: any): void {
+    this.value = progress;
   }
 
 }

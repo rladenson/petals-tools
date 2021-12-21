@@ -16,6 +16,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
   declarations: [
@@ -25,19 +26,20 @@ import {MatPaginatorModule} from "@angular/material/paginator";
     BulkSettingsComponent,
     TemplatesComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatInputModule,
-        MatTableModule,
-        MatSortModule,
-        MatPaginatorModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatOptionModule,
+    MatSelectModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatProgressBarModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })
