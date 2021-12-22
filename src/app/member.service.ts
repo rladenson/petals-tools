@@ -71,38 +71,39 @@ export class MemberService {
   }
 
   async getServerSettingsBulk() {
-    this.makeHeader();
     let list = await this.getSystemList();
+    this.it = 0;
     for(let member of list) {
       while(this.lock) await this.wait(1);
       this.lock = true;
-      setTimeout(() => this.lock = false, 600);
-      console.log(member.name);
-      this.memberEmitter.emit(this.http
-        .get<PKMember>(this.apiURL + '/members/' + member.id + '/guilds/' + this.get('serverID'), {'headers': this.headers})
-        .pipe(map(data => data), catchError(this.handleError)));
+      setTimeout(() => this.lock = false, 1000);
+      await this.getServerSettings(member, list.length);
     }
-    this.memberEmitter.emit('done');
   }
 
-  async getServerSettings(memberID: string) {
+  async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
-    while(this.lock) await this.wait(1);
     this.http
-      .get<any>(this.apiURL + '/members/' + memberID + '/guilds/' + this.get('serverID'), {'headers': this.headers})
+      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + this.get('serverID'), {'headers': this.headers})
       .subscribe(data => {
-        this.memberEmitter.emit(JSON.stringify({
-          memberID: memberID,
+        this.memberEmitter.emit({
+          id: member.id,
+          name: member.name,
           display_name: data.display_name,
           avatar_url: data.avatar_url
-        }));
+        });
+        this.it++;
+        this.progressEmitter.emit({progress: this.it/totalMembers*100, membersLeft: totalMembers - this.it});
       }, err => {
         if(err.error.code === 20010) {
-          this.memberEmitter.emit(JSON.stringify({
-            memberID: memberID,
+            this.memberEmitter.emit({
+            id: member.id,
+            name: member.name,
             display_name: null,
             avatar_url: null
-          }));
+          });
+          this.it++;
+          this.progressEmitter.emit({progress: this.it/totalMembers*100, membersLeft: totalMembers - this.it});
         }
       });
   }
@@ -112,16 +113,33 @@ export class MemberService {
       .set('Authorization', this.get('token'));
   }
 
+  async clearServerSettingsBulk() {
+    let list = await this.getSystemList();
+    this.it = 0;
+    for(let member of list) {
+      while(this.lock) await this.wait(1);
+      this.lock = true;
+      setTimeout(() => this.lock = false, 1000);
+      await this.clearServerSettings(member, list.length);
+    }
+  }
+
+  async clearServerSettings(member: PKMember, totalMembers: number) {
+    this.makeHeader();
+    this.http
+      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + this.get('serverID'),
+        {display_name: null, avatar_url: null},
+        {'headers': this.headers}
+      ).pipe(map(data => data), catchError(this.handleError))
+      .subscribe(data => console.log(data));
+    this.it++;
+    this.progressEmitter.emit({progress: this.it/totalMembers*100, membersLeft: totalMembers - this.it});
+  }
+
   private handleError(res: HttpErrorResponse | any) {
     //TODO send to serverset and turn into snackbar
     //TODO get more error detail
     console.error(res.error || res.body.error);
-    if(res.error.code === 20010) {
-      this.memberEmitter.emit()
-      console.log(1);
-    } else {
-      console.log(2);
-    }
     return observableThrowError(res.error || 'Server error');
   }
 

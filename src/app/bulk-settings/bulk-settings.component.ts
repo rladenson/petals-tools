@@ -4,6 +4,7 @@ import { MemberService } from "../member.service";
 import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-bulk-settings',
@@ -12,18 +13,22 @@ import {MatPaginator} from "@angular/material/paginator";
 })
 export class BulkSettingsComponent implements AfterViewInit {
 
-  data: MatTableDataSource<PKMember> = new MatTableDataSource();
+  data: MatTableDataSource<any> = new MatTableDataSource();
   recentMember: any;
-  value: number = 0;
+  progress: number = -1;
   inProgress: boolean = false;
+  membersLeft: number = -1;
 
   viewAll(): void {
-    this.memberService.getServerSettings('aobyr');
+    this.data.data = [];
+    this.inProgress = true;
+    this.memberService.getServerSettingsBulk();
   }
 
   clearAll() {
-    //TODO
-
+    this.data.data = [];
+    this.inProgress = true;
+    this.memberService.clearServerSettingsBulk();
   }
 
   getList(): void {
@@ -34,29 +39,32 @@ export class BulkSettingsComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['name', 'id', 'displayname'];
+  displayedColumns: string[] = ['name', 'id', 'display_name', 'avatar_url'];
 
-  constructor(private memberService: MemberService) { }
+  constructor(private memberService: MemberService, private _snackbar: MatSnackBar) { }
 
   ngAfterViewInit() {
     this.data.sort = this.sort;
     this.data.paginator = this.paginator;
-    this.memberService.memberEmitter.subscribe(member => console.log(member));
+    this.memberService.memberEmitter.subscribe(member => this.gotMember(member));
     this.memberService.progressEmitter.subscribe(progress => this.updateProgress(progress));
   }
 
   gotMember(member: any): void {
-    if(member === 'done') {
-      console.log("done");
-    } else {
-      //member.subscribe((member: any) => console.log(member));
-      console.log(member);
-    }
-
+    //MatTableDataSource push method was broken, this is workaround.
+    const data = this.data.data;
+    data.push(member);
+    this.data.data = data;
   }
 
   updateProgress(progress: any): void {
-    this.value = progress;
+    this.progress = progress.progress;
+    if(progress.membersLeft === 0) {
+      this.inProgress = false;
+      this._snackbar.open('Done!', 'Dismiss')
+    } else {
+      this.membersLeft = progress.membersLeft;
+    }
   }
 
 }

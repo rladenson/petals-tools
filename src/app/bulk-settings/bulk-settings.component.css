@@ -17,7 +17,7 @@ select, input {
   font-size: 18pt;
 }
 
-.mat-column-name, .mat-column-id {
+.mat-column-name, .mat-column-id, .mat-column-display_name {
   border-right: 0.2em solid rgba(0,0,0,0.2);
   padding-left: 1em;
 }
@@ -26,10 +26,14 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
   border-bottom-color: rgba(0, 0, 0, 0.2);
 }
 
-.mat-column-displayname {
+.mat-column-avatar_url {
   padding-left: 1em;
 }
 
 .mat-paginator   {
   background-color: rgba(256,256,256,0.2);
+}
+
+.hide {
+  visibility: hidden;
 }
