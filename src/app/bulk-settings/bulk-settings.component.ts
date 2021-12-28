@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
-import { PKMember } from "../PKMember";
 import { MemberService } from "../member.service";
 import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
@@ -41,7 +40,7 @@ export class BulkSettingsComponent implements AfterViewInit {
 
   displayedColumns: string[] = ['name', 'id', 'display_name', 'avatar_url'];
 
-  constructor(private memberService: MemberService, private _snackbar: MatSnackBar) { }
+  constructor(private memberService: MemberService, private snackbar: MatSnackBar) { }
 
   ngAfterViewInit() {
     this.data.sort = this.sort;
@@ -61,7 +60,7 @@ export class BulkSettingsComponent implements AfterViewInit {
     this.progress = progress.progress;
     if(progress.membersLeft === 0) {
       this.inProgress = false;
-      this._snackbar.open('Done!', 'Dismiss')
+      this.snackbar.open('Done!', 'Dismiss')
     } else {
       this.membersLeft = progress.membersLeft;
     }

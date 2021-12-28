@@ -18,6 +18,7 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
     MatSortModule,
     MatPaginatorModule,
     MatProgressBarModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

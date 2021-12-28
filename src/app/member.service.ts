@@ -1,7 +1,7 @@
-import {EventEmitter, Injectable, Output} from '@angular/core';
-import { PKMember } from "./PKMember";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
-import { Observable, throwError as observableThrowError } from 'rxjs';
+import { EventEmitter, Injectable, Output } from '@angular/core';
+import { PKMember, systemGuildSettingsModel } from "./pk-models";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
+import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -22,12 +22,6 @@ export class MemberService {
   }
   set(key: string, value: any): void {
     localStorage.setItem(key, value);
-  }
-
-  doAnEmit(value: any) {
-    this.it++;
-    this.memberEmitter.emit(this.it);
-    this.memberEmitter.emit(value);
   }
 
   // async getList(): PKMember[] {
@@ -84,7 +78,7 @@ export class MemberService {
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + this.get('serverID'), {'headers': this.headers})
+      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')), {'headers': this.headers})
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -127,7 +121,7 @@ export class MemberService {
   async clearServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + this.get('serverID'),
+      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
         {display_name: null, avatar_url: null},
         {'headers': this.headers}
       ).pipe(map(data => data), catchError(this.handleError))
@@ -144,4 +138,25 @@ export class MemberService {
   }
 
   constructor( private http: HttpClient ) {}
+
+  setSystemGuildSettings(model: systemGuildSettingsModel) {
+    this.makeHeader();
+
+    //TODO
+  }
+
+  public static normalizeGuildID(guild: string): string {
+    let guild_id: string;
+    if(!Number(guild)) {
+      let l = guild.length;
+      guild_id = guild.substring(l - (18 * 3) - 2, l - (18 * 2) - 2);
+      if(!Number(guild_id)) {
+        throw('not a valid server');
+      } else {
+        return guild_id;
+      }
+    } else {
+      return guild;
+    }
+  }
 }

@@ -1,61 +1,72 @@
 <div id='solo_settings'>
   <h3>System Settings</h3>
-  <label for='proxying_enabled'>Change whether proxy is enabled:</label>
-  <select name='proxying_enabled' id='proxying_enabled'>
-    <option value='null'>Don't Change Setting</option>
-    <option value='true'>Turn On</option>
-    <option value='false'>Turn Off</option>
-  </select>
-  <br>
-  <label for='tag_enabled'>Change whether tag is enabled:</label>
-  <select name='tag_enabled' id='tag_enabled'>
-    <option value='null'>Don't Change Setting</option>
-    <option value='on'>Turn On</option>
-    <option value='off'>Turn Off</option>
-  </select>
-  <br>
-  <label for='tag'>Servertag:</label>
-  <input type='text' maxlength='79' id='tag'>
-  <label for='tag_toggle'>Clear Servertag:</label>
-  <input type='checkbox' id='tag_toggle'>
-  <br>
-  <label for='autoproxy_mode'>Change autoproxy mode:</label>
-  <select name='autoproxy_mode' id='autoproxy_mode' onChange='toggleMem()'>
-    <option value='null'>Don't Change Setting</option>
-    <option value='off'>Turn Autoproxy Off</option>
-    <option value='front'>Turn Autoproxy to Front</option>
-    <option value='latch'>Turn Autoproxy to Latch</option>
-    <option value='member'>Turn Autoproxy to a Member (set below)</option>
-  </select>
-  <br>
-  <label for='autoproxy_member' class='apMember' hidden>Autoproxy member* (ignored if autoproxy mode not Member):</label>
-  <input type='text' name='autoproxy_member' class='apMember' id='autoproxy_member' maxlength='5' hidden>
-  <br>
-  <button onclick='runSystem()'>Go!</button>
+
+  <form #systemForm='ngForm' (ngSubmit)="submitSystem()">
+    <label for='proxying_enabled'>Change whether proxy is enabled: </label>
+    <select class="form-control" id='proxying_enabled' name="proxying_enabled" [(ngModel)]="model.proxying_enabled">
+      <option value='undefined'>Don't Change Setting</option>
+      <option value='true'>Turn On</option>
+      <option value='false'>Turn Off</option>
+    </select>
+    <br>
+    <label for='tag_enabled'>Change whether tag is enabled: </label>
+    <select class="form-control" id='tag_enabled' name="tag_enabled" [(ngModel)]="model.tag_enabled">
+      <option value='undefined'>Don't Change Setting</option>
+      <option value='true'>Turn On</option>
+      <option value='false'>Turn Off</option>
+    </select>
+    <br>
+    <label for='tag'>Servertag: </label>
+    <input type='text' maxlength='79' id='tag' class="form-control" name="tag" [(ngModel)]="model.tag">
+    <label for='tag_toggle'>  Clear Servertag: </label>
+    <input type='checkbox' id='tag_toggle' class="form-control" name="tag_toggle" [(ngModel)]="tag_toggle">
+    <br>
+    <label for='autoproxy_mode'>Change autoproxy mode: </label>
+    <select id='autoproxy_mode' class="form-control" name="autoproxy_mode" [(ngModel)]="model.autoproxy_mode">
+      <option value='undefined'>Don't Change Setting</option>
+      <option value='off'>Turn Autoproxy Off</option>
+      <option value='front'>Turn Autoproxy to Front</option>
+      <option value='latch'>Turn Autoproxy to Latch</option>
+      <option value='member'>Turn Autoproxy to a Member (set below)</option>
+    </select>
+    <br>
+    <div *ngIf="this.model.autoproxy_mode==='member'">
+      <label for='autoproxy_member' class='apMember'>Autoproxy member* (ignored if autoproxy mode not Member):</label>
+      <input type='text' class='form-control' name="autoproxy_member" id='autoproxy_member' maxlength='5'
+             [(ngModel)]="model.autoproxy_member" required>
+    </div>
+    <button type="submit" [disabled]="!systemForm.form.valid">Go!</button>
+  </form>
+
   <br><br>
+
   <h3>Member Settings</h3>
-  <label for='member'>Member*:</label>
-  <input type='text' id='member' maxlength='5'>
-  <br>
-  <label for='display_name'>Servername:</label>
-  <select id='display_name_select' onChange='toggleDisplayName()'>
-    <option value='null'>Don't Change Setting</option>
-    <option value='clear'>Clear Servername</option>
-    <option value='set'>Set Servername</option>
-  </select>
-  <input type='text' maxlength='80' name='display_name' id='display_name' hidden>
-  <input type='button' class='templateLoadButton' value='Load Template 1' onclick='loadtemplate("template1")' hidden>
-  <input type='button' class='templateLoadButton' value='Load Template 2' onclick='loadtemplate("template2")' hidden>
-  <input type='button' class='templateLoadButton' value='Load Template 3' onclick='loadtemplate("template3")' hidden>
-  <br>
-  <label for='avatar_url'>Serveravatar:</label>
-  <select id='avatar_url_select' onChange='toggleAvatar()'>
-    <option value='null'>Don't Change Setting</option>
-    <option value='clear'>Clear Serveravatar</option>
-    <option value='set'>Set Serveravatar</option>
-  </select>
-  <input type='text' maxlength='256' name='avatar_url' id='avatar_url' hidden>
-  <br>
-  <button onclick='runMember()'>Go!</button>
+
+  <form #memberForm='ngForm' (ngSubmit)="submitMember()">
+    <label for='member'>Member*: </label>
+    <input type='text' id='member' maxlength='5' class="form-control" name="member" required>
+    <br>
+    <label for='display_name'>Servername: </label>
+    <select id='display_name_select' onChange='toggleDisplayName()'>
+      <option value='undefined'>Don't Change Setting</option>
+      <option value='null'>Clear Servername</option>
+      <option value='true'>Set Servername</option>
+    </select>
+    <input type='text' maxlength='80' name='display_name' id='display_name' hidden>
+    <input type='button' class='templateLoadButton' value='Load Template 1' onclick='loadtemplate("template1")' hidden>
+    <input type='button' class='templateLoadButton' value='Load Template 2' onclick='loadtemplate("template2")' hidden>
+    <input type='button' class='templateLoadButton' value='Load Template 3' onclick='loadtemplate("template3")' hidden>
+    <br>
+    <label for='avatar_url'>Serveravatar: </label>
+    <select id='avatar_url_select' onChange='toggleAvatar()'>
+      <option value='null'>Don't Change Setting</option>
+      <option value='clear'>Clear Serveravatar</option>
+      <option value='set'>Set Serveravatar</option>
+    </select>
+    <input type='text' maxlength='256' name='avatar_url' id='avatar_url' hidden>
+    <br>
+    <button type="submit">Go!</button>
+  </form>
+
   <br><br>
 </div>
