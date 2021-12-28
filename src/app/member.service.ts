@@ -141,8 +141,18 @@ export class MemberService {
 
   setSystemGuildSettings(model: systemGuildSettingsModel) {
     this.makeHeader();
+    let json = JSON.stringify(model);
+    if(json.length === 2) {
+      throw('You need to change some settings');
+    }
+    this.http
+      .patch<any>(this.apiURL + '/systems/@me/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
+        <JSON>model,
+        {'headers': this.headers}
+      ).pipe(map(data => data), catchError(this.handleError))
+      .subscribe(data => console.log(data));
 
-    //TODO
+    //TODO errors
   }
 
   public static normalizeGuildID(guild: string): string {

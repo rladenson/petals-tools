@@ -13,25 +13,28 @@ export class SoloSettingsComponent implements OnInit {
   model = new systemGuildSettingsModel();
   tag_toggle: boolean = false;
   submitted = false;
+
   submitSystem() {
     this.submitted = true;
     if(this.tag_toggle) {
       this.model.tag = null;
-    } else if(this.model.tag === null) {
+    } else if(this.model.tag === null || this.model.tag === '') {
       this.model.tag = undefined;
     }
-    console.log(this.model);
-    //this.memberService.setSystemGuildSettings(this.model);
+    this.memberService.setSystemGuildSettings(this.model);
   }
+
   submitMember() {
-    /*try {
+
+  }
+
+  /* error snackbar
+    try {
       this.model.setGuildID('2a');
     } catch (e: any) {
       this.snackbar.open(e, 'Dismiss');
       console.log(e);
     }*/
-  }
-
 
 
   constructor( private memberService: MemberService, private snackbar: MatSnackBar ) { }
