@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {systemGuildSettingsModel} from "../pk-models";
+import {memberGuildSettingsModel, systemGuildSettingsModel} from "../pk-models";
 import {MemberService} from "../member.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 
@@ -10,18 +10,20 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 })
 export class SoloSettingsComponent implements OnInit {
 
-  model = new systemGuildSettingsModel();
+  systemModel = new systemGuildSettingsModel();
+  memberModel = new memberGuildSettingsModel();
+  memberID: string = '';
   tag_toggle: boolean = false;
   submitted = false;
 
   submitSystem() {
     this.submitted = true;
     if(this.tag_toggle) {
-      this.model.tag = null;
-    } else if(this.model.tag === null || this.model.tag === '') {
-      this.model.tag = undefined;
+      this.systemModel.tag = null;
+    } else if(this.systemModel.tag === null || this.systemModel.tag === '') {
+      this.systemModel.tag = undefined;
     }
-    this.memberService.setSystemGuildSettings(this.model);
+    this.memberService.setSystemGuildSettings(this.systemModel);
   }
 
   submitMember() {

@@ -3,26 +3,26 @@
 
   <form #systemForm='ngForm' (ngSubmit)="submitSystem()">
     <label for='proxying_enabled'>Change whether proxy is enabled: </label>
-    <select class="form-control" id='proxying_enabled' name="proxying_enabled" [(ngModel)]="model.proxying_enabled">
+    <select class="form-control" id='proxying_enabled' name="proxying_enabled" [(ngModel)]="systemModel.proxying_enabled">
       <option value='undefined'>Don't Change Setting</option>
       <option value='true'>Turn On</option>
       <option value='false'>Turn Off</option>
     </select>
     <br>
     <label for='tag_enabled'>Change whether tag is enabled: </label>
-    <select class="form-control" id='tag_enabled' name="tag_enabled" [(ngModel)]="model.tag_enabled">
+    <select class="form-control" id='tag_enabled' name="tag_enabled" [(ngModel)]="systemModel.tag_enabled">
       <option value='undefined'>Don't Change Setting</option>
       <option value='true'>Turn On</option>
       <option value='false'>Turn Off</option>
     </select>
     <br>
     <label for='tag'>Servertag: </label>
-    <input type='text' maxlength='79' id='tag' class="form-control" name="tag" [(ngModel)]="model.tag">
+    <input type='text' maxlength='79' id='tag' class="form-control" name="tag" [(ngModel)]="systemModel.tag">
     <label for='tag_toggle'>  Clear Servertag: </label>
     <input type='checkbox' id='tag_toggle' class="form-control" name="tag_toggle" [(ngModel)]="tag_toggle">
     <br>
     <label for='autoproxy_mode'>Change autoproxy mode: </label>
-    <select id='autoproxy_mode' class="form-control" name="autoproxy_mode" [(ngModel)]="model.autoproxy_mode">
+    <select id='autoproxy_mode' class="form-control" name="autoproxy_mode" [(ngModel)]="systemModel.autoproxy_mode">
       <option value='undefined'>Don't Change Setting</option>
       <option value='off'>Turn Autoproxy Off</option>
       <option value='front'>Turn Autoproxy to Front</option>
@@ -30,10 +30,10 @@
       <option value='member'>Turn Autoproxy to a Member (set below)</option>
     </select>
     <br>
-    <div *ngIf="this.model.autoproxy_mode==='member'">
+    <div *ngIf="this.systemModel.autoproxy_mode==='member'">
       <label for='autoproxy_member' class='apMember'>Autoproxy member* (ignored if autoproxy mode not Member):</label>
       <input type='text' class='form-control' name="autoproxy_member" id='autoproxy_member' maxlength='5'
-             [(ngModel)]="model.autoproxy_member" required>
+             [(ngModel)]="systemModel.autoproxy_member" required>
     </div>
     <button type="submit" [disabled]="!systemForm.form.valid">Go!</button>
   </form>
@@ -44,7 +44,22 @@
 
   <form #memberForm='ngForm' (ngSubmit)="submitMember()">
     <label for='member'>Member*: </label>
-    <input type='text' id='member' maxlength='5' class="form-control" name="member" required>
+    <input id='member' class="form-control" name="member"
+           [(ngModel)]="memberID" #member="ngModel"
+           type='text' maxlength='5'
+           required minlength="5" pattern="[a-zA-Z]*">
+    <div *ngIf="member.invalid && (member.dirty || member.touched)"
+         class="alert">
+      <div *ngIf="member.errors?.['required']">
+        Member ID is required.
+      </div>
+      <div *ngIf="member.errors?.['minlength']">
+        Member ID must be 5 characters long.
+      </div>
+      <div *ngIf="member.errors?.['pattern']">
+        Member ID must be letters only.
+      </div>
+    </div>
     <br>
     <label for='display_name'>Servername: </label>
     <select id='display_name_select' onChange='toggleDisplayName()'>
@@ -65,7 +80,7 @@
     </select>
     <input type='text' maxlength='256' name='avatar_url' id='avatar_url' hidden>
     <br>
-    <button type="submit">Go!</button>
+    <button type="submit" [disabled]="!memberForm.form.valid">Go!</button>
   </form>
 
   <br><br>
