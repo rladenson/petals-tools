@@ -1,28 +1,29 @@
 <div id='solo_settings'>
   <h3>System Settings</h3>
 
-  <form #systemForm='ngForm' (ngSubmit)="submitSystem()">
+  <form #systemForm='ngForm' (ngSubmit)='submitSystem()'>
     <label for='proxying_enabled'>Change whether proxy is enabled: </label>
-    <select class="form-control" id='proxying_enabled' name="proxying_enabled" [(ngModel)]="systemModel.proxying_enabled">
+    <select class='form-control' id='proxying_enabled' name='proxying_enabled'
+      [(ngModel)]='systemModel.proxying_enabled'>
       <option value='undefined'>Don't Change Setting</option>
       <option value='true'>Turn On</option>
       <option value='false'>Turn Off</option>
     </select>
     <br>
     <label for='tag_enabled'>Change whether tag is enabled: </label>
-    <select class="form-control" id='tag_enabled' name="tag_enabled" [(ngModel)]="systemModel.tag_enabled">
+    <select class='form-control' id='tag_enabled' name='tag_enabled' [(ngModel)]='systemModel.tag_enabled'>
       <option value='undefined'>Don't Change Setting</option>
       <option value='true'>Turn On</option>
       <option value='false'>Turn Off</option>
     </select>
     <br>
     <label for='tag'>Servertag: </label>
-    <input type='text' maxlength='79' id='tag' class="form-control" name="tag" [(ngModel)]="systemModel.tag">
-    <label for='tag_toggle'>  Clear Servertag: </label>
-    <input type='checkbox' id='tag_toggle' class="form-control" name="tag_toggle" [(ngModel)]="tag_toggle">
+    <input type='text' maxlength='79' id='tag' class='form-control' name='tag' [(ngModel)]='systemModel.tag'>
+    <label for='tag_toggle'> Clear Servertag: </label>
+    <input type='checkbox' id='tag_toggle' class='form-control' name='tag_toggle' [(ngModel)]='tag_toggle'>
     <br>
     <label for='autoproxy_mode'>Change autoproxy mode: </label>
-    <select id='autoproxy_mode' class="form-control" name="autoproxy_mode" [(ngModel)]="systemModel.autoproxy_mode">
+    <select id='autoproxy_mode' class='form-control' name='autoproxy_mode' [(ngModel)]='systemModel.autoproxy_mode'>
       <option value='undefined'>Don't Change Setting</option>
       <option value='off'>Turn Autoproxy Off</option>
       <option value='front'>Turn Autoproxy to Front</option>
@@ -30,57 +31,58 @@
       <option value='member'>Turn Autoproxy to a Member (set below)</option>
     </select>
     <br>
-    <div *ngIf="this.systemModel.autoproxy_mode==='member'">
+    <div *ngIf='this.systemModel.autoproxy_mode==="member"'>
       <label for='autoproxy_member' class='apMember'>Autoproxy member* (ignored if autoproxy mode not Member):</label>
-      <input type='text' class='form-control' name="autoproxy_member" id='autoproxy_member' maxlength='5'
-             [(ngModel)]="systemModel.autoproxy_member" required>
+      <input type='text' class='form-control' name='autoproxy_member' id='autoproxy_member' maxlength='5'
+        [(ngModel)]='systemModel.autoproxy_member' required>
     </div>
-    <button type="submit" [disabled]="!systemForm.form.valid">Go!</button>
+    <button type='submit' [disabled]='!systemForm.form.valid'>Go!</button>
   </form>
 
   <br><br>
 
   <h3>Member Settings</h3>
 
-  <form #memberForm='ngForm' (ngSubmit)="submitMember()">
+  <form #memberForm='ngForm' (ngSubmit)='submitMember()'>
     <label for='member'>Member*: </label>
-    <input id='member' class="form-control" name="member"
-           [(ngModel)]="memberID" #member="ngModel"
-           type='text' maxlength='5'
-           required minlength="5" pattern="[a-zA-Z]*">
-    <div *ngIf="member.invalid && (member.dirty || member.touched)"
-         class="alert">
-      <div *ngIf="member.errors?.['required']">
+    <input id='member' class='form-control' name='member' [(ngModel)]='memberID' #member='ngModel' type='text'
+      maxlength='5' required minlength='5' pattern='[a-zA-Z]*'>
+    <div *ngIf='member.invalid && (member.dirty || member.touched)' class='alert'>
+      <div *ngIf='member.errors?.["required"]'>
         Member ID is required.
       </div>
-      <div *ngIf="member.errors?.['minlength']">
+      <div *ngIf='member.errors?.["minlength"]'>
         Member ID must be 5 characters long.
       </div>
-      <div *ngIf="member.errors?.['pattern']">
+      <div *ngIf='member.errors?.["pattern"]'>
         Member ID must be letters only.
       </div>
     </div>
     <br>
     <label for='display_name'>Servername: </label>
-    <select id='display_name_select' onChange='toggleDisplayName()'>
-      <option value='undefined'>Don't Change Setting</option>
-      <option value='null'>Clear Servername</option>
-      <option value='true'>Set Servername</option>
+    <select id='display_name_select' name='display_name_select' class='form-control' [(ngModel)]='servername_toggle'>
+      <option value='null'>Don't Change Setting</option>
+      <option value='clear'>Clear Servername</option>
+      <option value='set'>Set Servername</option>
     </select>
-    <input type='text' maxlength='80' name='display_name' id='display_name' hidden>
-    <input type='button' class='templateLoadButton' value='Load Template 1' onclick='loadtemplate("template1")' hidden>
-    <input type='button' class='templateLoadButton' value='Load Template 2' onclick='loadtemplate("template2")' hidden>
-    <input type='button' class='templateLoadButton' value='Load Template 3' onclick='loadtemplate("template3")' hidden>
+    <span *ngIf='servername_toggle==="set"'>
+      <input type='text' maxlength='80' name='display_name' id='display_name' class='form-control'
+        [(ngModel)]='memberModel.display_name'>
+      <input type='button' class='templateLoadButton' value='Load Template 1' onclick='loadtemplate("template1")'>
+      <input type='button' class='templateLoadButton' value='Load Template 2' onclick='loadtemplate("template2")'>
+      <input type='button' class='templateLoadButton' value='Load Template 3' onclick='loadtemplate("template3")'>
+    </span>
     <br>
     <label for='avatar_url'>Serveravatar: </label>
-    <select id='avatar_url_select' onChange='toggleAvatar()'>
+    <select id='avatar_url_select' name='avatar_url_select' class='form-control' [(ngModel)]='avatar_url_toggle'>
       <option value='null'>Don't Change Setting</option>
       <option value='clear'>Clear Serveravatar</option>
       <option value='set'>Set Serveravatar</option>
     </select>
-    <input type='text' maxlength='256' name='avatar_url' id='avatar_url' hidden>
+    <input class='form-control' type='text' maxlength='256' name='avatar_url' id='avatar_url'
+      *ngIf='avatar_url_toggle==="set"' [(ngModel)]='memberModel.avatar_url'>
     <br>
-    <button type="submit" [disabled]="!memberForm.form.valid">Go!</button>
+    <button type='submit' [disabled]='!memberForm.form.valid'>Go!</button>
   </form>
 
   <br><br>

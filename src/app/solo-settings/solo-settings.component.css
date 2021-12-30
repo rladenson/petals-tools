@@ -7,8 +7,16 @@
 
 select, input {
   font-size: 12pt;
+  margin-right: 0.5em;
 }
+
 
 #content {
   font-size: 18pt;
+}
+
+.alert div {
+  background-color: #fed3d3;
+  color: #820000;
+  padding: 0.5rem;
 }

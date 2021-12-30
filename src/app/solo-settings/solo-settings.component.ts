@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {memberGuildSettingsModel, systemGuildSettingsModel} from "../pk-models";
-import {MemberService} from "../member.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
+import { Component, OnInit } from '@angular/core';
+import { memberGuildSettingsModel, systemGuildSettingsModel } from "../pk-models";
+import { MemberService } from "../member.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-solo-settings',
@@ -14,20 +14,30 @@ export class SoloSettingsComponent implements OnInit {
   memberModel = new memberGuildSettingsModel();
   memberID: string = '';
   tag_toggle: boolean = false;
-  submitted = false;
+  servername_toggle: string = 'null';
+  avatar_url_toggle: string = 'null';
 
   submitSystem() {
-    this.submitted = true;
-    if(this.tag_toggle) {
+    if (this.tag_toggle) {
       this.systemModel.tag = null;
-    } else if(this.systemModel.tag === null || this.systemModel.tag === '') {
+    } else if (this.systemModel.tag === null || this.systemModel.tag === '') {
       this.systemModel.tag = undefined;
     }
     this.memberService.setSystemGuildSettings(this.systemModel);
   }
 
   submitMember() {
-
+    if (this.servername_toggle === 'clear') {
+      this.memberModel.display_name = null;
+    } else if (this.memberModel.display_name === null || this.memberModel.display_name === '') {
+      this.memberModel.display_name = undefined;
+    }
+    if (this.avatar_url_toggle === 'clear') {
+      this.memberModel.avatar_url = null;
+    } else if (this.memberModel.avatar_url === null || this.memberModel.avatar_url === '') {
+      this.memberModel.avatar_url = undefined;
+    }
+    this.memberService.setMemberGuildSettings(this.memberModel, this.memberID);
   }
 
   /* error snackbar
@@ -39,7 +49,7 @@ export class SoloSettingsComponent implements OnInit {
     }*/
 
 
-  constructor( private memberService: MemberService, private snackbar: MatSnackBar ) { }
+  constructor(private memberService: MemberService, private snackbar: MatSnackBar) { }
 
   ngOnInit(): void {
   }

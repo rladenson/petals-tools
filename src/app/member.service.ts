@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import { PKMember, systemGuildSettingsModel } from "./pk-models";
+import { memberGuildSettingsModel, PKMember, systemGuildSettingsModel } from "./pk-models";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -50,7 +50,7 @@ export class MemberService {
     //this.lock = true;
     //setTimeout(() => this.lock = false, 500);
     return this.http
-      .get<PKMember[]>(this.apiURL, {'headers': headers})
+      .get<PKMember[]>(this.apiURL, { 'headers': headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
   }
@@ -59,7 +59,7 @@ export class MemberService {
     this.makeHeader();
     while (this.lock) await this.wait(1);
     return this.http
-      .get<PKMember[]>(this.apiURL + '/systems/@me/members', {'headers': this.headers})
+      .get<PKMember[]>(this.apiURL + '/systems/@me/members', { 'headers': this.headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
   }
@@ -67,8 +67,8 @@ export class MemberService {
   async getServerSettingsBulk() {
     let list = await this.getSystemList();
     this.it = 0;
-    for(let member of list) {
-      while(this.lock) await this.wait(1);
+    for (let member of list) {
+      while (this.lock) await this.wait(1);
       this.lock = true;
       setTimeout(() => this.lock = false, 1000);
       await this.getServerSettings(member, list.length);
@@ -78,7 +78,7 @@ export class MemberService {
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')), {'headers': this.headers})
+      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')), { 'headers': this.headers })
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -87,17 +87,17 @@ export class MemberService {
           avatar_url: data.avatar_url
         });
         this.it++;
-        this.progressEmitter.emit({progress: this.it/totalMembers*100, membersLeft: totalMembers - this.it});
+        this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
       }, err => {
-        if(err.error.code === 20010) {
-            this.memberEmitter.emit({
+        if (err.error.code === 20010) {
+          this.memberEmitter.emit({
             id: member.id,
             name: member.name,
             display_name: null,
             avatar_url: null
           });
           this.it++;
-          this.progressEmitter.emit({progress: this.it/totalMembers*100, membersLeft: totalMembers - this.it});
+          this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
         }
       });
   }
@@ -110,8 +110,8 @@ export class MemberService {
   async clearServerSettingsBulk() {
     let list = await this.getSystemList();
     this.it = 0;
-    for(let member of list) {
-      while(this.lock) await this.wait(1);
+    for (let member of list) {
+      while (this.lock) await this.wait(1);
       this.lock = true;
       setTimeout(() => this.lock = false, 1000);
       await this.clearServerSettings(member, list.length);
@@ -122,12 +122,12 @@ export class MemberService {
     this.makeHeader();
     this.http
       .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
-        {display_name: null, avatar_url: null},
-        {'headers': this.headers}
+        { display_name: null, avatar_url: null },
+        { 'headers': this.headers }
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => console.log(data));
     this.it++;
-    this.progressEmitter.emit({progress: this.it/totalMembers*100, membersLeft: totalMembers - this.it});
+    this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
   }
 
   private handleError(res: HttpErrorResponse | any) {
@@ -137,18 +137,18 @@ export class MemberService {
     return observableThrowError(res.error || 'Server error');
   }
 
-  constructor( private http: HttpClient ) {}
+  constructor(private http: HttpClient) { }
 
   setSystemGuildSettings(model: systemGuildSettingsModel) {
     this.makeHeader();
     let json = JSON.stringify(model);
-    if(json.length === 2) {
-      throw('You need to change some settings');
+    if (json.length === 2) {
+      throw ('You need to change some settings');
     }
     this.http
       .patch<any>(this.apiURL + '/systems/@me/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
         <JSON>model,
-        {'headers': this.headers}
+        { 'headers': this.headers }
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => console.log(data));
 
@@ -157,16 +157,32 @@ export class MemberService {
 
   public static normalizeGuildID(guild: string): string {
     let guild_id: string;
-    if(!Number(guild)) {
+    if (!Number(guild)) {
       let l = guild.length;
       guild_id = guild.substring(l - (18 * 3) - 2, l - (18 * 2) - 2);
-      if(!Number(guild_id)) {
-        throw('not a valid server');
+      if (!Number(guild_id)) {
+        throw ('not a valid server');
       } else {
         return guild_id;
       }
     } else {
       return guild;
     }
+  }
+
+  setMemberGuildSettings(model: memberGuildSettingsModel, memberID: string) {
+    this.makeHeader();
+    let json = JSON.stringify(model);
+    if (json.length === 2) {
+      throw ('You need to change some settings');
+    }
+    this.http
+      .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
+        <JSON>model,
+        { 'headers': this.headers }
+      ).pipe(map(data => data), catchError(this.handleError))
+      .subscribe(data => console.log(data));
+
+    //TODO errors
   }
 }
