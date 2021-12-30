@@ -1,15 +1,33 @@
 <div id='templates'>
   <h3>Templates go here</h3>
-  <label for='template1'>Template 1:</label>
-  <!--input type='text' class='template_name' id='template1_name' placeholder='Template 1 Name' onChange='save("template1_name")'-->
-  <input type='text' class='template' id='template1' placeholder="Template 1" onChange='save("template1")'>
-  <br><br>
-  <label for='template2'>Template 2:</label>
-  <!--input type='text' class='template_name' id='template2_name' placeholder='Template 2 Name' onChange='save("template2_name")'-->
-  <input type='text' class='template' id='template2' placeholder="Template 2" onChange='save("template2")'>
-  <br><br>
-  <label for='template3'>Template 3:</label>
-  <!--input type='text' class='template_name' id='template3_name' placeholder='Template 3 Name' onChange='save("template3_name")'-->
-  <input type='text' class='template' id='template3' placeholder="Template 3" onChange='save("template3")'>
-  <br>
+  <div *ngFor='let template of templates; let i=index'>
+    <label for='template{{i}}_name'>Template {{i+1}} Name: </label>
+    <input type='text' class='template_name' id='template{{i}}_name' placeholder='Template {{i + 1}} Name'
+      [(ngModel)]='templates[i][0]' (change)='this.saveTemplates()'>
+    <br>
+    <label for='template{{i}}'>Template {{i+1}}: </label>
+    <input type='text' class='template_name' id='template{{i}}' placeholder='Template {{i + 1}}'
+      [(ngModel)]='templates[i][1]' (change)='this.saveTemplates()'>
+    <br>
+    <button (click)='removeTemplate(i)'>Remove Template</button>
+    <br><br>
+  </div>
+  <button (click)='newTemplate()'>Add Template</button>
 </div>
+
+<!--
+
+<label for='template1'>Template 1:</label>
+  <input type='text' class='template_name' id='template1_name' placeholder='Template 1 Name' onChange='save("template1_name")'>
+  <input type='text' class='template' id='template1' placeholder="Template 1" onChange='save("template1")'>
+<br><br>
+<label for='template2'>Template 2:</label>
+  <input type='text' class='template_name' id='template2_name' placeholder='Template 2 Name' onChange='save("template2_name")'>
+  <input type='text' class='template' id='template2' placeholder="Template 2" onChange='save("template2")'>
+<br><br>
+<label for='template3'>Template 3:</label>
+  input type='text' class='template_name' id='template3_name' placeholder='Template 3 Name' onChange='save("template3_name")'>
+  <input type='text' class='template' id='template3' placeholder="Template 3" onChange='save("template3")'>
+<br>
+
+-->

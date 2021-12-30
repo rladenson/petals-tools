@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MemberService } from "../member.service";
 
 @Component({
@@ -6,18 +6,19 @@ import { MemberService } from "../member.service";
   templateUrl: './serverset.component.html',
   styleUrls: ['./serverset.component.css']
 })
-export class ServersetComponent implements AfterViewInit {
+export class ServersetComponent implements OnInit {
 
   selectedPage: string = "solo";
   lock: boolean = false;
-  @ViewChild('token') token!: ElementRef;
-  @ViewChild('guildID') guildID!: ElementRef;
+  token: string = '';
+  guildID: string = '';
+  templates: [string, string][] = [];
 
-  saveToken(event: any) {
-    this.memberService.set('token', event.originalTarget.value);
+  saveToken() {
+    this.memberService.set('token', this.token);
   }
-  saveGuildID(event: any) {
-    this.memberService.set('guildID', event.originalTarget.value);
+  saveGuildID() {
+    this.memberService.set('guildID', this.guildID);
   }
 
 
@@ -29,9 +30,13 @@ export class ServersetComponent implements AfterViewInit {
 
   constructor(private memberService: MemberService) { }
 
-  ngAfterViewInit(): void {
-    this.token.nativeElement.value = this.memberService.get('token');
-    this.guildID.nativeElement.value = this.memberService.get('guildID');
+  ngOnInit(): void {
+    this.token = this.memberService.get('token');
+    this.guildID = this.memberService.get('guildID');
+    this.templates = JSON.parse(this.memberService.get('templates'));
+    if (this.templates === null) {
+      this.templates = [];
+    }
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { memberGuildSettingsModel, systemGuildSettingsModel } from "../pk-models";
 import { MemberService } from "../member.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -16,6 +16,7 @@ export class SoloSettingsComponent implements OnInit {
   tag_toggle: boolean = false;
   servername_toggle: string = 'null';
   avatar_url_toggle: string = 'null';
+  @Input() templates!: [string, string][];
 
   submitSystem() {
     if (this.tag_toggle) {
@@ -38,6 +39,10 @@ export class SoloSettingsComponent implements OnInit {
       this.memberModel.avatar_url = undefined;
     }
     this.memberService.setMemberGuildSettings(this.memberModel, this.memberID);
+  }
+
+  loadTemplate(text: string): void {
+    this.memberModel.display_name = text;
   }
 
   /* error snackbar

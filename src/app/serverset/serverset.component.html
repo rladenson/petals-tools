@@ -5,40 +5,43 @@
 
 <body>
 
-<div id=all>
+  <div id=all>
 
-  <h1>Change Server Settings</h1>
-  <mat-form-field>
-    <mat-label>Token</mat-label>
-    <input matInput #token (change)="this.saveToken($event)">
-  </mat-form-field>
-  <br>
-  <mat-form-field>
-    <mat-label>Server ID (or message link)</mat-label>
-    <input matInput #guildID (change)="this.saveGuildID($event)">
-  </mat-form-field>
-  <br><br>
+    <h1>Change Server Settings</h1>
+    <mat-form-field>
+      <mat-label>Token</mat-label>
+      <input matInput [(ngModel)]='token' (change)='saveToken()'>
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+      <mat-label>Server ID (or message link)</mat-label>
+      <input matInput [(ngModel)]='guildID' (change)='saveGuildID()'>
+    </mat-form-field>
+    <br><br>
 
 
-  <div class='buttons'>
-    <button [ngClass]='{"selected": selectedPage==="solo", "pageButton": true}' (click)='switchTo("solo")'>System and Member Settings</button>
-    <button [ngClass]='{"selected": selectedPage==="bulk", "pageButton": true}' (click)='switchTo("bulk")'>Bulk Member Settings</button>
-    <button [ngClass]='{"selected": selectedPage==="template", "pageButton": true}' (click)='switchTo("template")'>Name Templates</button>
+    <div class='buttons'>
+      <button [ngClass]='{"selected": selectedPage==="solo", "pageButton": true}' (click)='switchTo("solo")'>System and
+        Member Settings</button>
+      <button [ngClass]='{"selected": selectedPage==="bulk", "pageButton": true}' (click)='switchTo("bulk")'>Bulk Member
+        Settings</button>
+      <button [ngClass]='{"selected": selectedPage==="template", "pageButton": true}'
+        (click)='switchTo("template")'>Name Templates</button>
+    </div>
+    <br>
+
+    <app-solo-settings *ngIf="selectedPage==='solo'" [templates]='templates'></app-solo-settings>
+
+    <app-bulk-settings *ngIf="selectedPage==='bulk'"></app-bulk-settings>
+
+    <app-templates *ngIf="selectedPage==='template'" [(templates)]='templates'></app-templates>
+
+    <p id='content'></p>
+    <p id='error'></p>
+    <br><br>
+    <p id='info'> </p>
+    <footer>*Must be a 5-letter ID</footer>
+    <footer>For help please contact Agrimonies Petala#5342 on discord!</footer>
   </div>
-  <br>
-
-  <app-solo-settings *ngIf="selectedPage==='solo'"></app-solo-settings>
-
-  <app-bulk-settings *ngIf="selectedPage==='bulk'"></app-bulk-settings>
-
-  <app-templates *ngIf="selectedPage==='template'"></app-templates>
-
-  <p id='content'></p>
-  <p id='error'></p>
-  <br><br>
-  <p id='info'> </p>
-  <footer>*Must be a 5-letter ID</footer>
-  <footer>For help please contact Agrimonies Petala#5342 on discord!</footer>
-</div>
 
 </body>

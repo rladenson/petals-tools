@@ -68,9 +68,8 @@
     <span *ngIf='servername_toggle==="set"'>
       <input type='text' maxlength='80' name='display_name' id='display_name' class='form-control'
         [(ngModel)]='memberModel.display_name'>
-      <input type='button' class='templateLoadButton' value='Load Template 1' onclick='loadtemplate("template1")'>
-      <input type='button' class='templateLoadButton' value='Load Template 2' onclick='loadtemplate("template2")'>
-      <input type='button' class='templateLoadButton' value='Load Template 3' onclick='loadtemplate("template3")'>
+      <input *ngFor='let template of templates' type='button' class='templateLoadButton'
+        value='Load Template {{template[0]}}' (click)='loadTemplate(template[1])'>
     </span>
     <br>
     <label for='avatar_url'>Serveravatar: </label>
