@@ -1,8 +1,4 @@
-body {
-  background-color: lightblue;
-  padding-left: 10px;
-  opacity: 1;
-}
+
 
 table, th, td {
   border:2px solid black;
@@ -32,9 +28,9 @@ body::before {
   background-size: cover;
   position: fixed;
   top: -30%;
-  right: 0px;
+  right: 0;
   bottom: -500px;
-  left: 0px;
+  left: 0;
   opacity: 0.4;
 }
 

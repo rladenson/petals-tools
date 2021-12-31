@@ -1,8 +1,10 @@
 router-outlet, body {
   left:0;
   top:0;
-  width:100%;
+  right: 0;
   height:100%;
   margin: 0;
   background:lightblue;
+  padding-left: 10px;
+  opacity: 1;
 }
