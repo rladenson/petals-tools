@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MemberService } from "../member.service";
-import {MatSort} from "@angular/material/sort";
-import {MatTableDataSource} from "@angular/material/table";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatSnackBar} from "@angular/material/snack-bar";
+import { MatSort } from "@angular/material/sort";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-bulk-settings',
@@ -28,11 +28,6 @@ export class BulkSettingsComponent implements AfterViewInit {
     this.data.data = [];
     this.inProgress = true;
     this.memberService.clearServerSettingsBulk();
-  }
-
-  getList(): void {
-    this.memberService.waitFetch()
-      .then(data => this.data.data = data);
   }
 
   @ViewChild(MatSort) sort!: MatSort;

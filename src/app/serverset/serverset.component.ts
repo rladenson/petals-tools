@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { MemberService } from "../member.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-serverset',
@@ -28,7 +29,7 @@ export class ServersetComponent implements OnInit {
     return;
   }
 
-  constructor(private memberService: MemberService) { }
+  constructor(private memberService: MemberService, private snackbar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.token = this.memberService.get('token');
@@ -37,6 +38,26 @@ export class ServersetComponent implements OnInit {
     if (this.templates === null) {
       this.templates = [];
     }
+    this.memberService.errorEmitter.subscribe(error => this.errorSnackbar(error));
+    this.memberService.doneEmitter.subscribe(data => this.doneSnackbar(data));
+  }
+
+  errorSnackbar(error: any): void {
+    if(typeof error === "string") {
+      this.snackbar.open(error, 'Dismiss', {
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
+    } else {
+      this.snackbar.open(error.error.code + ': ' + error.error.message, 'Dismiss', {
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
+    }
+  }
+
+  doneSnackbar(data: any): void {
+    this.snackbar.open(data.message, 'Dismiss', {
+      panelClass: ['mat-toolbar', 'mat-primary']
+    });
   }
 
 }

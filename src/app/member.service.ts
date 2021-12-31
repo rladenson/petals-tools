@@ -8,7 +8,6 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class MemberService {
-  //TODO
   lock: boolean = false;
   private apiURL = 'https://api.pluralkit.me/v2';
   it: number = 0;
@@ -16,6 +15,8 @@ export class MemberService {
 
   @Output() memberEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() progressEmitter: EventEmitter<any> = new EventEmitter<any>();
+  @Output() errorEmitter: EventEmitter<any> = new EventEmitter<any>();
+  @Output() doneEmitter: EventEmitter<any> = new EventEmitter<any>();
 
   get(key: string): any {
     return localStorage.getItem(key);
@@ -24,35 +25,12 @@ export class MemberService {
     localStorage.setItem(key, value);
   }
 
-  // async getList(): PKMember[] {
-  //
-  //   let members = await this.waitFetch('https://api.pluralkit.me/v2/systems/@me/members', {
-  //     headers: {'Authorization': 'ARJeOGMMLk5TrE1JhdtDDeDmdMnxbx08Zj/InvSELmUJ1uNgPgkRU8ej1tPw2SPy'}
-  //   });
-  //
-  //   return Array.of(members);
-  // }
-
   save(name: string, thing: any) {
     localStorage.setItem(name, thing);
   }
 
   wait(time: number): Promise<any> {
     return new Promise(res => setTimeout(res, time));
-  }
-
-  async waitFetch(/*url: string, args: any*/): Promise<PKMember[]> {
-    const headers = new HttpHeaders()
-      .set('Authorization', this.get('token'));
-    while (this.lock) await this.wait(1);
-    //TODO vvv
-    //while (this.lock) await this.wait(1);
-    //this.lock = true;
-    //setTimeout(() => this.lock = false, 500);
-    return this.http
-      .get<PKMember[]>(this.apiURL, { 'headers': headers })
-      .pipe(map(data => data), catchError(this.handleError))
-      .toPromise();
   }
 
   async getSystemList(): Promise<PKMember[]> {
@@ -130,29 +108,37 @@ export class MemberService {
     this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
   }
 
-  private handleError(res: HttpErrorResponse | any) {
-    //TODO send to serverset and turn into snackbar
+  private handleError = (res: HttpErrorResponse | any) => {
     //TODO get more error detail
-    console.error(res.error || res.body.error);
+    this.errorEmitter.emit({ error: res.error });
     return observableThrowError(res.error || 'Server error');
   }
 
   constructor(private http: HttpClient) { }
 
   setSystemGuildSettings(model: systemGuildSettingsModel) {
+    this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
     let json = JSON.stringify(model);
     if (json.length === 2) {
-      throw ('You need to change some settings');
+      this.errorEmitter.emit('You must change some settings');
+      throw('You must change some settings');
+    }
+    let guildID: string = '';
+    try {
+      guildID = MemberService.normalizeGuildID(this.get('guildID'));
+    } catch (error: any) {
+      this.errorEmitter.emit(error);
     }
     this.http
-      .patch<any>(this.apiURL + '/systems/@me/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
+      .patch<any>(this.apiURL + '/systems/@me/guilds/' + guildID,
         <JSON>model,
         { 'headers': this.headers }
       ).pipe(map(data => data), catchError(this.handleError))
-      .subscribe(data => console.log(data));
-
-    //TODO errors
+      .subscribe(data => this.doneEmitter.emit({
+        message: `Finished patching system settings for guild ${guildID}!`,
+        data: data
+      }));
   }
 
   public static normalizeGuildID(guild: string): string {
@@ -161,28 +147,39 @@ export class MemberService {
       let l = guild.length;
       guild_id = guild.substring(l - (18 * 3) - 2, l - (18 * 2) - 2);
       if (!Number(guild_id)) {
-        throw ('not a valid server');
+        throw ('Server ID not valid');
       } else {
         return guild_id;
       }
+    } else if(guild.length !== 18 ) {
+      throw('Server ID not valid');
     } else {
       return guild;
     }
   }
 
   setMemberGuildSettings(model: memberGuildSettingsModel, memberID: string) {
+    this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
     let json = JSON.stringify(model);
     if (json.length === 2) {
-      throw ('You need to change some settings');
+      this.errorEmitter.emit('You must change some settings');
+      throw('You must change some settings');
+    }
+    let guildID: string = '';
+    try {
+      guildID = MemberService.normalizeGuildID(this.get('guildID'));
+    } catch (error: any) {
+      this.errorEmitter.emit(error);
     }
     this.http
-      .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
+      .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + guildID,
         <JSON>model,
-        { 'headers': this.headers }
+        {'headers': this.headers}
       ).pipe(map(data => data), catchError(this.handleError))
-      .subscribe(data => console.log(data));
-
-    //TODO errors
+      .subscribe(data => this.doneEmitter.emit({
+        message: `Finished patching member ${memberID}'s settings for guild ${guildID}!`,
+        data: data
+      }));
   }
 }

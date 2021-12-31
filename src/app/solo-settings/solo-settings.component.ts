@@ -1,14 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { memberGuildSettingsModel, systemGuildSettingsModel } from "../pk-models";
 import { MemberService } from "../member.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-solo-settings',
   templateUrl: './solo-settings.component.html',
   styleUrls: ['./solo-settings.component.css']
 })
-export class SoloSettingsComponent implements OnInit {
+export class SoloSettingsComponent {
 
   systemModel = new systemGuildSettingsModel();
   memberModel = new memberGuildSettingsModel();
@@ -30,12 +29,12 @@ export class SoloSettingsComponent implements OnInit {
   submitMember() {
     if (this.servername_toggle === 'clear') {
       this.memberModel.display_name = null;
-    } else if (this.memberModel.display_name === null || this.memberModel.display_name === '') {
+    } else if (this.servername_toggle === 'null') {
       this.memberModel.display_name = undefined;
     }
     if (this.avatar_url_toggle === 'clear') {
       this.memberModel.avatar_url = null;
-    } else if (this.memberModel.avatar_url === null || this.memberModel.avatar_url === '') {
+    } else if (this.avatar_url_toggle === 'null') {
       this.memberModel.avatar_url = undefined;
     }
     this.memberService.setMemberGuildSettings(this.memberModel, this.memberID);
@@ -45,18 +44,9 @@ export class SoloSettingsComponent implements OnInit {
     this.memberModel.display_name = text;
   }
 
-  /* error snackbar
-    try {
-      this.model.setGuildID('2a');
-    } catch (e: any) {
-      this.snackbar.open(e, 'Dismiss');
-      console.log(e);
-    }*/
 
 
-  constructor(private memberService: MemberService, private snackbar: MatSnackBar) { }
 
-  ngOnInit(): void {
-  }
+  constructor(private memberService: MemberService) { }
 
 }

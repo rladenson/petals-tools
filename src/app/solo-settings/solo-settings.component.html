@@ -18,7 +18,13 @@
     </select>
     <br>
     <label for='tag'>Servertag: </label>
-    <input type='text' maxlength='79' id='tag' class='form-control' name='tag' [(ngModel)]='systemModel.tag'>
+    <input type='text' maxlength='79' id='tag' class='form-control' name='tag' [(ngModel)]='systemModel.tag'
+           #servertag='ngModel' pattern='.{0,79}'>
+    <div *ngIf='servertag.invalid && (member.dirty || member.touched)' class='alert'>
+      <div *ngIf='servertag.errors?.["pattern"]'>
+        Servertag cannot be more than 79 characters
+      </div>
+    </div>
     <label for='tag_toggle'> Clear Servertag: </label>
     <input type='checkbox' id='tag_toggle' class='form-control' name='tag_toggle' [(ngModel)]='tag_toggle'>
     <br>
@@ -66,8 +72,16 @@
       <option value='set'>Set Servername</option>
     </select>
     <span *ngIf='servername_toggle==="set"'>
-      <input type='text' maxlength='80' name='display_name' id='display_name' class='form-control'
-        [(ngModel)]='memberModel.display_name'>
+      <input type='text' name='display_name' id='display_name' class='form-control'
+        [(ngModel)]='memberModel.display_name' #servername='ngModel' pattern='.{0,80}' required>
+      <div *ngIf='servername.invalid && (member.dirty || member.touched)' class='alert'>
+        <div *ngIf='servername.errors?.["required"]'>
+          Servername is required if option "set" is chosen.
+        </div>
+        <div *ngIf='servername.errors?.["pattern"]'>
+          Servername cannot be more than 80 characters
+        </div>
+      </div>
       <input *ngFor='let template of templates' type='button' class='templateLoadButton'
         value='Load Template {{template[0]}}' (click)='loadTemplate(template[1])'>
     </span>
