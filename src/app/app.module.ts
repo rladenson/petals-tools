@@ -19,6 +19,8 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {FormsModule} from "@angular/forms";
+import { ToDoComponent } from './to-do/to-do.component';
+import { IndexComponent } from './index/index.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import {FormsModule} from "@angular/forms";
     ServersetComponent,
     SoloSettingsComponent,
     BulkSettingsComponent,
-    TemplatesComponent
+    TemplatesComponent,
+    ToDoComponent,
+    IndexComponent
   ],
   imports: [
     BrowserModule,

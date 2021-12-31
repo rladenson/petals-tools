@@ -1,6 +1,7 @@
 import { Component, OnInit} from '@angular/core';
 import { MemberService } from "../member.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-serverset',
@@ -29,7 +30,7 @@ export class ServersetComponent implements OnInit {
     return;
   }
 
-  constructor(private memberService: MemberService, private snackbar: MatSnackBar) { }
+  constructor(private memberService: MemberService, private snackbar: MatSnackBar, private titleService: Title) { }
 
   ngOnInit(): void {
     this.token = this.memberService.get('token');
@@ -40,6 +41,7 @@ export class ServersetComponent implements OnInit {
     }
     this.memberService.errorEmitter.subscribe(error => this.errorSnackbar(error));
     this.memberService.doneEmitter.subscribe(data => this.doneSnackbar(data));
+    this.titleService.setTitle('Petals Tools | Serverset')
   }
 
   errorSnackbar(error: any): void {
