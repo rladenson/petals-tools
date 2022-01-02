@@ -21,6 +21,7 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {FormsModule} from "@angular/forms";
 import { ToDoComponent } from './to-do/to-do.component';
 import { IndexComponent } from './index/index.component';
+import {MatExpansionModule} from "@angular/material/expansion";
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { IndexComponent } from './index/index.component';
     MatPaginatorModule,
     MatProgressBarModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]
