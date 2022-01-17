@@ -11,7 +11,7 @@ export class MemberService {
   lock: boolean = false;
   private apiURL = 'https://api.pluralkit.me/v2';
   it: number = 0;
-  headers!: HttpHeaders;
+  static headers: HttpHeaders;
 
   @Output() memberEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() progressEmitter: EventEmitter<any> = new EventEmitter<any>();
@@ -37,7 +37,7 @@ export class MemberService {
     this.makeHeader();
     while (this.lock) await this.wait(1);
     return this.http
-      .get<PKMember[]>(this.apiURL + '/systems/@me/members', { 'headers': this.headers })
+      .get<PKMember[]>(this.apiURL + '/systems/@me/members', { 'headers': MemberService.headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
   }
@@ -56,7 +56,7 @@ export class MemberService {
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')), { 'headers': this.headers })
+      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')), { 'headers': MemberService.headers })
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -81,7 +81,7 @@ export class MemberService {
   }
 
   makeHeader() {
-    this.headers = new HttpHeaders()
+    MemberService.headers = new HttpHeaders()
       .set('Authorization', this.get('token'));
   }
 
@@ -101,7 +101,7 @@ export class MemberService {
     this.http
       .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
         { display_name: null, avatar_url: null },
-        { 'headers': this.headers }
+        { 'headers': MemberService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => console.log(data));
     this.it++;
@@ -133,7 +133,7 @@ export class MemberService {
     this.http
       .patch<any>(this.apiURL + '/systems/@me/guilds/' + guildID,
         <JSON>model,
-        { 'headers': this.headers }
+        { 'headers': MemberService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => this.doneEmitter.emit({
         message: `Finished patching system settings for guild ${guildID}!`,
@@ -175,11 +175,54 @@ export class MemberService {
     this.http
       .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + guildID,
         <JSON>model,
-        {'headers': this.headers}
+        {'headers': MemberService.headers}
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => this.doneEmitter.emit({
         message: `Finished patching member ${memberID}'s settings for guild ${guildID}!`,
         data: data
       }));
+  }
+
+  async groupSwitch() {
+    this.makeHeader();
+    this.http
+        .get<any>(this.apiURL + '/systems/@me/groups',
+            {'headers': MemberService.headers}
+        ).pipe(map(data => data), catchError(this.handleError))
+        .subscribe(async list => {
+          this.progressEmitter.emit({done: 0, total: list.length});
+          for (let i = 0; i < list.length; i++) {
+            let group = list[i];
+            let json = {};
+            if(group.display_name !== null) {
+              json = {
+                name: group.display_name,
+                display_name: group.name,
+                privacy: {
+                  name_privacy: "private"
+                }
+              }
+            } else {
+              json = {
+                privacy: {
+                  name_privacy: "private"
+                }
+              }
+            }
+            while(this.lock) await this.wait(1);
+            this.lock = true;
+            setTimeout(() => this.lock = false, 1000);
+            this.http
+                .patch<any>(this.apiURL + `/groups/${group.id}`,
+                    json,
+                    {'headers': MemberService.headers}
+                ).pipe(map(data => data), catchError(this.handleError))
+                .subscribe(data => {
+                  this.progressEmitter.emit({total: list.length});
+                });
+          }
+
+
+        });
   }
 }

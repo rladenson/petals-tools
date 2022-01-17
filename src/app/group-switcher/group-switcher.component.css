@@ -1,0 +1,24 @@
+span {
+    font-size: large;
+}
+
+#go {
+    font-size: xx-large;
+    margin: 0.5em;
+}
+
+body::before {
+    content: "";
+    background-image: url('../../Myriad.png');
+    background-size: cover;
+    position: fixed;
+    top: -30%;
+    right: 0;
+    bottom: -500px;
+    left: 0;
+    opacity: 0.4;
+}
+
+#all {
+    position: relative;
+}

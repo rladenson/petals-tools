@@ -22,6 +22,7 @@ import {FormsModule} from "@angular/forms";
 import { ToDoComponent } from './to-do/to-do.component';
 import { IndexComponent } from './index/index.component';
 import {MatExpansionModule} from "@angular/material/expansion";
+import { GroupSwitcherComponent } from './group-switcher/group-switcher.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {MatExpansionModule} from "@angular/material/expansion";
     BulkSettingsComponent,
     TemplatesComponent,
     ToDoComponent,
-    IndexComponent
+    IndexComponent,
+    GroupSwitcherComponent
   ],
   imports: [
     BrowserModule,
