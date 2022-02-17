@@ -23,6 +23,9 @@ import { ToDoComponent } from './to-do/to-do.component';
 import { IndexComponent } from './index/index.component';
 import {MatExpansionModule} from "@angular/material/expansion";
 import { GroupSwitcherComponent } from './group-switcher/group-switcher.component';
+import { SiteMapComponent } from './site-map/site-map.component';
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatIconModule} from "@angular/material/icon";
 
 @NgModule({
   declarations: [
@@ -33,7 +36,8 @@ import { GroupSwitcherComponent } from './group-switcher/group-switcher.componen
     TemplatesComponent,
     ToDoComponent,
     IndexComponent,
-    GroupSwitcherComponent
+    GroupSwitcherComponent,
+    SiteMapComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +54,9 @@ import { GroupSwitcherComponent } from './group-switcher/group-switcher.componen
     MatProgressBarModule,
     MatSnackBarModule,
     FormsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSidenavModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

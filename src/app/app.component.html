@@ -1,3 +1,31 @@
+
+
 <body>
-  <router-outlet></router-outlet>
+  <div id="body">
+    <div id="top-bar">
+      <button mat-icon-button (click)="sidenav.toggle()" id="hamburger-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <a mat-icon-button routerLink="/home-page">
+        <mat-icon>home</mat-icon>
+      </a>
+      <span id="welcome_line">Hello! </span>
+
+    </div>
+    <mat-sidenav-container (backdropClick)="sidenav.close()">
+
+      <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" disableClose>
+        <app-site-map></app-site-map>
+      </mat-sidenav>
+
+      <mat-sidenav-content>
+
+        <div id="content">
+          <router-outlet></router-outlet>
+        </div>
+      </mat-sidenav-content>
+
+    </mat-sidenav-container>
+  </div>
 </body>
+
