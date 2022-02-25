@@ -21,20 +21,13 @@
 
 
     <div class='buttons'>
-      <button [ngClass]='{"selected": selectedPage==="solo", "pageButton": true}' (click)='switchTo("solo")'>System and
-        Member Settings</button>
-      <button [ngClass]='{"selected": selectedPage==="bulk", "pageButton": true}' (click)='switchTo("bulk")'>Bulk Member
-        Settings</button>
-      <button [ngClass]='{"selected": selectedPage==="template", "pageButton": true}'
-        (click)='switchTo("template")'>Name Templates</button>
+      <button [class]="'pageButton'" routerLinkActive="selected" routerLink="solo">System and Member Settings</button>
+      <button [class]="'pageButton'" routerLinkActive="selected" routerLink="bulk">Bulk Member Settings</button>
+      <button [class]="'pageButton'" routerLinkActive="selected" routerLink="templates">Name Templates</button>
     </div>
     <br>
 
-    <app-solo-settings *ngIf="selectedPage==='solo'" [templates]='templates'></app-solo-settings>
-
-    <app-bulk-settings *ngIf="selectedPage==='bulk'"></app-bulk-settings>
-
-    <app-templates *ngIf="selectedPage==='template'" [(templates)]='templates'></app-templates>
+    <router-outlet></router-outlet>
 
     <p id='content'></p>
     <p id='error'></p>
