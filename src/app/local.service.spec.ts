@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PluralKitService } from './pluralkit.service';
+import { LocalService } from './local.service';
 
-describe('MembersService', () => {
-  let service: PluralKitService;
+describe('LocalService', () => {
+  let service: LocalService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(PluralKitService);
+    service = TestBed.inject(LocalService);
   });
 
   it('should be created', () => {

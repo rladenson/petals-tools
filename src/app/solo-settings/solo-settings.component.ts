@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { memberGuildSettingsModel, systemGuildSettingsModel } from "../pk-models";
-import { MemberService } from "../member.service";
+import { PluralKitService } from "../pluralkit.service";
 
 @Component({
   selector: 'app-solo-settings',
@@ -47,6 +47,6 @@ export class SoloSettingsComponent {
 
 
 
-  constructor(private memberService: MemberService) { }
+  constructor(private memberService: PluralKitService) { }
 
 }

@@ -20,7 +20,7 @@ select, input {
   font-size: 18pt;
 }
 
-body::before {
+body.myriad::before {
   content: "";
   background-image: url('../../Myriad.png');
   background-size: cover;

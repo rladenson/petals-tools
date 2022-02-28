@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {MemberService} from "../member.service";
+import {PluralKitService} from "../pluralkit.service";
 
 @Component({
   selector: 'app-group-switcher',
@@ -13,7 +13,7 @@ export class GroupSwitcherComponent implements OnInit {
   numCompleted: number = -1;
   totalNum: number = -1;
 
-  constructor(private memberService: MemberService) { }
+  constructor(private memberService: PluralKitService) { }
 
   ngOnInit(): void {
     this.token = this.memberService.get('token');

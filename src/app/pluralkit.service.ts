@@ -7,9 +7,10 @@ import { catchError, map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class MemberService {
+export class PluralKitService {
   lock: boolean = false;
   private apiURL = 'https://api.pluralkit.me/v2';
+  private betaAPIURL = 'https://api.beta.pluralkit.me/v2';
   it: number = 0;
   static headers: HttpHeaders;
 
@@ -37,7 +38,7 @@ export class MemberService {
     this.makeHeader();
     while (this.lock) await this.wait(1);
     return this.http
-      .get<PKMember[]>(this.apiURL + '/systems/@me/members', { 'headers': MemberService.headers })
+      .get<PKMember[]>(this.apiURL + '/systems/@me/members', { 'headers': PluralKitService.headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
   }
@@ -56,7 +57,7 @@ export class MemberService {
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')), { 'headers': MemberService.headers })
+      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.get('guildID')), { 'headers': PluralKitService.headers })
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -81,7 +82,7 @@ export class MemberService {
   }
 
   makeHeader() {
-    MemberService.headers = new HttpHeaders()
+    PluralKitService.headers = new HttpHeaders()
       .set('Authorization', this.get('token'));
   }
 
@@ -99,9 +100,9 @@ export class MemberService {
   async clearServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + MemberService.normalizeGuildID(this.get('guildID')),
+      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.get('guildID')),
         { display_name: null, avatar_url: null },
-        { 'headers': MemberService.headers }
+        { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => console.log(data));
     this.it++;
@@ -126,14 +127,14 @@ export class MemberService {
     }
     let guildID: string = '';
     try {
-      guildID = MemberService.normalizeGuildID(this.get('guildID'));
+      guildID = PluralKitService.normalizeGuildID(this.get('guildID'));
     } catch (error: any) {
       this.errorEmitter.emit(error);
     }
     this.http
       .patch<any>(this.apiURL + '/systems/@me/guilds/' + guildID,
         <JSON>model,
-        { 'headers': MemberService.headers }
+        { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => this.doneEmitter.emit({
         message: `Finished patching system settings for guild ${guildID}!`,
@@ -168,14 +169,14 @@ export class MemberService {
     }
     let guildID: string = '';
     try {
-      guildID = MemberService.normalizeGuildID(this.get('guildID'));
+      guildID = PluralKitService.normalizeGuildID(this.get('guildID'));
     } catch (error: any) {
       this.errorEmitter.emit(error);
     }
     this.http
       .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + guildID,
         <JSON>model,
-        {'headers': MemberService.headers}
+        {'headers': PluralKitService.headers}
       ).pipe(map(data => data), catchError(this.handleError))
       .subscribe(data => this.doneEmitter.emit({
         message: `Finished patching member ${memberID}'s settings for guild ${guildID}!`,
@@ -187,7 +188,7 @@ export class MemberService {
     this.makeHeader();
     this.http
         .get<any>(this.apiURL + '/systems/@me/groups',
-            {'headers': MemberService.headers}
+            {'headers': PluralKitService.headers}
         ).pipe(map(data => data), catchError(this.handleError))
         .subscribe(async list => {
           this.progressEmitter.emit({done: 0, total: list.length});
@@ -215,7 +216,7 @@ export class MemberService {
             this.http
                 .patch<any>(this.apiURL + `/groups/${group.id}`,
                     json,
-                    {'headers': MemberService.headers}
+                    {'headers': PluralKitService.headers}
                 ).pipe(map(data => data), catchError(this.handleError))
                 .subscribe(data => {
                   this.progressEmitter.emit({total: list.length});

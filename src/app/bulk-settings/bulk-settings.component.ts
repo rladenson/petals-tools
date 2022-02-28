@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { MemberService } from "../member.service";
+import { PluralKitService } from "../pluralkit.service";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
@@ -35,7 +35,7 @@ export class BulkSettingsComponent implements AfterViewInit {
 
   displayedColumns: string[] = ['name', 'id', 'display_name', 'avatar_url'];
 
-  constructor(private memberService: MemberService, private snackbar: MatSnackBar) { }
+  constructor(private memberService: PluralKitService, private snackbar: MatSnackBar) { }
 
   ngAfterViewInit() {
     this.data.sort = this.sort;

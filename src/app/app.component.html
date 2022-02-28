@@ -10,8 +10,15 @@
         <mat-icon>home</mat-icon>
       </a>
       <span id="welcome_line">Hello! </span>
-
+      <span class="empty-space"></span>
+      <mat-slide-toggle [(ngModel)]="betaURL">
+        {{betaURL ? "Beta PK API&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "&nbsp;Regular PK API"}}
+      </mat-slide-toggle>
+      &nbsp;&nbsp;
+      <a routerLink="/settings"><i class="fa-solid fa-gear"></i></a>
+      &nbsp;&nbsp;
     </div>
+
     <mat-sidenav-container (backdropClick)="sidenav.close()">
 
       <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" disableClose>
@@ -22,10 +29,10 @@
 
         <div id="content">
           <router-outlet></router-outlet>
-          <span class='empty-space'>.</span>
+          <span class='empty-space'></span>
         </div>
       </mat-sidenav-content>
-      <span class='empty-space'>.</span>
+      <span class='empty-space'></span>
     </mat-sidenav-container>
   </div>
 </body>

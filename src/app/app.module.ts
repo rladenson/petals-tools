@@ -26,6 +26,10 @@ import { GroupSwitcherComponent } from './group-switcher/group-switcher.componen
 import { SiteMapComponent } from './site-map/site-map.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatIconModule} from "@angular/material/icon";
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import { SettingsComponent } from './settings/settings.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -37,7 +41,8 @@ import {MatIconModule} from "@angular/material/icon";
     ToDoComponent,
     IndexComponent,
     GroupSwitcherComponent,
-    SiteMapComponent
+    SiteMapComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +61,10 @@ import {MatIconModule} from "@angular/material/icon";
     FormsModule,
     MatExpansionModule,
     MatSidenavModule,
-    MatIconModule
+    MatIconModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

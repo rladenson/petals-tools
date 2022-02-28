@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MemberService } from '../member.service';
+import { PluralKitService } from '../pluralkit.service';
 
 @Component({
   selector: 'app-templates',
@@ -12,7 +12,7 @@ export class TemplatesComponent implements OnInit {
   @Output() templatesChange = new EventEmitter<[string, string][]>();
 
 
-  constructor(private memberService: MemberService) { }
+  constructor(private memberService: PluralKitService) { }
 
   ngOnInit(): void {
 

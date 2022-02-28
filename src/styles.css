@@ -6,3 +6,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-
 .mat-button-wrapper {
   color: white;
 }
+.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: #fafafa
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: rgba(0, 0, 0, 0.38);
+}

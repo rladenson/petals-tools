@@ -26,6 +26,7 @@ mat-sidenav {
 }
 #top-bar {
   background: #4789eb;
+  color: white;
   position: fixed;
   z-index: 2;
   display: flex;
@@ -38,7 +39,7 @@ mat-sidenav {
   flex-direction: column;
   flex-grow: 5;
   height: 100%;
-  padding-top: 20px;
+  padding-top: 30px;
 }
 .empty-space {
   flex-grow: 5;
@@ -49,4 +50,8 @@ mat-sidenav {
 
 body {
   display: flex;
+}
+.fa-gear {
+  color: white;
+  font-size: 25px;
 }

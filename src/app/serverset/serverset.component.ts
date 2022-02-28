@@ -1,5 +1,5 @@
 import { Component, OnInit} from '@angular/core';
-import { MemberService } from "../member.service";
+import { PluralKitService } from "../pluralkit.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {Title} from "@angular/platform-browser";
 
@@ -30,7 +30,7 @@ export class ServersetComponent implements OnInit {
     return;
   }
 
-  constructor(private memberService: MemberService, private snackbar: MatSnackBar, private titleService: Title) { }
+  constructor(private memberService: PluralKitService, private snackbar: MatSnackBar, private titleService: Title) { }
 
   ngOnInit(): void {
     this.token = this.memberService.get('token');
