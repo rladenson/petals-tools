@@ -23,7 +23,7 @@ export class SoloSettingsComponent {
     } else if (this.systemModel.tag === null || this.systemModel.tag === '') {
       this.systemModel.tag = undefined;
     }
-    this.memberService.setSystemGuildSettings(this.systemModel);
+    this.pluralKitService.setSystemGuildSettings(this.systemModel);
   }
 
   submitMember() {
@@ -37,16 +37,13 @@ export class SoloSettingsComponent {
     } else if (this.avatar_url_toggle === 'null') {
       this.memberModel.avatar_url = undefined;
     }
-    this.memberService.setMemberGuildSettings(this.memberModel, this.memberID);
+    this.pluralKitService.setMemberGuildSettings(this.memberModel, this.memberID);
   }
 
   loadTemplate(text: string): void {
     this.memberModel.display_name = text;
   }
 
-
-
-
-  constructor(private memberService: PluralKitService) { }
+  constructor(private pluralKitService: PluralKitService) { }
 
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {PluralKitService} from "../pluralkit.service";
+import {LocalService} from "../local.service";
 
 @Component({
   selector: 'app-group-switcher',
@@ -13,11 +14,11 @@ export class GroupSwitcherComponent implements OnInit {
   numCompleted: number = -1;
   totalNum: number = -1;
 
-  constructor(private memberService: PluralKitService) { }
+  constructor(private pluralKitService: PluralKitService, private localService: LocalService) { }
 
   ngOnInit(): void {
-    this.token = this.memberService.get('token');
-    this.memberService.progressEmitter.subscribe(progress => this.writeProgress(progress));
+    this.token = this.localService.get('token');
+    this.pluralKitService.progressEmitter.subscribe(progress => this.writeProgress(progress));
   }
 
   writeProgress(progress: any) {
@@ -32,12 +33,12 @@ export class GroupSwitcherComponent implements OnInit {
   };
 
   saveToken() {
-    this.memberService.set('token', this.token);
+    this.localService.set('token', this.token);
   }
 
   go(): void {
     this.started = true;
-    this.memberService.groupSwitch();
+    this.pluralKitService.groupSwitch();
   }
 
 }

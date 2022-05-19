@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { PluralKitService } from './pluralkit.service';
 
-describe('MembersService', () => {
+describe('PluralKitService', () => {
   let service: PluralKitService;
 
   beforeEach(() => {

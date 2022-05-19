@@ -21,13 +21,13 @@ export class BulkSettingsComponent implements AfterViewInit {
   viewAll(): void {
     this.data.data = [];
     this.inProgress = true;
-    this.memberService.getServerSettingsBulk();
+    this.pluralKitService.getServerSettingsBulk();
   }
 
   clearAll() {
     this.data.data = [];
     this.inProgress = true;
-    this.memberService.clearServerSettingsBulk();
+    this.pluralKitService.clearServerSettingsBulk();
   }
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -35,13 +35,13 @@ export class BulkSettingsComponent implements AfterViewInit {
 
   displayedColumns: string[] = ['name', 'id', 'display_name', 'avatar_url'];
 
-  constructor(private memberService: PluralKitService, private snackbar: MatSnackBar) { }
+  constructor(private pluralKitService: PluralKitService, private snackbar: MatSnackBar) { }
 
   ngAfterViewInit() {
     this.data.sort = this.sort;
     this.data.paginator = this.paginator;
-    this.memberService.memberEmitter.subscribe(member => this.gotMember(member));
-    this.memberService.progressEmitter.subscribe(progress => this.updateProgress(progress));
+    this.pluralKitService.memberEmitter.subscribe(member => this.gotMember(member));
+    this.pluralKitService.progressEmitter.subscribe(progress => this.updateProgress(progress));
   }
 
   gotMember(member: any): void {

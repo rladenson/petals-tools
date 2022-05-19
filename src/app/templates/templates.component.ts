@@ -12,7 +12,7 @@ export class TemplatesComponent implements OnInit {
   @Output() templatesChange = new EventEmitter<[string, string][]>();
 
 
-  constructor(private memberService: PluralKitService) { }
+  constructor(private pluralKitService: PluralKitService) { }
 
   ngOnInit(): void {
 
@@ -25,7 +25,7 @@ export class TemplatesComponent implements OnInit {
 
   saveTemplates(): void {
     this.templatesChange.emit(this.templates);
-    this.memberService.save('templates', JSON.stringify(this.templates));
+    this.pluralKitService.save('templates', JSON.stringify(this.templates));
   }
 
   removeTemplate(index: number): void {

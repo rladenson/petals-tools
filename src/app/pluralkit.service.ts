@@ -3,6 +3,7 @@ import { memberGuildSettingsModel, PKMember, systemGuildSettingsModel } from "./
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import {LocalService} from "./local.service";
 
 @Injectable({
   providedIn: 'root'
@@ -19,12 +20,14 @@ export class PluralKitService {
   @Output() errorEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() doneEmitter: EventEmitter<any> = new EventEmitter<any>();
 
-  get(key: string): any {
+  constructor(private http: HttpClient, private localService: LocalService) { }
+
+  /*get(key: string): any {
     return localStorage.getItem(key);
   }
   set(key: string, value: any): void {
     localStorage.setItem(key, value);
-  }
+  }*/
 
   save(name: string, thing: any) {
     localStorage.setItem(name, thing);
@@ -57,7 +60,7 @@ export class PluralKitService {
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.get('guildID')), { 'headers': PluralKitService.headers })
+      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')), { 'headers': PluralKitService.headers })
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -83,7 +86,7 @@ export class PluralKitService {
 
   makeHeader() {
     PluralKitService.headers = new HttpHeaders()
-      .set('Authorization', this.get('token'));
+      .set('Authorization', this.localService.get('token'));
   }
 
   async clearServerSettingsBulk() {
@@ -100,7 +103,7 @@ export class PluralKitService {
   async clearServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.get('guildID')),
+      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
         { display_name: null, avatar_url: null },
         { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
@@ -115,8 +118,6 @@ export class PluralKitService {
     return observableThrowError(res.error || 'Server error');
   }
 
-  constructor(private http: HttpClient) { }
-
   setSystemGuildSettings(model: systemGuildSettingsModel) {
     this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
@@ -127,7 +128,7 @@ export class PluralKitService {
     }
     let guildID: string = '';
     try {
-      guildID = PluralKitService.normalizeGuildID(this.get('guildID'));
+      guildID = PluralKitService.normalizeGuildID(this.localService.get('guildID'));
     } catch (error: any) {
       this.errorEmitter.emit(error);
     }
@@ -169,10 +170,13 @@ export class PluralKitService {
     }
     let guildID: string = '';
     try {
-      guildID = PluralKitService.normalizeGuildID(this.get('guildID'));
+      guildID = PluralKitService.normalizeGuildID(this.localService.get('guildID'));
     } catch (error: any) {
       this.errorEmitter.emit(error);
     }
+    console.log(1);
+    console.log(<JSON>model);
+    console.log(1);
     this.http
       .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + guildID,
         <JSON>model,

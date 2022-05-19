@@ -2,6 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { PluralKitService } from "../pluralkit.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {Title} from "@angular/platform-browser";
+import {LocalService} from "../local.service";
 
 @Component({
   selector: 'app-serverset',
@@ -17,10 +18,10 @@ export class ServersetComponent implements OnInit {
   templates: [string, string][] = [];
 
   saveToken() {
-    this.memberService.set('token', this.token);
+    this.localService.set('token', this.token);
   }
   saveGuildID() {
-    this.memberService.set('guildID', this.guildID);
+    this.localService.set('guildID', this.guildID);
   }
 
 
@@ -30,17 +31,18 @@ export class ServersetComponent implements OnInit {
     return;
   }
 
-  constructor(private memberService: PluralKitService, private snackbar: MatSnackBar, private titleService: Title) { }
+  constructor(private pluralKitService: PluralKitService, private snackbar: MatSnackBar, private titleService: Title,
+              private localService: LocalService) { }
 
   ngOnInit(): void {
-    this.token = this.memberService.get('token');
-    this.guildID = this.memberService.get('guildID');
-    this.templates = JSON.parse(this.memberService.get('templates'));
+    this.token = this.localService.get('token');
+    this.guildID = this.localService.get('guildID');
+    this.templates = JSON.parse(this.localService.get('templates'));
     if (this.templates === null) {
       this.templates = [];
     }
-    this.memberService.errorEmitter.subscribe(error => this.errorSnackbar(error));
-    this.memberService.doneEmitter.subscribe(data => this.doneSnackbar(data));
+    this.pluralKitService.errorEmitter.subscribe(error => this.errorSnackbar(error));
+    this.pluralKitService.doneEmitter.subscribe(data => this.doneSnackbar(data));
     this.titleService.setTitle('Petals Tools | Serverset')
   }
 
