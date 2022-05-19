@@ -19,19 +19,9 @@ export class PluralKitService {
   @Output() progressEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() errorEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() doneEmitter: EventEmitter<any> = new EventEmitter<any>();
+  @Output() APIURLChangeEmitter: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private http: HttpClient, private localService: LocalService) { }
-
-  /*get(key: string): any {
-    return localStorage.getItem(key);
-  }
-  set(key: string, value: any): void {
-    localStorage.setItem(key, value);
-  }*/
-
-  save(name: string, thing: any) {
-    localStorage.setItem(name, thing);
-  }
 
   wait(time: number): Promise<any> {
     return new Promise(res => setTimeout(res, time));

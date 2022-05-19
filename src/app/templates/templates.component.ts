@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { PluralKitService } from '../pluralkit.service';
+import { LocalService } from "../local.service";
 
 @Component({
   selector: 'app-templates',
@@ -12,7 +12,7 @@ export class TemplatesComponent implements OnInit {
   @Output() templatesChange = new EventEmitter<[string, string][]>();
 
 
-  constructor(private pluralKitService: PluralKitService) { }
+  constructor(private localService: LocalService) { }
 
   ngOnInit(): void {
 
@@ -25,7 +25,7 @@ export class TemplatesComponent implements OnInit {
 
   saveTemplates(): void {
     this.templatesChange.emit(this.templates);
-    this.pluralKitService.save('templates', JSON.stringify(this.templates));
+    this.localService.set('templates', JSON.stringify(this.templates));
   }
 
   removeTemplate(index: number): void {

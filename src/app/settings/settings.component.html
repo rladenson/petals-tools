@@ -1,8 +1,14 @@
 <h2>Settings</h2>
 
-Beta API Override:<sup><i class="fa-solid fa-circle-question" matTooltip="Activating this toggle opts into using the API for PluralKit's Beta Bot instead of the normal (live) one."></i></sup>&nbsp;<mat-slide-toggle [(ngModel)]="apiToggle">
-    {{apiToggle ? "Beta PK API" : "Regular PK API"}}</mat-slide-toggle>
+API URL Override:<sup><i class="fa-solid fa-circle-question" matTooltip="Activating this toggle opts into using the API for PluralKit's Beta Bot instead of the normal (live) one."></i></sup>&nbsp;
+<mat-form-field>
+    <mat-select [(value)]="APIURL">
+        <mat-option value="https://api.pluralkit.me/v2/">Live URL (v2)</mat-option>
+        <mat-option value="https://api.beta.pluralkit.me/v2/" disabled>Beta URL (v2)</mat-option>
+        <mat-option value="other">Custom URL</mat-option>
+    </mat-select>
+</mat-form-field>
 <br><br>
-Make Myriad Disappear:<sup><i class="fa-solid fa-circle-question" matTooltip="Checking this box removes Myriad from backgrounds that would otherwise have showed her."></i></sup>&nbsp;<mat-checkbox [(ngModel)]="myriadToggle"></mat-checkbox>
-    {{myriadToggle ? "Myriad will not appear in webpage backgrounds!" : ""}}
+Make Myriad Disappear:<sup><i class="fa-solid fa-circle-question" matTooltip="Checking this box removes Myriad from backgrounds that would otherwise have showed her."></i></sup>&nbsp;<mat-checkbox [(ngModel)]="myriadDisable"></mat-checkbox>
+    {{myriadDisable ? "Myriad will not appear in webpage backgrounds!" : ""}}
 
