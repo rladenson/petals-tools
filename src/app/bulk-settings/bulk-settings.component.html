@@ -2,10 +2,13 @@
   <h3>Settings For All Members</h3>
   Note that these are only for the server whose id you put above!
   <br>
-  <button (click)='viewAll()'>View All Member Serversettings</button>
-  <button (click)='clearAll()'>Clear All Member Serversettings</button>
+  <button (click)='viewAll()' [disabled]="this.inProgress">View All Member Serversettings</button>
+  <button (click)='clearAll()' [disabled]="this.inProgress">Clear All Member Serversettings</button>
   <br><br>
-  <div *ngIf="this.inProgress">
+  <div *ngIf="this.inProgress && this.membersLeft == -1">
+    <b>Loading...</b>
+  </div>
+  <div *ngIf="this.inProgress && this.membersLeft != -1">
     <mat-progress-bar mode="determinate" [value]="this.progress"></mat-progress-bar>
     Members Remaining: {{membersLeft}}<br>
     Time Remaining (Approximate): {{membersLeft}} seconds<br>
