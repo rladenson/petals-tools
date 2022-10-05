@@ -144,8 +144,6 @@ export class PluralKitService {
     let ids: Array<string> | null = guild.match(/\d+/g);
     if(!ids) {
       return "-1";
-    } else if(ids.length === 3) {
-      return ids[2];
     } else {
       return ids[0];
     }
