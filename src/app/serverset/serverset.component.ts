@@ -12,10 +12,10 @@ import {LocalService} from "../local.service";
 export class ServersetComponent implements OnInit {
 
   selectedPage: string = "solo";
-  lock: boolean = false;
   token: string = '';
   guildID: string = '';
   templates: [string, string][] = [];
+  myriadDisable: boolean = false;
 
   saveToken() {
     this.localService.set('token', this.token);
@@ -44,6 +44,7 @@ export class ServersetComponent implements OnInit {
     this.pluralKitService.errorEmitter.subscribe(error => this.errorSnackbar(error));
     this.pluralKitService.doneEmitter.subscribe(data => this.doneSnackbar(data));
     this.titleService.setTitle('Petals Tools | Serverset')
+    this.myriadDisable = this.localService.get("myriadDisable") === "true";
   }
 
   errorSnackbar(error: any): void {

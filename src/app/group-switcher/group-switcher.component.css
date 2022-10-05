@@ -7,7 +7,7 @@ span {
     margin: 0.5em;
 }
 
-body::before {
+body.myriad::before {
     content: "";
     background-image: url('../../Myriad.png');
     background-size: cover;

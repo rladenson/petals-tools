@@ -19,10 +19,8 @@ export class SettingsComponent implements OnInit {
       this.altUrl = prevURL;
       this.apiUrl = "other";
     }
-    console.log(prevURL);
+    this.myriadDisable = this.localService.get("myriadDisable") === "true";
   }
-
-  //TODO CHANGE ALL INSTANCES OF "API URL" TO "API OVERRIDE" AND FIX BEHAVIOR ACCORDINGLY
 
   save() {
     switch(this.apiUrl) {

@@ -13,12 +13,14 @@ export class GroupSwitcherComponent implements OnInit {
   started: boolean = false;
   numCompleted: number = -1;
   totalNum: number = -1;
+  myriadDisable: boolean = false;
 
   constructor(private pluralKitService: PluralKitService, private localService: LocalService) { }
 
   ngOnInit(): void {
     this.token = this.localService.get('token');
     this.pluralKitService.progressEmitter.subscribe(progress => this.writeProgress(progress));
+    this.myriadDisable = this.localService.get("myriadDisable") === "true";
   }
 
   writeProgress(progress: any) {
