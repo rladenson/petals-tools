@@ -21,14 +21,11 @@ export class PluralKitService {
 
   constructor(private http: HttpClient, private localService: LocalService) { }
 
-  wait(time: number): Promise<any> {
-    return new Promise(res => setTimeout(res, time));
-  }
+  //API CALLS
 
   async getSystemList(): Promise<PKMember[]> {
     this.makeHeader();
-    let apiOverride = this.localService.get('apiOverride');
-    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
+    let apiUrl = this.getUrl();
     while (this.lock) await this.wait(1);
     return this.http
       .get<PKMember[]>(apiUrl + '/systems/@me/members', { 'headers': PluralKitService.headers })
@@ -49,8 +46,7 @@ export class PluralKitService {
 
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
-    let apiOverride = this.localService.get('apiOverride');
-    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
+    let apiUrl = this.getUrl();
     this.http
       .get<any>(apiUrl + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')), { 'headers': PluralKitService.headers })
       .subscribe(data => {
@@ -76,11 +72,6 @@ export class PluralKitService {
       });
   }
 
-  makeHeader() {
-    PluralKitService.headers = new HttpHeaders()
-      .set('Authorization', this.localService.get('token'));
-  }
-
   async clearServerSettingsBulk() {
     let list = await this.getSystemList();
     this.it = 0;
@@ -94,8 +85,7 @@ export class PluralKitService {
 
   async clearServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
-    let apiOverride = this.localService.get('apiOverride');
-    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
+    let apiUrl = this.getUrl();
     this.http
       .patch<any>(apiUrl + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
         { display_name: null, avatar_url: null },
@@ -106,17 +96,10 @@ export class PluralKitService {
     this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
   }
 
-  private handleError = (res: HttpErrorResponse | any) => {
-    //TODO get more error detail
-    this.errorEmitter.emit({ error: res.error });
-    return observableThrowError(res.error || 'Server error');
-  }
-
   setSystemGuildSettings(model: systemGuildSettingsModel) {
     this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
-    let apiOverride = this.localService.get('apiOverride');
-    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
+    let apiUrl = this.getUrl();
     let json = JSON.stringify(model);
     if (json.length === 2) {
       this.errorEmitter.emit('You must change some settings');
@@ -139,21 +122,10 @@ export class PluralKitService {
       }));
   }
 
-  public static normalizeGuildID(guild: string): string {
-
-    let ids: Array<string> | null = guild.match(/\d+/g);
-    if(!ids) {
-      return "-1";
-    } else {
-      return ids[0];
-    }
-  }
-
   setMemberGuildSettings(model: memberGuildSettingsModel, memberID: string) {
     this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
-    let apiOverride = this.localService.get('apiOverride');
-    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
+    let apiUrl = this.getUrl();
     let json = JSON.stringify(model);
     if (json.length === 2) {
       this.errorEmitter.emit('You must change some settings');
@@ -178,8 +150,7 @@ export class PluralKitService {
 
   async groupSwitch() {
     this.makeHeader();
-    let apiOverride = this.localService.get('apiOverride');
-    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
+    let apiUrl = this.getUrl();
     this.http
         .get<any>(apiUrl + '/systems/@me/groups',
             {'headers': PluralKitService.headers}
@@ -219,5 +190,39 @@ export class PluralKitService {
 
 
         });
+  }
+
+  //UTILITY FUNCTIONS
+
+  getUrl(): string {
+    let apiOverride = this.localService.get('apiOverride');
+    return apiOverride !== null ? apiOverride : this.liveApiUrl;
+  }
+
+  makeHeader() {
+    PluralKitService.headers = new HttpHeaders()
+        .set('Authorization', this.localService.get('token'));
+  }
+
+  public static normalizeGuildID(guild: string): string {
+
+    let ids: Array<string> | null = guild.match(/\d+/g);
+    if(!ids) {
+      return "-1";
+    } else {
+      return ids[0];
+    }
+  }
+
+  wait(time: number): Promise<any> {
+    return new Promise(res => setTimeout(res, time));
+  }
+
+  //ERROR HANDLING
+
+  private handleError = (res: HttpErrorResponse | any) => {
+    //TODO get more error detail
+    this.errorEmitter.emit({ error: res.error });
+    return observableThrowError(res.error || 'Server error');
   }
 }
