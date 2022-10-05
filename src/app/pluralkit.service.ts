@@ -12,6 +12,7 @@ export class PluralKitService {
   lock: boolean = false;
   it: number = 0;
   static headers: HttpHeaders;
+  liveApiUrl: string = "https://api.pluralkit.me/v2"
 
   @Output() memberEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() progressEmitter: EventEmitter<any> = new EventEmitter<any>();
@@ -26,9 +27,11 @@ export class PluralKitService {
 
   async getSystemList(): Promise<PKMember[]> {
     this.makeHeader();
+    let apiOverride = this.localService.get('apiOverride');
+    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
     while (this.lock) await this.wait(1);
     return this.http
-      .get<PKMember[]>(this.localService.get('apiUrl') + '/systems/@me/members', { 'headers': PluralKitService.headers })
+      .get<PKMember[]>(apiUrl + '/systems/@me/members', { 'headers': PluralKitService.headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
   }
@@ -46,8 +49,10 @@ export class PluralKitService {
 
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
+    let apiOverride = this.localService.get('apiOverride');
+    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
     this.http
-      .get<any>(this.localService.get('apiUrl') + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')), { 'headers': PluralKitService.headers })
+      .get<any>(apiUrl + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')), { 'headers': PluralKitService.headers })
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -89,8 +94,10 @@ export class PluralKitService {
 
   async clearServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
+    let apiOverride = this.localService.get('apiOverride');
+    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
     this.http
-      .patch<any>(this.localService.get('apiUrl') + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
+      .patch<any>(apiUrl + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
         { display_name: null, avatar_url: null },
         { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
@@ -108,6 +115,8 @@ export class PluralKitService {
   setSystemGuildSettings(model: systemGuildSettingsModel) {
     this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
+    let apiOverride = this.localService.get('apiOverride');
+    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
     let json = JSON.stringify(model);
     if (json.length === 2) {
       this.errorEmitter.emit('You must change some settings');
@@ -120,7 +129,7 @@ export class PluralKitService {
       this.errorEmitter.emit(error);
     }
     this.http
-      .patch<any>(this.localService.get('apiUrl') + '/systems/@me/guilds/' + guildID,
+      .patch<any>(apiUrl + '/systems/@me/guilds/' + guildID,
         <JSON>model,
         { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
@@ -150,6 +159,8 @@ export class PluralKitService {
   setMemberGuildSettings(model: memberGuildSettingsModel, memberID: string) {
     this.doneEmitter.emit({message: 'Loading...'});
     this.makeHeader();
+    let apiOverride = this.localService.get('apiOverride');
+    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
     let json = JSON.stringify(model);
     if (json.length === 2) {
       this.errorEmitter.emit('You must change some settings');
@@ -161,11 +172,8 @@ export class PluralKitService {
     } catch (error: any) {
       this.errorEmitter.emit(error);
     }
-    console.log(1);
-    console.log(<JSON>model);
-    console.log(1);
     this.http
-      .patch<any>(this.localService.get('apiUrl') + '/members/' + memberID + '/guilds/' + guildID,
+      .patch<any>(apiUrl + '/members/' + memberID + '/guilds/' + guildID,
         <JSON>model,
         {'headers': PluralKitService.headers}
       ).pipe(map(data => data), catchError(this.handleError))
@@ -177,8 +185,10 @@ export class PluralKitService {
 
   async groupSwitch() {
     this.makeHeader();
+    let apiOverride = this.localService.get('apiOverride');
+    let apiUrl = apiOverride !== null ? apiOverride : this.liveApiUrl;
     this.http
-        .get<any>(this.localService.get('apiUrl') + '/systems/@me/groups',
+        .get<any>(apiUrl + '/systems/@me/groups',
             {'headers': PluralKitService.headers}
         ).pipe(map(data => data), catchError(this.handleError))
         .subscribe(async list => {
@@ -205,11 +215,11 @@ export class PluralKitService {
             this.lock = true;
             setTimeout(() => this.lock = false, 1000);
             this.http
-                .patch<any>(this.localService.get('apiUrl') + `/groups/${group.id}`,
+                .patch<any>(apiUrl + `/groups/${group.id}`,
                     json,
                     {'headers': PluralKitService.headers}
                 ).pipe(map(data => data), catchError(this.handleError))
-                .subscribe(data => {
+                .subscribe(() => {
                   this.progressEmitter.emit({total: list.length});
                 });
           }
