@@ -21,14 +21,9 @@ export class ServersetComponent implements OnInit {
     this.localService.set('token', this.token);
   }
   saveGuildID() {
-    this.localService.set('guildID', this.guildID);
-  }
-
-
-
-  switchTo(page: string): void {
-    this.selectedPage = page;
-    return;
+    if(this.guildID.match(/\d+/)) {
+      this.localService.set('guildID', this.guildID);
+    }
   }
 
   constructor(private pluralKitService: PluralKitService, private snackbar: MatSnackBar, private titleService: Title,

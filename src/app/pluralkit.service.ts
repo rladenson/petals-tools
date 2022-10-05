@@ -140,19 +140,14 @@ export class PluralKitService {
   }
 
   public static normalizeGuildID(guild: string): string {
-    let guild_id: string;
-    if (!Number(guild)) {
-      let l = guild.length;
-      guild_id = guild.substring(l - (18 * 3) - 2, l - (18 * 2) - 2);
-      if (!Number(guild_id)) {
-        throw ('Server ID not valid');
-      } else {
-        return guild_id;
-      }
-    } else if(guild.length !== 18 ) {
-      throw('Server ID not valid');
+
+    let ids: Array<string> | null = guild.match(/\d+/g);
+    if(!ids) {
+      return "-1";
+    } else if(ids.length === 3) {
+      return ids[2];
     } else {
-      return guild;
+      return ids[0];
     }
   }
 
