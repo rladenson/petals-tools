@@ -10,8 +10,6 @@ import {LocalService} from "./local.service";
 })
 export class PluralKitService {
   lock: boolean = false;
-  private apiURL = 'https://api.pluralkit.me/v2';
-  private betaAPIURL = 'https://api.beta.pluralkit.me/v2';
   it: number = 0;
   static headers: HttpHeaders;
 
@@ -19,7 +17,6 @@ export class PluralKitService {
   @Output() progressEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() errorEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Output() doneEmitter: EventEmitter<any> = new EventEmitter<any>();
-  @Output() APIURLChangeEmitter: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private http: HttpClient, private localService: LocalService) { }
 
@@ -31,7 +28,7 @@ export class PluralKitService {
     this.makeHeader();
     while (this.lock) await this.wait(1);
     return this.http
-      .get<PKMember[]>(this.apiURL + '/systems/@me/members', { 'headers': PluralKitService.headers })
+      .get<PKMember[]>(this.localService.get('apiUrl') + '/systems/@me/members', { 'headers': PluralKitService.headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
   }
@@ -50,7 +47,7 @@ export class PluralKitService {
   async getServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .get<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')), { 'headers': PluralKitService.headers })
+      .get<any>(this.localService.get('apiUrl') + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')), { 'headers': PluralKitService.headers })
       .subscribe(data => {
         this.memberEmitter.emit({
           id: member.id,
@@ -93,7 +90,7 @@ export class PluralKitService {
   async clearServerSettings(member: PKMember, totalMembers: number) {
     this.makeHeader();
     this.http
-      .patch<any>(this.apiURL + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
+      .patch<any>(this.localService.get('apiUrl') + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
         { display_name: null, avatar_url: null },
         { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
@@ -123,7 +120,7 @@ export class PluralKitService {
       this.errorEmitter.emit(error);
     }
     this.http
-      .patch<any>(this.apiURL + '/systems/@me/guilds/' + guildID,
+      .patch<any>(this.localService.get('apiUrl') + '/systems/@me/guilds/' + guildID,
         <JSON>model,
         { 'headers': PluralKitService.headers }
       ).pipe(map(data => data), catchError(this.handleError))
@@ -168,7 +165,7 @@ export class PluralKitService {
     console.log(<JSON>model);
     console.log(1);
     this.http
-      .patch<any>(this.apiURL + '/members/' + memberID + '/guilds/' + guildID,
+      .patch<any>(this.localService.get('apiUrl') + '/members/' + memberID + '/guilds/' + guildID,
         <JSON>model,
         {'headers': PluralKitService.headers}
       ).pipe(map(data => data), catchError(this.handleError))
@@ -181,7 +178,7 @@ export class PluralKitService {
   async groupSwitch() {
     this.makeHeader();
     this.http
-        .get<any>(this.apiURL + '/systems/@me/groups',
+        .get<any>(this.localService.get('apiUrl') + '/systems/@me/groups',
             {'headers': PluralKitService.headers}
         ).pipe(map(data => data), catchError(this.handleError))
         .subscribe(async list => {
@@ -208,7 +205,7 @@ export class PluralKitService {
             this.lock = true;
             setTimeout(() => this.lock = false, 1000);
             this.http
-                .patch<any>(this.apiURL + `/groups/${group.id}`,
+                .patch<any>(this.localService.get('apiUrl') + `/groups/${group.id}`,
                     json,
                     {'headers': PluralKitService.headers}
                 ).pipe(map(data => data), catchError(this.handleError))

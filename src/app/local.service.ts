@@ -11,6 +11,10 @@ export class LocalService {
     return localStorage.getItem(key);
   }
   set(key: string, value: any): void {
-    localStorage.setItem(key, value);
+    if(value === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, value);
+    }
   }
 }
