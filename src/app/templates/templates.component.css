@@ -1,4 +1,7 @@
-
+.normalOverride{
+  font-size: 12pt;
+  font-weight: normal;
+}
 
 #all, button {
   position: relative;
