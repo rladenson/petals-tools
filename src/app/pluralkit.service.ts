@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { memberGuildSettingsModel, PKMember, systemGuildSettingsModel } from "./pk-models";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { throwError as observableThrowError} from 'rxjs';
+import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LocalService } from "./local.service";
 
@@ -22,6 +22,18 @@ export class PluralKitService {
   constructor(private http: HttpClient, private localService: LocalService) { }
 
   //API CALLS
+
+  async getSystem() {
+    this.makeHeader();
+    let apiUrl = this.getUrl();
+    while(this.lock) await this.wait(1);
+    this.lock = true;
+    setTimeout(() => this.lock = false, 1000);
+    return this.http
+        .get<any>(apiUrl + '/systems/@me', {'headers': PluralKitService.headers })
+        .pipe(map(data => data), catchError(this.handleError))
+        .toPromise();
+  }
 
   async getSystemList(): Promise<PKMember[]> {
     this.makeHeader();
@@ -57,31 +69,8 @@ export class PluralKitService {
         .toPromise();
   }
 
-  async getSystem() {
-    this.makeHeader();
-    let apiUrl = this.getUrl();
-    while(this.lock) await this.wait(1);
-    this.lock = true;
-    setTimeout(() => this.lock = false, 1000);
-    return this.http
-        .get<any>(apiUrl + '/systems/@me', {'headers': PluralKitService.headers })
-        .pipe(map(data => data), catchError(this.handleError))
-        .toPromise();
-  }
-
   async getServerSettingsBulk(groupOverride?: string) {
-    let list;
-    if(!groupOverride) {
-      list = await this.getSystemList();
-    } else {
-      let group = await this.getGroup(groupOverride!);
-      let system = await this.getSystem();
-      if(group.system !== system.id) {
-        throw new Error("The group ID must belong to your system");
-      }
-      list = await this.getGroupList(groupOverride!);
-    }
-    this.it = 0;
+    let list = await this.getList(groupOverride);
     for (let member of list) {
       while (this.lock) await this.wait(1);
       this.lock = true;
@@ -118,9 +107,8 @@ export class PluralKitService {
       });
   }
 
-  async clearServerSettingsBulk() {
-    let list = await this.getSystemList();
-    this.it = 0;
+  async clearServerSettingsBulk(groupOverride?: string) {
+    let list = await this.getList(groupOverride);
     for (let member of list) {
       while (this.lock) await this.wait(1);
       this.lock = true;
@@ -239,6 +227,22 @@ export class PluralKitService {
   }
 
   //UTILITY FUNCTIONS
+
+  async getList(groupOverride?: string): Promise<any> {
+    let list;
+    if(!groupOverride) {
+      list = await this.getSystemList()
+    } else {
+      let group = await this.getGroup(groupOverride!);
+      let system = await this.getSystem();
+      if(group.system !== system.id) {
+        throw new Error("The group ID must belong to your system");
+      }
+      list = await this.getGroupList(groupOverride!);
+    }
+    this.it = 0;
+    return list;
+  }
 
   getUrl(): string {
     let apiOverride = this.localService.get('apiOverride');

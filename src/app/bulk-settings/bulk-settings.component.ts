@@ -53,7 +53,11 @@ export class BulkSettingsComponent implements OnInit {
   clearAll() {
     this.data.data = [];
     this.inProgress = true;
-    this.pluralKitService.clearServerSettingsBulk();
+    if(this.groupOverride.valid) {
+      this.pluralKitService.clearServerSettingsBulk(this.groupOverride.value).catch(error => this.handleError(error));
+    } else {
+      this.pluralKitService.clearServerSettingsBulk();
+    }
   }
 
   @ViewChild(MatSort) sort!: MatSort;
