@@ -103,6 +103,8 @@ export class PluralKitService {
           });
           this.it++;
           this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
+        } else {
+          this.handleError(err);
         }
       });
   }
@@ -124,8 +126,14 @@ export class PluralKitService {
       .patch<any>(apiUrl + '/members/' + member.id + '/guilds/' + PluralKitService.normalizeGuildID(this.localService.get('guildID')),
         { display_name: null, avatar_url: null },
         { 'headers': PluralKitService.headers }
-      ).pipe(map(data => data), catchError(this.handleError))
-      .subscribe(data => console.log(data));
+      ).subscribe(data => console.log(data),
+          error => {
+        if(error.error.code === 20010) {
+          console.log(error);
+        } else {
+          this.handleError(error);
+        }
+          });
     this.it++;
     this.progressEmitter.emit({ progress: this.it / totalMembers * 100, membersLeft: totalMembers - this.it });
   }

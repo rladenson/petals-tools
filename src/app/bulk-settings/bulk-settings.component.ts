@@ -28,9 +28,15 @@ export class BulkSettingsComponent implements OnInit {
     this.pluralKitService.progressEmitter.subscribe(progress => this.updateProgress(progress));
   }
 
-  viewAll(): void {
+  resetProgress() {
     this.data.data = [];
     this.inProgress = true;
+    this.progress = -1;
+    this.membersLeft = -1;
+  }
+
+  viewAll(): void {
+    this.resetProgress();
     if(this.groupOverride.valid) {
       this.pluralKitService.getServerSettingsBulk(this.groupOverride.value).catch(error => this.handleError(error));
     } else {
@@ -51,8 +57,7 @@ export class BulkSettingsComponent implements OnInit {
   }
 
   clearAll() {
-    this.data.data = [];
-    this.inProgress = true;
+    this.resetProgress();
     if(this.groupOverride.valid) {
       this.pluralKitService.clearServerSettingsBulk(this.groupOverride.value).catch(error => this.handleError(error));
     } else {
