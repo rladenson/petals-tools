@@ -1,5 +1,15 @@
 <div id='bulk_settings'>
   <h3>Settings For All Members</h3>
+  Group Override:
+
+  <mat-form-field>
+    <mat-label>Group: </mat-label>
+    <input matInput id="groupOverride" type="text" [formControl]="groupOverride" pattern="^$|^[a-zA-Z]{5}$">
+  </mat-form-field>
+  <div *ngIf="groupOverride.invalid" class="alert">Group ID must be exactly 5 letters.</div>
+
+
+  <br><br>
   Note that these are only for the server whose id you put above!
   <br>
   <button (click)='viewAll()' [disabled]="this.inProgress">View All Member Serversettings</button>
@@ -15,7 +25,7 @@
     Keep this page open!
     <br><br>
   </div>
-  <div [ngClass]="{'hide': this.data.data.length <= 0}">
+  <div *ngIf="this.data.data.length > 0">
     <table mat-table [dataSource]="data" matSort>
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>

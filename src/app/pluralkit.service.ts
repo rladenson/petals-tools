@@ -1,9 +1,9 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { memberGuildSettingsModel, PKMember, systemGuildSettingsModel } from "./pk-models";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError as observableThrowError} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {LocalService} from "./local.service";
+import { LocalService } from "./local.service";
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +33,54 @@ export class PluralKitService {
       .toPromise();
   }
 
-  async getServerSettingsBulk() {
-    let list = await this.getSystemList();
+  async getGroup(group: string) {
+    this.makeHeader();
+    let apiUrl = this.getUrl();
+    while(this.lock) await this.wait(1);
+    this.lock = true;
+    setTimeout(() => this.lock = false, 1000);
+    return this.http
+        .get<any>(apiUrl + '/groups/' + group, {'headers': PluralKitService.headers })
+        .pipe(map(data => data), catchError(this.handleError))
+        .toPromise();
+  }
+
+  async getGroupList(group: string) {
+    this.makeHeader();
+    let apiUrl = this.getUrl();
+    while(this.lock) await this.wait(1);
+    this.lock = true;
+    setTimeout(() => this.lock = false, 1000);
+    return this.http
+        .get<any>(apiUrl + '/groups/' + group + '/members', {'headers': PluralKitService.headers})
+        .pipe(map(data => data), catchError(this.handleError))
+        .toPromise();
+  }
+
+  async getSystem() {
+    this.makeHeader();
+    let apiUrl = this.getUrl();
+    while(this.lock) await this.wait(1);
+    this.lock = true;
+    setTimeout(() => this.lock = false, 1000);
+    return this.http
+        .get<any>(apiUrl + '/systems/@me', {'headers': PluralKitService.headers })
+        .pipe(map(data => data), catchError(this.handleError))
+        .toPromise();
+  }
+
+  async getServerSettingsBulk(groupOverride?: string) {
+    let list;
+    if(!groupOverride) {
+      list = await this.getSystemList();
+    } else {
+      let group = await this.getGroup(groupOverride!);
+      let system = await this.getSystem();
+      if(group.system !== system.id) {
+        throw new Error("The group ID must belong to your system");
+      }
+      list = await this.getGroupList(groupOverride!);
+    }
     this.it = 0;
     for (let member of list) {
       while (this.lock) await this.wait(1);
