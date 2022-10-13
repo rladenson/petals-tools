@@ -46,6 +46,11 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
   padding: 3px;
 }
 
+#groupError {
+  background-color: rgba(255, 255, 255, .5);
+  padding: 3px;
+}
+
 #groupOverride {
   width: 50%;
 }
