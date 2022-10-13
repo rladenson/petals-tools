@@ -1,8 +1,9 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PluralKitService } from "../pluralkit.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import {Title} from "@angular/platform-browser";
-import {LocalService} from "../local.service";
+import { Title } from "@angular/platform-browser";
+import { LocalService } from "../local.service";
+import { InternalService } from "../internal.service";
 
 @Component({
   selector: 'app-serverset',
@@ -11,7 +12,6 @@ import {LocalService} from "../local.service";
 })
 export class ServersetComponent implements OnInit {
 
-  selectedPage: string = "solo";
   token: string = '';
   guildID: string = '';
   templates: [string, string][] = [];
@@ -19,6 +19,7 @@ export class ServersetComponent implements OnInit {
 
   saveToken() {
     this.localService.set('token', this.token);
+    this.internalService.updateGroups();
   }
   saveGuildID() {
     if(this.guildID.match(/\d+/)) {
@@ -27,7 +28,7 @@ export class ServersetComponent implements OnInit {
   }
 
   constructor(private pluralKitService: PluralKitService, private snackbar: MatSnackBar, private titleService: Title,
-              private localService: LocalService) { }
+              private localService: LocalService, private internalService: InternalService) { }
 
   ngOnInit(): void {
     this.token = this.localService.get('token');

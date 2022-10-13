@@ -5,6 +5,12 @@ export interface PKMember {
   display_name: string | null;
 }
 
+export interface PKGroup {
+  id: string;
+  name: string;
+  display_name: string | null;
+}
+
 export class systemGuildSettingsModel {
   constructor(
     public proxying_enabled?: boolean,

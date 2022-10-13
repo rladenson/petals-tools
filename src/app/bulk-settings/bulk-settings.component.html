@@ -1,15 +1,22 @@
 <div id='bulk_settings'>
   <h3>Settings For All Members</h3>
-  Group Override:
+  <form [formGroup]="groupForm">
+    Group Filter:
+    <mat-form-field id="groupOverride">
+      <mat-label>Group:</mat-label>
+      <input matInput type="text" formControlName="groupOverride" [matAutocomplete]="auto">
+      <mat-hint id="groupHint">Choose a group to use its list instead of the system list</mat-hint>
+      <mat-error *ngIf="groupOverride.invalid">Group ID must be exactly 5 letters.</mat-error>
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let group of this.filteredGroups | async" [value]="group">
+          {{group.display_name ? group.display_name : group.name}} (<i>{{group.id}}</i>)
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>
 
-  <mat-form-field>
-    <mat-label>Group: </mat-label>
-    <input matInput id="groupOverride" type="text" [formControl]="groupOverride" pattern="^$|^[a-zA-Z]{5}$">
-  </mat-form-field>
-  <div *ngIf="groupOverride.invalid" class="alert">Group ID must be exactly 5 letters.</div>
 
-
-  <br><br>
+  <br><br><br>
   Note that these are only for the server whose id you put above!
   <br>
   <button (click)='viewAll()' [disabled]="this.inProgress">View All Member Serversettings</button>

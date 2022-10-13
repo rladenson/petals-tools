@@ -30,6 +30,7 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { SettingsComponent } from './settings/settings.component';
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatSlideToggleModule,
     MatCheckboxModule,
     MatTooltipModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

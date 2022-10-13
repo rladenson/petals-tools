@@ -4,7 +4,11 @@ import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { FormControl } from "@angular/forms";
+import { AbstractControl, FormBuilder, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { InternalService } from "../internal.service";
+import { Observable } from "rxjs";
+import { map, startWith } from "rxjs/operators";
+import { PKGroup } from "../pk-models";
 
 @Component({
   selector: 'app-bulk-settings',
@@ -17,15 +21,34 @@ export class BulkSettingsComponent implements OnInit {
   progress: number = -1;
   inProgress: boolean = false;
   membersLeft: number = -1;
-  groupOverride = new FormControl("");
+  groups!: Array<PKGroup>;
+  filteredGroups!: Observable<PKGroup[]>;
 
-  constructor(private pluralKitService: PluralKitService, private snackbar: MatSnackBar) { }
+  constructor(private pluralKitService: PluralKitService, private snackbar: MatSnackBar, private internalService: InternalService,
+              private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.data.sort = this.sort;
     this.data.paginator = this.paginator;
     this.pluralKitService.memberEmitter.subscribe(member => this.gotMember(member));
     this.pluralKitService.progressEmitter.subscribe(progress => this.updateProgress(progress));
+    this.internalService.groups$.subscribe(res => {
+      this.groups = res;
+      this.groupForm.controls["groupOverride"].enable();
+    });
+    this.filteredGroups = this.groupForm.controls["groupOverride"].valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value || '')),
+    );
+    this.internalService.updateGroups();
+  }
+
+  private _filter(value: string): PKGroup[] {
+    const filterValue = value.toLowerCase();
+    return this.groups.filter(group => group.display_name?.toLowerCase().includes(filterValue)
+        || group.name?.toLowerCase().includes(filterValue)
+        || group.id?.toLowerCase().includes(filterValue)
+    );
   }
 
   resetProgress() {
@@ -33,15 +56,6 @@ export class BulkSettingsComponent implements OnInit {
     this.inProgress = true;
     this.progress = -1;
     this.membersLeft = -1;
-  }
-
-  viewAll(): void {
-    this.resetProgress();
-    if(this.groupOverride.valid) {
-      this.pluralKitService.getServerSettingsBulk(this.groupOverride.value).catch(error => this.handleError(error));
-    } else {
-      this.pluralKitService.getServerSettingsBulk();
-    }
   }
 
   handleError(error: any) {
@@ -56,10 +70,27 @@ export class BulkSettingsComponent implements OnInit {
     }
   }
 
+  viewAll(): void {
+    this.resetProgress();
+    if(this.groupOverride.valid && this.groupOverride.value) {
+      this.pluralKitService.getServerSettingsBulk(
+          this.groups.find(g => g.name === this.groupOverride.value || g.display_name === this.groupOverride.value
+              || g.id === this.groupOverride.value)!.id)
+          .catch(error => this.handleError(error));
+
+    } else {
+      this.pluralKitService.getServerSettingsBulk();
+    }
+  }
+
   clearAll() {
     this.resetProgress();
-    if(this.groupOverride.valid) {
-      this.pluralKitService.clearServerSettingsBulk(this.groupOverride.value).catch(error => this.handleError(error));
+    if(this.groupOverride.valid && this.groupOverride.value) {
+      this.pluralKitService.clearServerSettingsBulk(
+          this.groups.find(g => g.name === this.groupOverride.value || g.display_name === this.groupOverride.value
+              || g.id === this.groupOverride.value)!.id)
+          .catch(error => this.handleError(error));
+
     } else {
       this.pluralKitService.clearServerSettingsBulk();
     }
@@ -84,6 +115,29 @@ export class BulkSettingsComponent implements OnInit {
       this.snackbar.open('Done!', 'Dismiss')
     } else {
       this.membersLeft = progress.membersLeft;
+    }
+  }
+
+  get groupOverride() {
+    return this.groupForm.controls['groupOverride'];
+  }
+
+  groupForm = this.formBuilder.group({
+    groupOverride: ['', {
+      validators: [
+        this.createIsOptionValidator()
+      ],
+      updateOn: 'change'
+    }]
+  })
+
+  createIsOptionValidator(): ValidatorFn {
+    return (control:AbstractControl) : ValidationErrors | null => {
+      const value = control.value;
+      if(!value) {
+        return null;
+      }
+      return this.groups.find(g => g.name === value || g.display_name === value || g.id === value) ? null : {isOption: false};
     }
   }
 
