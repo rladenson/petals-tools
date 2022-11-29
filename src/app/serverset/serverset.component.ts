@@ -43,9 +43,9 @@ export class ServersetComponent implements OnInit {
     this.myriadDisable = this.localService.get("myriadDisable") === "true";
   }
 
-  errorSnackbar(error: any): void {
-    if(typeof error === "string") {
-      this.snackbar.open(error, 'Dismiss', {
+  errorSnackbar(error?: any): void {
+    if(error.errorMessage) {
+      this.snackbar.open(error.errorMessage, 'Dismiss', {
         panelClass: ['mat-toolbar', 'mat-warn']
       });
     } else {

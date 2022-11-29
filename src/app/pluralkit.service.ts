@@ -262,8 +262,11 @@ export class PluralKitService {
   //ERROR HANDLING
 
   private handleError = (res: HttpErrorResponse | any) => {
-    //TODO get more error detail
-    this.errorEmitter.emit({ error: res.error });
+   if(res.error.code === 20010) {
+     this.errorEmitter.emit({ errorMessage: "20010: Cannot set servername. In order to set a servername this member must either have a prior servername set in designated server or must have had their member card pulled up in designated server."} )
+   } else {
+     this.errorEmitter.emit({error: res.error});
+   }
     return observableThrowError(res.error || 'Server error');
   }
 }
