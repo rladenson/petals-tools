@@ -8,7 +8,7 @@
       <mat-hint id="groupHint">Choose a group to use its list instead of the system list</mat-hint>
       <mat-error id="groupError" *ngIf="groupOverride.invalid">Must match the name, id, or displayname of one of your groups. (Hint: Is your token entered?)</mat-error>
       <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let group of this.filteredGroups | async" [value]="group">
+        <mat-option *ngFor="let group of this.filteredGroups | async" [value]="group.toString()">
           {{group.display_name ? group.display_name : group.name}} (<i>{{group.id}}</i>)
         </mat-option>
       </mat-autocomplete>

@@ -31,7 +31,13 @@ export class PluralKitService {
     setTimeout(() => this.lock = false, 1000);
     return this.http
         .get<any>(apiUrl + '/systems/@me/groups', {'headers': PluralKitService.headers })
-        .pipe(map(data => data), catchError(this.handleError))
+        .pipe(map(data => {
+          let arr: PKGroup[] = [];
+          data.forEach((g: any) => {
+            arr.push(new PKGroup(g.id, g.name, g.display_name));
+          })
+          return arr;
+        }), catchError(this.handleError))
         .toPromise();
   }
 

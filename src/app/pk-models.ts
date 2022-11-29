@@ -1,14 +1,25 @@
-export interface PKMember {
-  id: string;
-  uuid: string;
-  name: string;
-  display_name: string | null;
+export class PKMember {
+  constructor(
+    public id: string,
+    public uuid: string,
+    public name: string,
+    public display_name?: string | null
+  ) {}
+  public toString(): string {
+    return (this.display_name ? this.display_name : this.name) + " (" + this.id + ")";
+  }
+
 }
 
-export interface PKGroup {
-  id: string;
-  name: string;
-  display_name: string | null;
+export class PKGroup {
+  constructor(
+    public id: string,
+    public name: string,
+    public display_name?: string | null
+  ) {}
+  public toString(): string {
+    return (this.display_name ? this.display_name : this.name) + " (" + this.id + ")"
+  }
 }
 
 export class systemGuildSettingsModel {
@@ -18,7 +29,7 @@ export class systemGuildSettingsModel {
     public autoproxy_member?: string,
     public tag?: string | null,
     public tag_enabled?: boolean
-  ) { }
+  ) {}
 }
 
 export class memberGuildSettingsModel {

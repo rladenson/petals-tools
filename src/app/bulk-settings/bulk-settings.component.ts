@@ -74,8 +74,10 @@ export class BulkSettingsComponent implements OnInit {
     this.resetProgress();
     if(this.groupOverride.valid && this.groupOverride.value) {
       this.pluralKitService.getServerSettingsBulk(
-          this.groups.find(g => g.name === this.groupOverride.value || g.display_name === this.groupOverride.value
-              || g.id === this.groupOverride.value)!.id)
+          this.groups.find(g => g.name === this.groupOverride.value ||
+              g.display_name === this.groupOverride.value ||
+              g.id === this.groupOverride.value ||
+              g.toString() === this.groupOverride.value)!.id)
           .catch(error => this.handleError(error));
 
     } else {
@@ -137,7 +139,12 @@ export class BulkSettingsComponent implements OnInit {
       if(!value) {
         return null;
       }
-      return this.groups.find(g => g.name === value || g.display_name === value || g.id === value) ? null : {isOption: false};
+      return this.groups.find(g =>
+          g.name === value ||
+          g.display_name === value ||
+          g.id === value ||
+          g.toString() === value
+      ) ? null : {isOption: false};
     }
   }
 
