@@ -8,6 +8,7 @@ import {SoloSettingsComponent} from "./solo-settings/solo-settings.component";
 import {BulkSettingsComponent} from "./bulk-settings/bulk-settings.component";
 import {TemplatesComponent} from "./templates/templates.component";
 import {SettingsComponent} from "./settings/settings.component";
+import {PrettyGroupsComponent} from "./pretty-groups/pretty-groups.component";
 
 const routes: Routes = [
   { path: '', component: IndexComponent },
@@ -21,14 +22,16 @@ const routes: Routes = [
     ]
   },
   { path: 'todo', component: ToDoComponent },
-  { path: 'groupswitcher', component: GroupSwitcherComponent },
+  { path: 'group-switcher', component: GroupSwitcherComponent },
   { path: 'settings', component: SettingsComponent },
+  { path: 'pretty-groups', component: PrettyGroupsComponent},
   //everything below here is aliases
   { path: 'server-set', redirectTo: '/serverset', pathMatch: 'full' },
   { path: 'serverset.html', redirectTo: '/serverset', pathMatch: 'full' },
   { path: 'todo.html', redirectTo: '/todo', pathMatch: 'full' },
   { path: 'to-do', redirectTo: '/todo', pathMatch: 'full' },
-  { path: 'group-switcher', redirectTo: '/groupswitcher', pathMatch: 'full' },
+  { path: 'groupswitcher', redirectTo: '/groupswitcher', pathMatch: 'full' },
+  { path: 'prettygroups', component: PrettyGroupsComponent, pathMatch: 'full'},
     //wildcard
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
