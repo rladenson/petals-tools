@@ -1,0 +1,74 @@
+<body [ngClass]="{'myriad': !this.myriadDisable}">
+<div id="all">
+<h1>Pretty Group Maker (DOES NOT WORK)</h1>
+<mat-form-field>
+     <mat-label>Token</mat-label>
+     <input matInput [(ngModel)]='token' (change)='saveToken()'>
+</mat-form-field>
+<br>
+
+     <div id="grid">
+
+          <div id="notInUse">
+               <h2>Groups that haven't been used yet</h2>
+
+               <div id="notInUseInner">
+                    <mat-button-toggle-group
+                            name="notInUseList"
+                            cdkDropList
+                            #notInUseList="cdkDropList"
+                            [cdkDropListData]="notInUseArr"
+                            [cdkDropListConnectedTo]="[inUseList]"
+                            class="list"
+                            (cdkDropListDropped)="drop($event)"
+                            (change)="notInUseSelected()"
+                            [(ngModel)]="notInUse">
+                         <mat-button-toggle class="box" *ngFor="let group of notInUseArr" cdkDrag [value]="group">
+                              <span class="indent" *ngFor="let _ of [].constructor(group.indents)"></span>
+                              {{group.name}} ({{group.id}})
+                         </mat-button-toggle>
+                    </mat-button-toggle-group>
+               </div>
+          </div>
+
+          <div id="inUse">
+               <h2>Group Organizer</h2>
+
+               <div id="inUseInner">
+                    <mat-button-toggle-group
+                            name="inUseList"
+                            cdkDropList
+                            #inUseList="cdkDropList"
+                            [cdkDropListData]="inUseArr"
+                            [cdkDropListConnectedTo]="[notInUseList]"
+                            class="list"
+                            (cdkDropListDropped)="drop($event)"
+                            (change)="inUseSelected()"
+                            [(ngModel)]="inUse">
+                         <mat-button-toggle class="box" *ngFor="let group of inUseArr" cdkDrag [value]="group">
+                              <span class="indent" *ngFor="let _ of [].constructor(group.indents)"></span>
+                              {{group.name}} ({{group.id}})</mat-button-toggle>
+                    </mat-button-toggle-group>
+               </div>
+          </div>
+
+          <div id="editing">
+               <h2>Edit a Group</h2>
+               <div *ngIf="currentlySelected">
+                    <mat-form-field><mat-label>Name</mat-label>
+                         <input matInput [(ngModel)]="currentlySelected.name">
+                    </mat-form-field>
+                    <br>
+                    <button mat-raised-button color="primary" (click)="incrementIndents()">Indent</button>
+                    &nbsp;&nbsp;
+                    <button mat-raised-button color="primary" [disabled]="currentlySelected.indents === 0"
+                    (click)="decrementIndents()">Outdent</button>
+               </div>
+          </div>
+
+
+     </div>
+
+
+</div>
+</body>

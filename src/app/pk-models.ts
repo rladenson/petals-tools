@@ -15,7 +15,8 @@ export class PKGroup {
   constructor(
     public id: string,
     public name: string,
-    public display_name?: string | null
+    public display_name?: string | null,
+    public indents: number = 0
   ) {}
   public toString(): string {
     return (this.display_name ? this.display_name : this.name) + " (" + this.id + ")"

@@ -31,6 +31,9 @@ import { SettingsComponent } from './settings/settings.component';
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { PrettyGroupsComponent } from './pretty-groups/pretty-groups.component';
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -43,32 +46,35 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
     IndexComponent,
     GroupSwitcherComponent,
     SiteMapComponent,
-    SettingsComponent
+    SettingsComponent,
+    PrettyGroupsComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatButtonModule,
-    MatOptionModule,
-    MatSelectModule,
-    MatInputModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatProgressBarModule,
-    MatSnackBarModule,
-    FormsModule,
-    MatExpansionModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    MatCheckboxModule,
-    MatTooltipModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatOptionModule,
+        MatSelectModule,
+        MatInputModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule,
+        MatProgressBarModule,
+        MatSnackBarModule,
+        FormsModule,
+        MatExpansionModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatSlideToggleModule,
+        MatCheckboxModule,
+        MatTooltipModule,
+        ReactiveFormsModule,
+        MatAutocompleteModule,
+        DragDropModule,
+        MatButtonToggleModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
