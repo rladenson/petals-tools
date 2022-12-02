@@ -14,7 +14,7 @@ API URL Override:<sup><i class="fa-solid fa-circle-question" matTooltip="Activat
     <input matInput [(ngModel)]="this.altUrl">
 </mat-form-field>
 <br><br>
-Make Myriad Disappear:<sup><i class="fa-solid fa-circle-question" matTooltip="Checking this box removes Myriad from backgrounds that would otherwise have showed her."></i></sup>&nbsp;<mat-checkbox [(ngModel)]="myriadDisable"></mat-checkbox>
+Make Myriad Disappear:<sup><i class="fa-solid fa-circle-question" matTooltip="Checking this box removes Myriad from backgrounds that would otherwise have showed her."></i></sup>&nbsp;<mat-checkbox [(ngModel)]="myriadDisable" [color]="'primary'"></mat-checkbox>
     &nbsp;&nbsp;
     <span id="myriadDisableMessage" *ngIf="myriadDisable">Myriad will not appear in webpage backgrounds!</span>
 <br><br><br><button mat-raised-button (click)="save()">Save</button>
