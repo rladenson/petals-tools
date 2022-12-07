@@ -13,11 +13,12 @@ export class PKMember {
 
 export class PKGroup {
   constructor(
-    public id: string,
-    public name: string,
-    public display_name?: string | null,
-    public indents: number = 0,
-    public sortOrder?: number[]
+      public id: string,
+      public name: string,
+      public display_name?: string | null,
+      public members: PKMember[] = [],
+      public indents?: number,
+      public sortOrder?: number[]
   ) {}
   public toString(): string {
     return (this.display_name ? this.display_name : this.name) + " (" + this.id + ")"
@@ -39,4 +40,11 @@ export class memberGuildSettingsModel {
     public display_name?: string | null,
     public avatar_url?: string | null
   ) { }
+}
+
+export class PKSystem {
+  constructor(
+      public name: string | null,
+  ) {
+  }
 }

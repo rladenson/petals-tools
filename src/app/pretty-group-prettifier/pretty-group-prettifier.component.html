@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Prettifier</h1>
+<div mat-dialog-content>
+    <p>Note that for all groups, their displayname will become their name plus any special characters-- their current displayname will NOT be kept</p>
+    <div>
+        Category Accents:&nbsp;
+        <mat-form-field>
+            <mat-label>Prefix</mat-label>
+            <input matInput [(ngModel)]="categoryPrefix" (change)="format()">
+        </mat-form-field>&nbsp;&nbsp;
+        <mat-form-field>
+            <mat-label>Suffix</mat-label>
+            <input matInput [(ngModel)]="categorySuffix" (change)="format()">
+        </mat-form-field>
+        <br>
+        Group Accents:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <mat-form-field>
+            <mat-label>Prefix</mat-label>
+            <input matInput [(ngModel)]="groupPrefix" (change)="format()">
+        </mat-form-field>&nbsp;&nbsp;
+        <mat-form-field>
+            <mat-label>Suffix</mat-label>
+            <input matInput [(ngModel)]="groupSuffix" (change)="format()">
+        </mat-form-field>
+    </div>
+    <div [innerHTML]="formattedData"></div>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" cdkFocusInitial>Cancel</button>
+    <button mat-button [mat-dialog-close]="{categoryPrefix: categoryPrefix, categorySuffix: categorySuffix, groupPrefix: groupPrefix, groupSuffix: groupSuffix}">Process and Download</button>
+</div>

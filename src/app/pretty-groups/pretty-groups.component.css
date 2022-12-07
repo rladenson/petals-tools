@@ -16,22 +16,31 @@ body.myriad::before {
     position: relative;
 }
 
-#grid {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+.grid {
+    display: grid;
+    grid-template-columns: 35% 5% 35% 5% 15%;
+}
+#notInUseHeader {
+    grid-column: 1;
+}
+#inUseHeader {
+    grid-column: 3;
+}
+#editingHeader {
+    grid-column: 5;
 }
 
+
 #inUse {
-    width: 35%
+    grid-column: 3;
 }
 #notInUse {
-    width: 35%
+    grid-column: 1;
 }
 
 #editing {
-    width: 15%;
     margin-right: 3em;
+    grid-column: 5;
 }
 
 .indent {
@@ -41,6 +50,17 @@ body.myriad::before {
 #notInUseInner, #inUseInner {
     overflow: auto;
     height: 500px;
+}
+
+#parse {
+    margin-left: 1.5em;
+    font-size: x-large;
+    padding: .2em .7em;
+}
+
+.moveButton {
+    margin-bottom: 1em;
+    grid-row: 2;
 }
 
 /* Everything below this taken from the angular material website */

@@ -5,12 +5,20 @@
      <mat-label>Token</mat-label>
      <input matInput [(ngModel)]='token' (change)='saveToken()'>
 </mat-form-field>
+<button mat-raised-button id="parse" color="primary" (click)="parse()">Parse!</button>
+<br>
+<span hidden><mat-checkbox color="primary" [(ngModel)]="advancedToggle" (change)="!advancedToggle ? flattenIndents(1) : ''">Advanced Abilities</mat-checkbox><sup><i class="fa-solid fa-circle-question" matTooltip="This enables advanced abilities such as designated more tiers of categories that will not show on member cards."></i></sup></span>
 <br>
 
-     <div id="grid">
-
+     <div class="grid">
+         <h2 id="notInUseHeader">Groups that haven't been used yet</h2>
+         <h2 id="inUseHeader">Group Organizer</h2>
+         <h2 id="editingHeader">Edit a Group</h2>
+     </div>
+     <div class="grid">
           <div id="notInUse">
-               <h2>Groups that haven't been used yet</h2>
+
+               <button mat-raised-button (click)="moveAllToNotInUse()" class="moveButton">Move All</button>
 
                <div id="notInUseInner">
                     <mat-button-toggle-group
@@ -33,7 +41,7 @@
           </div>
 
           <div id="inUse">
-               <h2>Group Organizer</h2>
+               <button mat-raised-button (click)="moveAllToInUse()" class="moveButton">Move All</button>
 
                <div id="inUseInner">
                     <mat-button-toggle-group
@@ -55,21 +63,20 @@
           </div>
 
           <div id="editing">
-               <h2>Edit a Group</h2>
                <div *ngIf="currentlySelected">
                     <mat-form-field><mat-label>Name</mat-label>
                          <input matInput [(ngModel)]="currentlySelected.name">
                     </mat-form-field>
                     <br>
-                    <button mat-raised-button color="primary" (click)="incrementIndents()">Indent</button>
+                    <button mat-raised-button color="primary" [disabled]="advancedToggle ? false : currentlySelected.indents >= 1"
+                            (click)="incrementIndents()">Indent</button>
                     &nbsp;&nbsp;
                     <button mat-raised-button color="primary" [disabled]="currentlySelected.indents === 0"
-                    (click)="decrementIndents()">Outdent</button>
+                            (click)="decrementIndents()">Outdent</button>
                </div>
           </div>
-
-
      </div>
+
 
 
 </div>

@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import {memberGuildSettingsModel, PKGroup, PKMember, systemGuildSettingsModel} from "./pk-models";
+import {memberGuildSettingsModel, PKGroup, PKMember, PKSystem, systemGuildSettingsModel} from "./pk-models";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -49,6 +49,16 @@ export class PluralKitService {
       .get<PKMember[]>(apiUrl + '/systems/@me/members', { 'headers': PluralKitService.headers })
       .pipe(map(data => data), catchError(this.handleError))
       .toPromise();
+  }
+
+  async getSystem(): Promise<PKSystem> {
+    this.makeHeader();
+    let apiUrl = this.getUrl();
+    while (this.lock) await this.wait(1);
+    return this.http
+        .get<PKSystem>(apiUrl + '/systems/@me', { 'headers': PluralKitService.headers })
+        .pipe(map(data => data), catchError(this.handleError))
+        .toPromise();
   }
 
   async getGroupList(group: string) {

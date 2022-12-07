@@ -101,7 +101,7 @@ export class BulkSettingsComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['name', 'id', 'display_name', 'avatar_url'];
+  displayedColumns: string[] = ['name', 'id', 'display_name?', 'avatar_url'];
 
   gotMember(member: any): void {
     //MatTableDataSource push method was broken, this is workaround.

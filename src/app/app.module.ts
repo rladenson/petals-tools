@@ -34,6 +34,8 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { PrettyGroupsComponent } from './pretty-groups/pretty-groups.component';
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import { PrettyGroupPrettifierComponent } from './pretty-group-prettifier/pretty-group-prettifier.component';
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -47,7 +49,8 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
     GroupSwitcherComponent,
     SiteMapComponent,
     SettingsComponent,
-    PrettyGroupsComponent
+    PrettyGroupsComponent,
+    PrettyGroupPrettifierComponent
   ],
     imports: [
         BrowserModule,
@@ -73,7 +76,8 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
         ReactiveFormsModule,
         MatAutocompleteModule,
         DragDropModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        MatDialogModule
     ],
   providers: [],
   bootstrap: [AppComponent]
