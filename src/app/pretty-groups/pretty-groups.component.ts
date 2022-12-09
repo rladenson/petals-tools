@@ -247,6 +247,8 @@ export class PrettyGroupsComponent implements OnInit {
       prevIndent = g.indents!;
       arr[i] = new PKGroup(g.id, newName, newDN, [], undefined);
     })
+    unicodeIndex++;
+    arr.push(new PKGroup('_____', unicode[unicodeIndex] + unicode[unicodeIndex] + 'Spacer', '\n.', [], undefined));
     let str = JSON.stringify(arr);
 
     let download = new File(['{"version": 2, "switches": [], "members": [], "groups": ', str, ', ' +
