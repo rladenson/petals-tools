@@ -6,6 +6,7 @@ import { InternalService } from "../internal.service";
 import { MatDialog } from "@angular/material/dialog";
 import { PrettyGroupPrettifierComponent } from "../pretty-group-prettifier/pretty-group-prettifier.component";
 import {PluralKitService} from "../pluralkit.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-pretty-groups',
@@ -23,8 +24,8 @@ export class PrettyGroupsComponent implements OnInit {
   advancedToggle: boolean = false;
   systemName: string | null = null;
 
-  constructor(private localService: LocalService, private internalService: InternalService,
-              public dialog: MatDialog, private pluralKitService: PluralKitService) {
+  constructor(private localService: LocalService, private internalService: InternalService, private snackbar: MatSnackBar,
+              public dialog: MatDialog, private pluralKitService: PluralKitService ) {
 
     this.internalService.groups$.subscribe(res => {
       this.notInUseArr = res;
@@ -66,6 +67,12 @@ export class PrettyGroupsComponent implements OnInit {
     this.localService.set('token', this.token);
     this.internalService.updateGroups();
     this.pluralKitService.getSystem().then(s => this.systemName = s.name);
+  }
+
+  errorSnackbar(error: string): void {
+      this.snackbar.open(error, 'Dismiss', {
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
   }
 
 
@@ -138,8 +145,14 @@ export class PrettyGroupsComponent implements OnInit {
 
   parse() {
     let maxIndent = this.checkIfValid();
-    if(maxIndent === -1) {
-      console.log("ERROR"); //TODO
+    if(maxIndent === -3) {
+      this.errorSnackbar("Please add groups to the Group Organizer list.");
+      return;
+    } else if(maxIndent === -2) {
+      this.errorSnackbar("Please make sure your first group is not indented.");
+      return;
+    } else if(maxIndent === -1) {
+      this.errorSnackbar("Something went wrong.")
       return;
     }
     let sort = Array.from({length: maxIndent + 1}, _ => 0);
@@ -172,17 +185,19 @@ export class PrettyGroupsComponent implements OnInit {
   }
 
   checkIfValid() {
+    if(this.inUseArr.length === 0) {
+      return -3;
+    }
     let maxIndent = -1;
-    let good = true;
     this.inUseArr.forEach(group => {
       if(group.indents! > maxIndent + 1) {
-        good = false;
+        maxIndent = -2;
         return;
       } else if(group.indents! > maxIndent) {
         maxIndent = group.indents!;
       }
     })
-    return good ? maxIndent : -1;
+    return maxIndent;
   }
 
   openDialog(): void {
@@ -210,7 +225,7 @@ export class PrettyGroupsComponent implements OnInit {
     })
   }
 
-  makeExport(settings: any) {
+  makeExport(settings?: any) {
     let arr: PKGroup[] = JSON.parse(JSON.stringify(this.inUseArr))
     let prevIndent = 1;
     let unicode = [',', ';', ':', '!', '?', '.', "'", '"', '(', ')', '[', ']', '{', '}', '@', '/', '&', '#', '%', '^', '<', '=', '>', '~']
@@ -224,10 +239,10 @@ export class PrettyGroupsComponent implements OnInit {
         }
         unicodeIndex++;
         newName = newName.concat(unicode[unicodeIndex], unicode[unicodeIndex], g.name);
-        newDN = newDN.concat(settings.categoryPrefix, g.display_name ? g.display_name : g.name, settings.categorySuffix, '\n> ');
+        newDN = newDN.concat(settings?.categoryPrefix, g.display_name ? g.display_name : g.name, settings?.categorySuffix, '\n> ');
       } else if(g.indents === 1) {
         newName = newName.concat(unicode[unicodeIndex], g.name);
-        newDN = newDN.concat(settings.groupPrefix, g.display_name ? g.display_name : g.name, settings.groupSuffix);
+        newDN = newDN.concat(settings?.groupPrefix, g.display_name ? g.display_name : g.name, settings?.groupSuffix);
       }
       prevIndent = g.indents!;
       arr[i] = new PKGroup(g.id, newName, newDN, [], undefined);
@@ -254,4 +269,5 @@ TODO what happens if too many groups?
 TODO make it recognize when you've used the tool before
 TODO should turning advancedtoggle off get rid of all extra indents? maybe just visually?
 TODO ask if they want to make all names on newlines
+TODO more advanced drag and drop (includes dropping onto other groups to go into them and auto-indenting if dropped between two indented groups)
  */
