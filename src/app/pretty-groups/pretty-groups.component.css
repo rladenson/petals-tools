@@ -123,3 +123,9 @@ body.myriad::before {
     flex-direction: row !important;
     padding-left: 2em;
 }
+
+.alert div {
+    background-color: #fed3d3;
+    color: #820000;
+    padding: 0.5rem;
+}

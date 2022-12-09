@@ -23,6 +23,12 @@ export class PrettyGroupsComponent implements OnInit {
   currentlySelected?: any;
   advancedToggle: boolean = false;
   systemName: string | null = null;
+  unicode: string[] = [',', ';', ':', '!', '?', '.', "'", '"', '(', ')', '[', ']', '{', '}', '@', '/', '&', '#', '%', '^', '<', '=', '>', '~']
+  newGroupName: string = '';
+  newGroupDN: string = '';
+  createdGroupsArr: PKGroup[] = [];
+  createdGroups: any;
+
 
   constructor(private localService: LocalService, private internalService: InternalService, private snackbar: MatSnackBar,
               public dialog: MatDialog, private pluralKitService: PluralKitService ) {
@@ -42,6 +48,10 @@ export class PrettyGroupsComponent implements OnInit {
     this.token = this.localService.get('token');
     this.internalService.updateGroups();
     this.pluralKitService.getSystem().then(s => this.systemName = s.name);
+  }
+
+  makeNewGroup() {
+    this.createdGroupsArr.push(new PKGroup('no id', this.newGroupName, this.newGroupDN, [], 0));
   }
 
   drop(event: CdkDragDrop<PKGroup[]>) {
@@ -151,7 +161,15 @@ export class PrettyGroupsComponent implements OnInit {
     } else if(maxIndent === -2) {
       this.errorSnackbar("Please make sure your first group is not indented.");
       return;
-    } else if(maxIndent === -1) {
+    } else if(maxIndent === -4){
+      let numCats = 0;
+      this.inUseArr.forEach(g => {
+        if(g.indents === 0)
+          numCats++;
+      })
+      this.errorSnackbar("You have more groups than we have available unicode characters! Please contact me in" +
+          "the third-party-discussions channel of the PluralKit server and say you have " + numCats + " categories.")
+    }else if(maxIndent < 0) {
       this.errorSnackbar("Something went wrong.")
       return;
     }
@@ -185,6 +203,7 @@ export class PrettyGroupsComponent implements OnInit {
   }
 
   checkIfValid() {
+    let numCategories = 0;
     if(this.inUseArr.length === 0) {
       return -3;
     }
@@ -196,7 +215,12 @@ export class PrettyGroupsComponent implements OnInit {
       } else if(group.indents! > maxIndent) {
         maxIndent = group.indents!;
       }
+      if(group.indents === 0)
+        numCategories++;
     })
+    if(numCategories > this.unicode.length - 1) {
+      return -4;
+    }
     return maxIndent;
   }
 
@@ -228,7 +252,6 @@ export class PrettyGroupsComponent implements OnInit {
   makeExport(settings?: any) {
     let arr: PKGroup[] = JSON.parse(JSON.stringify(this.inUseArr))
     let prevIndent = 1;
-    let unicode = [',', ';', ':', '!', '?', '.', "'", '"', '(', ')', '[', ']', '{', '}', '@', '/', '&', '#', '%', '^', '<', '=', '>', '~']
     let unicodeIndex = -1;
     arr.forEach((g: PKGroup, i, arr) => { //TODO GENERALIZE FOR MORE INDENT AMOUNTS
       let newDN = '';
@@ -238,17 +261,17 @@ export class PrettyGroupsComponent implements OnInit {
           newDN = newDN.concat('\n')
         }
         unicodeIndex++;
-        newName = newName.concat(unicode[unicodeIndex], unicode[unicodeIndex], g.name);
-        newDN = newDN.concat(settings?.categoryPrefix, g.display_name ? g.display_name : g.name, settings?.categorySuffix, '\n> ');
+        newName = newName.concat(this.unicode[unicodeIndex], this.unicode[unicodeIndex], g.name);
+        newDN = newDN.concat(settings?.categoryPrefix, (g.display_name && g.display_name.length > 0) ? g.display_name : g.name, settings?.categorySuffix, '\n> ');
       } else if(g.indents === 1) {
-        newName = newName.concat(unicode[unicodeIndex], g.name);
-        newDN = newDN.concat(settings?.groupPrefix, g.display_name ? g.display_name : g.name, settings?.groupSuffix);
+        newName = newName.concat(this.unicode[unicodeIndex], g.name);
+        newDN = newDN.concat(settings?.groupPrefix, (g.display_name && g.display_name.length > 0) ? g.display_name : g.name, settings?.groupSuffix);
       }
       prevIndent = g.indents!;
       arr[i] = new PKGroup(g.id, newName, newDN, [], undefined);
     })
     unicodeIndex++;
-    arr.push(new PKGroup('_____', unicode[unicodeIndex] + unicode[unicodeIndex] + 'Spacer', '\n.', [], undefined));
+    arr.push(new PKGroup('_____', this.unicode[unicodeIndex] + this.unicode[unicodeIndex] + 'Spacer', '\n.', [], undefined));
     let str = JSON.stringify(arr);
 
     let download = new File(['{"version": 2, "switches": [], "members": [], "groups": ', str, ', ' +
