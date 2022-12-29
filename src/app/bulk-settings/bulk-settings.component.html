@@ -32,7 +32,7 @@
     Keep this page open!
     <br><br>
   </div>
-  <div *ngIf="this.data.data.length > 0">
+  <div [attr.hidden]="this.data.data.length > 0 ? null : true ">
     <table mat-table [dataSource]="data" matSort>
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>

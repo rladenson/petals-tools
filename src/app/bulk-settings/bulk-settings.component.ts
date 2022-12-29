@@ -1,4 +1,4 @@
-import { OnInit, Component, ViewChild } from '@angular/core';
+import {OnInit, Component, ViewChild, AfterViewInit} from '@angular/core';
 import { PluralKitService } from "../pluralkit.service";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
@@ -15,7 +15,7 @@ import { PKGroup } from "../pk-models";
   templateUrl: './bulk-settings.component.html',
   styleUrls: ['./bulk-settings.component.css']
 })
-export class BulkSettingsComponent implements OnInit {
+export class BulkSettingsComponent implements OnInit, AfterViewInit {
 
   data: MatTableDataSource<any> = new MatTableDataSource();
   progress: number = -1;
@@ -28,8 +28,6 @@ export class BulkSettingsComponent implements OnInit {
               private formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.data.sort = this.sort;
-    this.data.paginator = this.paginator;
     this.pluralKitService.memberEmitter.subscribe(member => this.gotMember(member));
     this.pluralKitService.progressEmitter.subscribe(progress => this.updateProgress(progress));
     this.internalService.groups$.subscribe(res => {
@@ -41,6 +39,10 @@ export class BulkSettingsComponent implements OnInit {
         map(value => this._filter(value || '')),
     );
     this.internalService.updateGroups();
+  }
+  ngAfterViewInit() {
+    this.data.sort = this.sort;
+    this.data.paginator = this.paginator;
   }
 
   private _filter(value: string): PKGroup[] {
@@ -101,7 +103,7 @@ export class BulkSettingsComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['name', 'id', 'display_name?', 'avatar_url'];
+  displayedColumns: string[] = ['name', 'id', 'display_name', 'avatar_url'];
 
   gotMember(member: any): void {
     //MatTableDataSource push method was broken, this is workaround.
