@@ -103,7 +103,7 @@
     <input class='form-control' type='text' maxlength='256' name='avatar_url' id='avatar_url'
       *ngIf='avatar_url_toggle==="set"' [(ngModel)]='memberModel.avatar_url'>
     <br>
-    <button type='submit' [disabled]='!memberForm.form.valid'>Go!</button>
+    <button type='submit' [disabled]='!memberForm.form.valid || ((this.servername_toggle === null || this.servername_toggle === "null") && (this.avatar_url_toggle === null || this.avatar_url_toggle === "null"))'>Go!</button>
   </form>
 
   <br><br>
