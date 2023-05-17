@@ -28,8 +28,16 @@
     <label for='tag_toggle'> Clear Servertag: </label>
     <input type='checkbox' id='tag_toggle' class='form-control' name='tag_toggle' [(ngModel)]='tag_toggle'>
     <br>
+    <button type='submit' [disabled]='!systemForm.form.valid || ((this.systemModel.proxying_enabled === undefined || this.systemModel.proxying_enabled === "undefined") && (this.systemModel.tag_enabled === undefined || this.systemModel.tag_enabled === "undefined") && (this.systemModel.tag === undefined || this.systemModel.tag === "") && !this.tag_toggle)'>Go!</button>
+  </form>
+
+  <br><br>
+
+  <h3>Autoproxy Settings</h3>
+
+  <form #autoProxyForm='ngForm' (ngSubmit)='submitAutoproxy()'>
     <label for='autoproxy_mode'>Change autoproxy mode: </label>
-    <select id='autoproxy_mode' class='form-control' name='autoproxy_mode' [(ngModel)]='systemModel.autoproxy_mode'>
+    <select id='autoproxy_mode' class='form-control' name='autoproxy_mode' [(ngModel)]='autoproxyModel.autoproxy_mode'>
       <option value='undefined'>Don't Change Setting</option>
       <option value='off'>Turn Autoproxy Off</option>
       <option value='front'>Turn Autoproxy to Front</option>
@@ -37,12 +45,12 @@
       <option value='member'>Turn Autoproxy to a Member (set below)</option>
     </select>
     <br>
-    <div *ngIf='this.systemModel.autoproxy_mode==="member"'>
+    <div *ngIf='this.autoproxyModel.autoproxy_mode==="member"'>
       <label for='autoproxy_member' class='apMember'>Autoproxy member* (ignored if autoproxy mode not Member):</label>
       <input type='text' class='form-control' name='autoproxy_member' id='autoproxy_member' maxlength='5'
-        [(ngModel)]='systemModel.autoproxy_member' required>
+             [(ngModel)]='autoproxyModel.autoproxy_member' required>
     </div>
-    <button type='submit' [disabled]='!systemForm.form.valid'>Go!</button>
+    <button type='submit' [disabled]='!autoProxyForm.form.valid || this.autoproxyModel.autoproxy_mode === undefined || this.autoproxyModel.autoproxy_mode === "undefined"'>Go!</button>
   </form>
 
   <br><br>

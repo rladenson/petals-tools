@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { memberGuildSettingsModel, systemGuildSettingsModel } from "../pk-models";
+import { memberGuildSettingsModel, systemGuildSettingsModel, autoproxySettingsModel } from "../pk-models";
 import { PluralKitService } from "../pluralkit.service";
 
 @Component({
@@ -11,6 +11,7 @@ export class SoloSettingsComponent {
 
   systemModel = new systemGuildSettingsModel();
   memberModel = new memberGuildSettingsModel();
+  autoproxyModel = new autoproxySettingsModel();
   memberID: string = '';
   tag_toggle: boolean = false;
   servername_toggle: string = 'null';
@@ -24,6 +25,13 @@ export class SoloSettingsComponent {
       this.systemModel.tag = undefined;
     }
     this.pluralKitService.setSystemGuildSettings(this.systemModel);
+  }
+
+  submitAutoproxy() {
+    if(this.autoproxyModel.autoproxy_mode !== "member") {
+      this.autoproxyModel.autoproxy_member = undefined;
+    }
+    this.pluralKitService.setAutoproxyGuildSettings(this.autoproxyModel);
   }
 
   submitMember() {

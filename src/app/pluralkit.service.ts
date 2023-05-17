@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import {memberGuildSettingsModel, PKGroup, PKMember, PKSystem, systemGuildSettingsModel} from "./pk-models";
+import { memberGuildSettingsModel, PKGroup, PKMember, PKSystem, systemGuildSettingsModel, autoproxySettingsModel } from "./pk-models";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -166,6 +166,32 @@ export class PluralKitService {
         message: `Finished patching system settings for guild ${guildID}!`,
         data: data
       }));
+  }
+
+  setAutoproxyGuildSettings(model: autoproxySettingsModel) {
+    this.doneEmitter.emit({message: 'Loading...'});
+    this.makeHeader();
+    let apiUrl = this.getUrl();
+    let json = JSON.stringify(model);
+    if (json.length === 2) {
+      this.errorEmitter.emit('You must change some settings');
+      throw('You must change some settings');
+    }
+    let guildID: string = '';
+    try {
+      guildID = PluralKitService.normalizeGuildID(this.localService.get('guildID'));
+    } catch (error: any) {
+      this.errorEmitter.emit(error);
+    }
+    this.http
+        .patch<any>(apiUrl + '/systems/@me/autoproxy?guild_id=' + guildID,
+            <JSON>model,
+            { 'headers': PluralKitService.headers }
+        ).pipe(map(data => data), catchError(this.handleError))
+        .subscribe(data => this.doneEmitter.emit({
+          message: `Finished patching autoproxy settings for guild ${guildID}!`,
+          data: data
+        }));
   }
 
   setMemberGuildSettings(model: memberGuildSettingsModel, memberID: string) {

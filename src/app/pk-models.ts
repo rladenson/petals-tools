@@ -27,12 +27,19 @@ export class PKGroup {
 
 export class systemGuildSettingsModel {
   constructor(
-    public proxying_enabled?: boolean,
-    public autoproxy_mode?: string,
-    public autoproxy_member?: string,
+    public proxying_enabled?: boolean | string,
     public tag?: string | null,
-    public tag_enabled?: boolean
+    public tag_enabled?: boolean | string
   ) {}
+}
+
+export class autoproxySettingsModel {
+  constructor(
+      public autoproxy_mode?: string,
+      public autoproxy_member?: string,
+      public readonly last_latch_timestamp?: string
+  ) {
+  }
 }
 
 export class memberGuildSettingsModel {
