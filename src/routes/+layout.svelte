@@ -75,9 +75,8 @@
 			</div>
 		</nav>
 	</header>
-	<div class="flex grow">
-		{#if showMenu}
-			<nav class="flex w-fit flex-col bg-blue-500 p-2 text-white">
+	<div class="flex grow bg-blue-200 {showMenu ? "md:flex-row flex-col" : ""}">
+			<nav class="flex flex-col bg-blue-500 text-white transition-none md:transition-all motion-reduce:transition-none {showMenu ? "w-full md:w-3/4 lg:w-1/3 p-2" : "w-0"}">
 				<ul>
 					<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
 						PluralKit
@@ -103,7 +102,6 @@
 					</li>
 				</ul>
 			</nav>
-		{/if}
 		<div class="w-full bg-blue-200 p-2">
 			{@render children()}
 		</div>
