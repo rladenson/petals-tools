@@ -10,7 +10,7 @@
 </script>
 
 <div class="flex h-screen flex-col">
-	<header class="bg-blue-500 text-white">
+	<header class="bg-blue-500 text-white sticky top-0">
 		<nav class="mx-auto flex items-center justify-between p-2" aria-label="Global">
 			<div class="flex lg:flex-1">
 				<button onclick={toggleSidebar} class="-m-1.5 p-1.5">
@@ -75,35 +75,45 @@
 			</div>
 		</nav>
 	</header>
-	<div class="flex grow bg-blue-200 md:flex-row flex-col">
-			<nav class="flex flex-col bg-blue-500 text-white transition-all motion-reduce:transition-none {showMenu ? "w-full md:w-3/4 lg:w-1/3 p-2" : "overflow-hidden h-0 md:h-auto md:w-0"}">
-				<ul>
-					<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
-						PluralKit
-						<ul>
-							<li>
-								&nbsp;&nbsp;<a href="/serverset" class="text-sm/6 font-semibold"
-									>Server-Specific Settings</a
-								>
-							</li>
-						</ul>
-					</li>
-					<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
-						System
-						<ul>
-							<li>&nbsp;&nbsp;<span class="text-sm/6 font-semibold">Nothing Yet</span></li>
-						</ul>
-					</li>
-					<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
-						Misc
-						<ul>
-							<li>&nbsp;&nbsp;<span class="text-sm/6 font-semibold">Nothing Yet</span></li>
-						</ul>
-					</li>
-				</ul>
-			</nav>
-		<div class="w-full p-2">
+	<div class="flex grow flex-col md:flex-row">
+		<nav
+			class="flex flex-col bg-blue-500 text-white transition-all motion-reduce:transition-none {showMenu
+				? 'w-full p-2 md:w-3/4 lg:w-1/3'
+				: 'h-0 overflow-hidden md:h-auto md:w-0'}"
+		>
+			<ul>
+				<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
+					PluralKit
+					<ul>
+						<li>
+							&nbsp;&nbsp;<a href="/serverset" class="text-sm/6 font-semibold"
+								>Server-Specific Settings</a
+							>
+						</li>
+					</ul>
+				</li>
+				<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
+					System
+					<ul>
+						<li>&nbsp;&nbsp;<span class="text-sm/6 font-semibold">Nothing Yet</span></li>
+					</ul>
+				</li>
+				<li class="m-5 rounded bg-blue-400 p-2 px-5 text-lg">
+					Misc
+					<ul>
+						<li>&nbsp;&nbsp;<span class="text-sm/6 font-semibold">Nothing Yet</span></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		<div class="w-full p-2 overflow-scroll">
 			{@render children()}
 		</div>
 	</div>
 </div>
+
+<style lang="postcss">
+	:global(body) {
+		@apply bg-blue-200;
+	}
+</style>
