@@ -1,4 +1,4 @@
-<div class="flex">
+<div class="flex flex-wrap">
 	<form class="m-4 w-fit rounded bg-blue-100 p-6 pt-4">
 		<h2 class="text-xl">System Settings</h2>
 		<label class="text-l text-gray-800" for="proxyEnabled">Proxying Enabled:</label>
