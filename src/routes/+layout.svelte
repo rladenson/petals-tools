@@ -106,7 +106,7 @@
 				</li>
 			</ul>
 		</nav>
-		<div class="w-full p-2 overflow-scroll">
+		<div class="w-full p-2">
 			{@render children()}
 		</div>
 	</div>
