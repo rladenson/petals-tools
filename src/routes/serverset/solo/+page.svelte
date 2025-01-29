@@ -49,7 +49,7 @@
 	});
 </script>
 
-<div class="flex flex-wrap">
+<div class="flex flex-wrap justify-center">
 	<form class="m-4 flex w-fit flex-col rounded bg-blue-100 p-6 pt-4" onsubmit={submitSystem}>
 		<h2 class="text-xl">System Settings</h2>
 		<label class="text-l text-gray-800" for="proxyEnabled">Proxying Enabled:</label>
