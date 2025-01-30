@@ -4,13 +4,13 @@
 	let systemSettings = $state({
 		proxyingEnabled: OnOffNone.None,
 		tagEnabled: OnOffNone.None,
-		servertag: '',
-		servertagSelect: OnOffNone.None
+		serverTag: '',
+		serverTagSelect: OnOffNone.None
 	});
 	let systemSettingsInvalid = $derived(
 		systemSettings.proxyingEnabled == OnOffNone.None &&
 			systemSettings.tagEnabled == OnOffNone.None &&
-			systemSettings.servertag == ''
+			systemSettings.serverTag == ''
 	);
 	let submitSystem = (e: Event) => {
 		e.preventDefault();
@@ -29,17 +29,17 @@
 
 	let memberSettings = $state({
 		memberId: '',
-		servernameSelect: OnOffNone.None,
-		servername: '',
-		serveravatarSelect: OnOffNone.None,
-		serveravatar: ''
+		serverNameSelect: OnOffNone.None,
+		serverName: '',
+		serverAvatarSelect: OnOffNone.None,
+		serverAvatar: ''
 	});
 	let memberSettingsInvalid = $derived(
 		memberSettings.memberId.match(/^(?:[A-Za-z][- ]*){5,6}$/) == null ||
-			(memberSettings.servernameSelect == OnOffNone.None &&
-				memberSettings.serveravatarSelect == OnOffNone.None) ||
-			(memberSettings.servernameSelect == OnOffNone.On && memberSettings.servername == '') ||
-			(memberSettings.serveravatarSelect == OnOffNone.On && memberSettings.serveravatar == '')
+			(memberSettings.serverNameSelect == OnOffNone.None &&
+				memberSettings.serverAvatarSelect == OnOffNone.None) ||
+			(memberSettings.serverNameSelect == OnOffNone.On && memberSettings.serverName == '') ||
+			(memberSettings.serverAvatarSelect == OnOffNone.On && memberSettings.serverAvatar == '')
 	);
 	let submitMember = (e: Event) => {
 		e.preventDefault();
@@ -74,12 +74,12 @@
 			<option value={1}>Turn On</option>
 			<option value={2}>Turn Off</option>
 		</select>
-		<label class="text-l text-gray-800" for="servertagSelect">Server Tag Action:</label>
+		<label class="text-l text-gray-800" for="serverTagSelect">Server Tag Action:</label>
 		<select
 			class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
-			id="servertagSelect"
-			name="servertagSelect"
-			bind:value={systemSettings.servertagSelect}
+			id="serverTagSelect"
+			name="serverTagSelect"
+			bind:value={systemSettings.serverTagSelect}
 		>
 			<option value={0}>Don't Change Setting</option>
 			<option value={1}>Set</option>
@@ -88,15 +88,15 @@
 		<input
 			type="text"
 			class="peer order-2 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-60"
-			id="servertag"
-			name="servertag"
-			placeholder="Servertag"
-			bind:value={systemSettings.servertag}
-			disabled={systemSettings.servertagSelect != OnOffNone.On}
+			id="serverTag"
+			name="serverTag"
+			placeholder="serverTag"
+			bind:value={systemSettings.serverTag}
+			disabled={systemSettings.serverTagSelect != OnOffNone.On}
 		/>
 		<label
 			class="text-l order-1 text-gray-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
-			for="servertag">Server Tag:</label
+			for="serverTag">Server Tag:</label
 		>
 		<div class="order-last grow"></div>
 		<input
@@ -156,12 +156,12 @@
 			placeholder="Member ID"
 			bind:value={memberSettings.memberId}
 		/>
-		<label class="text-l text-gray-800" for="servernameSelect">Server Name Action:</label>
+		<label class="text-l text-gray-800" for="serverNameSelect">Server Name Action:</label>
 		<select
 			class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
-			id="servernameSelect"
-			name="servernameSelect"
-			bind:value={memberSettings.servernameSelect}
+			id="serverNameSelect"
+			name="serverNameSelect"
+			bind:value={memberSettings.serverNameSelect}
 		>
 			<option value={0}>Don't Change Setting</option>
 			<option value={1}>Set</option>
@@ -170,24 +170,24 @@
 		<input
 			type="text"
 			class="peer order-2 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-60"
-			id="servername"
-			name="servername"
+			id="serverName"
+			name="serverName"
 			placeholder="Server Name"
-			bind:value={memberSettings.servername}
-			disabled={memberSettings.servernameSelect != OnOffNone.On}
+			bind:value={memberSettings.serverName}
+			disabled={memberSettings.serverNameSelect != OnOffNone.On}
 		/>
 		<label
 			class="text-l order-1 text-gray-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
-			for="servername">Server Name:</label
+			for="serverName">Server Name:</label
 		>
-		<label class="text-l order-3 text-gray-800" for="serveravatarSelect"
+		<label class="text-l order-3 text-gray-800" for="serverAvatarSelect"
 			>Server Avatar Action:</label
 		>
 		<select
 			class="order-3 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
-			id="serveravatarSelect"
-			name="serveravatarSelect"
-			bind:value={memberSettings.serveravatarSelect}
+			id="serverAvatarSelect"
+			name="serverAvatarSelect"
+			bind:value={memberSettings.serverAvatarSelect}
 		>
 			<option value={0}>Don't Change Setting</option>
 			<option value={1}>Set</option>
@@ -196,15 +196,15 @@
 		<input
 			type="text"
 			class="peer order-5 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-60"
-			id="serveravatar"
-			name="serveravatar"
+			id="serverAvatar"
+			name="serverAvatar"
 			placeholder="Image Link"
-			bind:value={memberSettings.serveravatar}
-			disabled={memberSettings.serveravatarSelect != OnOffNone.On}
+			bind:value={memberSettings.serverAvatar}
+			disabled={memberSettings.serverAvatarSelect != OnOffNone.On}
 		/>
 		<label
 			class="text-l order-4 text-gray-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
-			for="serveravatar">Server Avatar:</label
+			for="serverAvatar">Server Avatar:</label
 		>
 		<div class="order-last grow"></div>
 		<input

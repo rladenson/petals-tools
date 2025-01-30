@@ -22,22 +22,22 @@
 		tokenInput.setCustomValidity(tokenError);
 	});
 
-	let serveridRaw = $state('');
-	let serverid = '';
-	let serveridError = $state('');
+	let serverIdRaw = $state('');
+	let serverId = '';
+	let serverIdError = $state('');
 	$effect(() => {
-		let match = serveridRaw.match(
+		let match = serverIdRaw.match(
 			/(?:https?:\/\/(?:(?:ptb|canary)\.)?discord\.com\/channels\/)?(\d{17,19})/
 		);
 		if (match) {
-			serverid = match[1];
-			serveridError = '';
+			serverId = match[1];
+			serverIdError = '';
 		} else {
-			serverid = '';
-			serveridError = "This doesn't seem to be a valid server ID or message link";
+			serverId = '';
+			serverIdError = "This doesn't seem to be a valid server ID or message link";
 		}
-		let serveridInput: HTMLObjectElement = document.getElementById('serverid') as HTMLObjectElement;
-		serveridInput.setCustomValidity(serveridError);
+		let serverIdInput: HTMLObjectElement = document.getElementById('serverId') as HTMLObjectElement;
+		serverIdInput.setCustomValidity(serverIdError);
 	});
 </script>
 
@@ -55,19 +55,19 @@
 			bind:value={token.value}
 		/>
 		<span class="mt-2 text-sm text-rose-700" id="tokenError">{tokenError}</span>
-		<label class="mb-0.5 mt-2 block text-sm font-bold text-gray-700" for="serverid">
+		<label class="mb-0.5 mt-2 block text-sm font-bold text-gray-700" for="serverId">
 			Server ID or Message Link
 		</label>
 		<input
 			class="mt-1 block w-full rounded-md border-gray-300 shadow-sm invalid:border-red-500
 			invalid:ring invalid:ring-red-500 invalid:ring-opacity-50 focus:border-indigo-500
 			focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
-			id="serverid"
+			id="serverId"
 			type="text"
 			placeholder="Server ID"
-			bind:value={serveridRaw}
+			bind:value={serverIdRaw}
 		/>
-		<span class="mt-2 text-sm text-rose-700" id="serveridError">{serveridError}</span>
+		<span class="mt-2 text-sm text-rose-700" id="serverIdError">{serverIdError}</span>
 	</form>
 	<nav class="m-4 flex">
 		<a href="/serverset/solo" class="m-2 rounded bg-blue-500 p-2 text-white">System and Member</a>
