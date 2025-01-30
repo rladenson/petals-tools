@@ -22,18 +22,12 @@
 		tokenInput.setCustomValidity(tokenError);
 	});
 
-	let serverIdRaw = $state('');
-	let serverId = '';
+	const serverId = data.serverId;
 	let serverIdError = $state('');
 	$effect(() => {
-		let match = serverIdRaw.match(
-			/(?:https?:\/\/(?:(?:ptb|canary)\.)?discord\.com\/channels\/)?(\d{17,19})/
-		);
-		if (match) {
-			serverId = match[1];
+		if (serverId.id !== '') {
 			serverIdError = '';
 		} else {
-			serverId = '';
 			serverIdError = "This doesn't seem to be a valid server ID or message link";
 		}
 		let serverIdInput: HTMLObjectElement = document.getElementById('serverId') as HTMLObjectElement;
@@ -65,7 +59,7 @@
 			id="serverId"
 			type="text"
 			placeholder="Server ID"
-			bind:value={serverIdRaw}
+			bind:value={serverId.raw}
 		/>
 		<span class="mt-2 text-sm text-rose-700" id="serverIdError">{serverIdError}</span>
 	</form>

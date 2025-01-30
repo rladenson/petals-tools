@@ -4,14 +4,12 @@
 	import SystemSettings from './systemSettings.svelte';
 	let { data } = $props();
 
-	const token = data.token;
-
 </script>
 
 <div class="flex flex-wrap justify-center">
 	
-	<SystemSettings token={token} />
-	<AutoproxySettings token={token} />
-	<MemberSettings token={token} />
+	<SystemSettings token={data.token} serverId={data.serverId.id} />
+	<AutoproxySettings token={data.token} serverId={data.serverId.id} />
+	<MemberSettings token={data.token} serverId={data.serverId.id} />
 	
 </div>
