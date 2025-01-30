@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createToken, TokenValidation } from '$lib/token.svelte';
-	let { children } = $props();
+	import { TokenValidation } from '$lib/token.svelte';
+	let { children, data } = $props();
 
-	const token = createToken();
+	const token = data.token;
 	let tokenError = $state('');
 	$effect(() => {
-		switch (token.validate()) {
+		switch (token.validate) {
 			case TokenValidation.Valid:
 			case TokenValidation.IsUndefined:
 				tokenError = '';

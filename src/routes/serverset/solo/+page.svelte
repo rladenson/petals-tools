@@ -1,5 +1,9 @@
 <script lang="ts">
 	import { OnOffNone, AutoproxyEnum } from '$lib';
+	import { TokenValidation } from '$lib/token.svelte';
+	let { data } = $props();
+
+	const token = data.token;
 
 	let systemSettings = $state({
 		proxyingEnabled: OnOffNone.None,
@@ -8,9 +12,11 @@
 		serverTagSelect: OnOffNone.None
 	});
 	let systemSettingsInvalid = $derived(
-		systemSettings.proxyingEnabled == OnOffNone.None &&
-			systemSettings.tagEnabled == OnOffNone.None &&
-			systemSettings.serverTag == ''
+		token.validate != TokenValidation.Valid ||
+			(systemSettings.proxyingEnabled == OnOffNone.None &&
+				systemSettings.tagEnabled == OnOffNone.None &&
+				systemSettings.serverTagSelect == OnOffNone.None) ||
+			(systemSettings.serverTagSelect == OnOffNone.On && systemSettings.serverTag == '')
 	);
 	let submitSystem = (e: Event) => {
 		e.preventDefault();
@@ -21,7 +27,9 @@
 		autoproxyMember: ''
 	});
 	let autoproxySettingsInvalid = $derived(
-		autoproxySettings.autoproxyMode == AutoproxyEnum.None && autoproxySettings.autoproxyMember == ''
+		token.validate != TokenValidation.Valid ||
+			(autoproxySettings.autoproxyMode == AutoproxyEnum.None &&
+				autoproxySettings.autoproxyMember == '')
 	);
 	let submitAutoproxy = (e: Event) => {
 		e.preventDefault();
@@ -35,7 +43,8 @@
 		serverAvatar: ''
 	});
 	let memberSettingsInvalid = $derived(
-		memberSettings.memberId.match(/^(?:[A-Za-z][- ]*){5,6}$/) == null ||
+		token.validate != TokenValidation.Valid ||
+			memberSettings.memberId.match(/^(?:[A-Za-z][- ]*){5,6}$/) == null ||
 			(memberSettings.serverNameSelect == OnOffNone.None &&
 				memberSettings.serverAvatarSelect == OnOffNone.None) ||
 			(memberSettings.serverNameSelect == OnOffNone.On && memberSettings.serverName == '') ||
