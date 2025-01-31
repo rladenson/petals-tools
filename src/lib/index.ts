@@ -7,9 +7,11 @@ export enum OnOffNone {
 }
 
 export enum AutoproxyEnum {
-	None,
-	Off,
-	Front,
-	Latch,
-	Member
+	None = 'none',
+	Off = 'off',
+	Front = 'front',
+	Latch = 'latch',
+	Member = 'member'
 }
+
+export const baseURL = 'https://api.pluralkit.me/v2/';

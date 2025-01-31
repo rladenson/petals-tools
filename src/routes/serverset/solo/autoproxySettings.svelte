@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AutoproxyEnum } from '$lib';
+	import { AutoproxyEnum, baseURL } from '$lib';
 	import { TokenValidation } from '$lib/token.svelte';
 	const { token, serverId } = $props();
 
@@ -10,11 +10,34 @@
 	let autoproxySettingsInvalid = $derived(
 		token.validate != TokenValidation.Valid ||
 			serverId == '' ||
-			(autoproxySettings.autoproxyMode == AutoproxyEnum.None &&
-				autoproxySettings.autoproxyMember == '')
+			autoproxySettings.autoproxyMode == AutoproxyEnum.None ||
+			(autoproxySettings.autoproxyMode == AutoproxyEnum.Front &&
+				autoproxySettings.autoproxyMember == '') ||
+			((autoproxySettings.autoproxyMode == AutoproxyEnum.Front ||
+				autoproxySettings.autoproxyMode == AutoproxyEnum.Latch) &&
+				autoproxySettings.autoproxyMember.match(/^(?:(?:[A-Za-z][- ]*){5,6})?$/) == null)
 	);
-	let submitAutoproxy = (e: Event) => {
+	let submitAutoproxy = async (e: Event) => {
 		e.preventDefault();
+		const res = await fetch(baseURL + `systems/@me/autoproxy?guild_id=${serverId}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: token.value,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				autoproxy_mode: autoproxySettings.autoproxyMode,
+				autoproxy_member:
+					autoproxySettings.autoproxyMember == '' ||
+					!(
+						autoproxySettings.autoproxyMode == AutoproxyEnum.Latch ||
+						autoproxySettings.autoproxyMode == AutoproxyEnum.Member
+					)
+						? undefined
+						: autoproxySettings.autoproxyMember
+			})
+		});
+		if (res.ok) console.log(await res.json());
 	};
 </script>
 
@@ -27,11 +50,11 @@
 		name="autoproxy"
 		bind:value={autoproxySettings.autoproxyMode}
 	>
-		<option value={0}>Don't Change Setting</option>
-		<option value={1}>Off</option>
-		<option value={2}>Front</option>
-		<option value={3}>Latch</option>
-		<option value={4}>Member</option>
+		<option value={'none'}>Don't Change Setting</option>
+		<option value={'off'}>Off</option>
+		<option value={'front'}>Front</option>
+		<option value={'latch'}>Latch</option>
+		<option value={'member'}>Member</option>
 	</select>
 	<input
 		type="text"
