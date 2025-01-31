@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { OnOffNone } from '$lib';
+	import { baseURL, OnOffNone } from '$lib';
 	import { TokenValidation } from '$lib/token.svelte';
 	const { token, serverId } = $props();
 
@@ -17,8 +17,36 @@
 				systemSettings.serverTagSelect == OnOffNone.None) ||
 			(systemSettings.serverTagSelect == OnOffNone.On && systemSettings.serverTag == '')
 	);
-	let submitSystem = (e: Event) => {
+	let submitSystem = async (e: Event) => {
 		e.preventDefault();
+		const res = await fetch(baseURL + `systems/@me/guilds/${serverId}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: token.value,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				tag:
+					systemSettings.serverTagSelect == OnOffNone.Off
+						? null
+						: systemSettings.serverTagSelect == OnOffNone.On
+							? systemSettings.serverTag
+							: undefined,
+				tag_enabled:
+					systemSettings.tagEnabled == OnOffNone.Off
+						? false
+						: systemSettings.tagEnabled == OnOffNone.On
+							? true
+							: undefined,
+				proxying_enabled:
+					systemSettings.proxyingEnabled == OnOffNone.Off
+						? false
+						: systemSettings.proxyingEnabled == OnOffNone.On
+							? true
+							: undefined
+			})
+		});
+		if (res.ok) console.log(await res.json());
 	};
 </script>
 
