@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { OnOffNone } from '$lib';
+	import { baseURL, OnOffNone } from '$lib';
 	import { TokenValidation } from '$lib/token.svelte';
 	const { token, serverId } = $props();
 
@@ -19,8 +19,30 @@
 			(memberSettings.serverNameSelect == OnOffNone.On && memberSettings.serverName == '') ||
 			(memberSettings.serverAvatarSelect == OnOffNone.On && memberSettings.serverAvatar == '')
 	);
-	let submitMember = (e: Event) => {
+	let submitMember = async (e: Event) => {
 		e.preventDefault();
+		const res = await fetch(baseURL + `members/${memberSettings.memberId}/guilds/${serverId}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: token.value,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				display_name:
+					memberSettings.serverNameSelect == OnOffNone.Off
+						? null
+						: memberSettings.serverNameSelect == OnOffNone.On
+							? memberSettings.serverName
+							: undefined,
+				avatar_url:
+					memberSettings.serverAvatarSelect == OnOffNone.Off
+						? null
+						: memberSettings.serverAvatarSelect == OnOffNone.On
+							? memberSettings.serverAvatar
+							: undefined
+			})
+		});
+		if (res.ok) console.log(await res.json());
 	};
 </script>
 
