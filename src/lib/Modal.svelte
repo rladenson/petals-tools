@@ -9,9 +9,11 @@
 		if (shown === true) showModal();
 	});
 
-	const hideModal = () => {
-		shown = false;
-		modalShown.value = false;
+	const hideModal = (e: Event) => {
+		if (e.target instanceof Element && e.target.classList.contains('close')) {
+			shown = false;
+			modalShown.value = false;
+		}
 	};
 	const showModal = () => {
 		shown = true;
@@ -21,23 +23,25 @@
 </script>
 
 {#if shown}
-	<div class="absolute bottom-0 flex h-full w-full items-center justify-center bg-black/20">
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="close absolute bottom-0 flex h-full w-full items-center justify-center bg-black/20" onclick={hideModal}>
 		<div class="flex h-fit w-fit max-w-96 flex-col rounded bg-white p-5">
-			<button class="self-end" aria-label="Close Modal" onclick={hideModal}>
+			<button class="close self-end" aria-label="Close Modal" onclick={hideModal}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke-width="1.5"
 					stroke="currentColor"
-					class="size-6"
+					class="close size-6"
 					><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg
 				>
 			</button>
 			<h1 class="text-2xl">{title}</h1>
 			<div class="text-l">{body}</div>
 			{#if data}
-				<div class="table border-collapse border mt-3">
+				<div class="mt-3 table border-collapse border">
 					<div class="table-header-group">
 						<div class="table-row">
 							<div class="table-cell border">
