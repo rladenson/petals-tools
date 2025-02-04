@@ -9,8 +9,13 @@
 		if (shown === true) showModal();
 	});
 
-	const hideModal = (e: Event) => {
-		if (e.target instanceof Element && e.target.classList.contains('close')) {
+	const hideModal = (e?: Event) => {
+		if (e?.target instanceof Element) {
+			if (e.target.classList.contains('close')) {
+				shown = false;
+				modalShown.value = false;
+			}
+		} else {
 			shown = false;
 			modalShown.value = false;
 		}
@@ -20,12 +25,21 @@
 		modalShown.value = true;
 	};
 	let hideData = $state(true);
+
+	const onKeyDown = (e: KeyboardEvent) => {
+		if (e.key == 'Escape' && shown) hideModal();
+	};
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 {#if shown}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="close absolute bottom-0 flex h-full w-full items-center justify-center bg-black/20" onclick={hideModal}>
+	<div
+		class="close absolute bottom-0 flex h-full w-full items-center justify-center bg-black/20"
+		onclick={hideModal}
+	>
 		<div class="flex h-fit w-fit max-w-96 flex-col rounded bg-white p-5">
 			<button class="close self-end" aria-label="Close Modal" onclick={hideModal}>
 				<svg
@@ -74,7 +88,7 @@
 										</svg>
 									{/if}
 								</button>
-								Data:
+								Data
 							</div>
 						</div>
 					</div>
