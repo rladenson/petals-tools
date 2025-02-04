@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { AutoproxyEnum, baseURL } from '$lib';
+	import Modal from '$lib/Modal.svelte';
 	import { TokenValidation } from '$lib/token.svelte';
 	const { token, serverId } = $props();
+	let modalTitle = $state(''),
+		modalBody = $state(''),
+		modalData = $state('');
 
 	let autoproxySettings = $state({
 		autoproxyMode: AutoproxyEnum.None,
@@ -37,8 +41,14 @@
 						: autoproxySettings.autoproxyMember
 			})
 		});
-		if (res.ok) console.log(await res.json());
+		if (res.ok) {
+			modalTitle = 'Success!';
+			modalBody = 'Autoproxy Settings changed in server ' + serverId.toString();
+			modalData = await res.json();
+			shown = true;
+		}
 	};
+	let shown = $state(false);
 </script>
 
 <form class="m-4 flex w-fit flex-col rounded bg-blue-100 p-6 pt-4" onsubmit={submitAutoproxy}>
@@ -78,3 +88,5 @@
 		disabled={autoproxySettingsInvalid}
 	/>
 </form>
+
+<Modal title={modalTitle} body={modalBody} data={modalData} bind:shown />

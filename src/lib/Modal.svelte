@@ -37,7 +37,7 @@
 			<h1 class="text-2xl">{title}</h1>
 			<div class="text-l">{body}</div>
 			{#if data}
-				<div class="table border-collapse border">
+				<div class="table border-collapse border mt-3">
 					<div class="table-header-group">
 						<div class="table-row">
 							<div class="table-cell border">
@@ -78,7 +78,7 @@
 				<div class="table-row-group {hideData ? 'h-0 overflow-clip' : ''}">
 					<div class="table-row">
 						<div class="table-cell border">
-							{JSON.stringify(data).replaceAll(/(?<=\"[,:])(?=\")/g, ' ')}
+							{JSON.stringify(data).replaceAll(/(?<=(\"|null)[,:])(?=\")/g, ' ')}
 						</div>
 					</div>
 				</div>

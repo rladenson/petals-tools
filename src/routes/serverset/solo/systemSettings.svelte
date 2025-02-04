@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { baseURL, OnOffNone } from '$lib';
+	import Modal from '$lib/Modal.svelte';
 	import { TokenValidation } from '$lib/token.svelte';
 	const { token, serverId } = $props();
+	let modalTitle = $state(''),
+		modalBody = $state(''),
+		modalData = $state('');
 
 	let systemSettings = $state({
 		proxyingEnabled: OnOffNone.None,
@@ -46,8 +50,14 @@
 							: undefined
 			})
 		});
-		if (res.ok) console.log(await res.json());
+		if (res.ok) {
+			modalTitle = 'Success!';
+			modalBody = 'System Settings changed in server ' + serverId.toString();
+			modalData = await res.json();
+			shown = true;
+		}
 	};
+	let shown = $state(false);
 </script>
 
 <form class="m-4 flex w-fit flex-col rounded bg-blue-100 p-6 pt-4" onsubmit={submitSystem}>
@@ -106,3 +116,5 @@
 		disabled={systemSettingsInvalid}
 	/>
 </form>
+
+<Modal title={modalTitle} body={modalBody} data={modalData} bind:shown />
