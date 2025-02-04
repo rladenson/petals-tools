@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { setContext } from 'svelte';
 	import '../app.css';
 	let { children } = $props();
 
@@ -7,10 +8,13 @@
 	function toggleSidebar() {
 		showMenu = !showMenu;
 	}
+
+	const modalShown = $state({ value: false });
+	setContext('modalShown', modalShown);
 </script>
 
-<div class="flex h-screen flex-col">
-	<header class="bg-blue-500 text-white sticky top-0 z-50">
+<div class="flex h-screen flex-col {modalShown.value ? 'overflow-hidden' : ''}">
+	<header class="sticky top-0 z-50 bg-blue-500 text-white">
 		<nav class="mx-auto flex items-center justify-between p-2" aria-label="Global">
 			<div class="flex lg:flex-1">
 				<button onclick={toggleSidebar} class="-m-1.5 p-1.5">
