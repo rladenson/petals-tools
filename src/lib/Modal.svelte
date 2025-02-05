@@ -1,7 +1,16 @@
+<script module>
+	export type ModalData = {
+		title: string;
+		body: string;
+		data: string | undefined;
+		statusCode: number;
+	};
+</script>
+
 <script lang="ts">
 	import { getContext } from 'svelte';
 
-	let { title, body, data = null, shown = $bindable(false) } = $props();
+	let { data, shown = $bindable(false) } = $props();
 
 	const modalShown: { value: boolean } = getContext('modalShown');
 
@@ -37,10 +46,16 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
-		class="close absolute bottom-0 flex h-full w-full items-center justify-center bg-black/20"
+		class="close absolute bottom-0 z-10 flex h-full w-full items-center justify-center bg-black/20"
 		onclick={hideModal}
 	>
-		<div class="flex h-fit w-fit max-w-96 flex-col rounded bg-white p-5">
+		<div
+			class="flex h-fit w-fit max-w-96 flex-col rounded {data.statusCode == 1
+				? 'bg-green-100'
+				: data.statusCode == 2
+					? 'bg-red-100'
+					: 'bg-white'} p-5"
+		>
 			<button class="close self-end" aria-label="Close Modal" onclick={hideModal}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -52,13 +67,13 @@
 					><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg
 				>
 			</button>
-			<h1 class="text-2xl">{title}</h1>
-			<div class="text-l">{body}</div>
-			{#if data}
-				<div class="mt-3 table border-collapse border">
+			<h1 class="text-2xl">{data.title}</h1>
+			<div class="text-l">{data.body}</div>
+			{#if data.data}
+				<div class="mt-3 table border-collapse border border-stone-300">
 					<div class="table-header-group">
 						<div class="table-row">
-							<div class="table-cell border">
+							<div class="table-cell border border-stone-300">
 								<button onclick={() => (hideData = !hideData)} aria-label="Toggle Data Shown">
 									{#if hideData}
 										<svg
@@ -95,8 +110,8 @@
 				</div>
 				<div class="table-row-group {hideData ? 'h-0 overflow-clip' : ''}">
 					<div class="table-row">
-						<div class="table-cell border">
-							{JSON.stringify(data).replaceAll(/(?<=(\"|null)[,:])(?=\")/g, ' ')}
+						<div class="table-cell border border-stone-300">
+							{JSON.stringify(data.data).replaceAll(/(?<=(\"|null|true|false|\d+)[,:])(?=\")/g, ' ')}
 						</div>
 					</div>
 				</div>

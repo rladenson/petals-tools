@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { baseURL, OnOffNone } from '$lib';
 	import type { ServerId } from '$lib/guildId.svelte';
-	import Modal from '$lib/Modal.svelte';
+	import Modal, { type ModalData } from '$lib/Modal.svelte';
 	import { TokenValidation, type Token } from '$lib/token.svelte';
 	import { getContext } from 'svelte';
 	const token: Token = getContext('token');
 	const serverId: ServerId = getContext('serverId');
 
-	let modalTitle = $state(''),
-		modalBody = $state(''),
-		modalData = $state('');
+	let modalData = $state({} as ModalData);
 
 	let systemSettings = $state({
 		proxyingEnabled: OnOffNone.None,
@@ -54,10 +52,38 @@
 							: undefined
 			})
 		});
+		const body = await res.json();
 		if (res.ok) {
-			modalTitle = 'Success!';
-			modalBody = 'System Settings changed in server ' + serverId.id.toString();
-			modalData = await res.json();
+			modalData.title = 'Success!';
+			modalData.body = 'System Settings changed in server ' + serverId.id.toString();
+			modalData.data = await res.json();
+			modalData.statusCode = 1;
+			shown = true;
+		} else if (res.status == 404 && body.code == 20009) {
+			modalData.title = 'Error: No Info Set';
+			modalData.body =
+				'Cannot set server info. In order to set server info your system must either have prior (system level) server settings set in designated server or must have had your system card pulled up in designated server.';
+			modalData.data = undefined;
+			modalData.statusCode = 2;
+			shown = true;
+		} else if (res.status == 400 && body.code == 40001) {
+			modalData.title = 'Error in Data';
+			modalData.body = 'Please fix error or contact petalss_tm on Discord for help.';
+			modalData.data = body.errors;
+			modalData.statusCode = 2;
+			shown = true;
+		} else if (res.status == 401) {
+			modalData.title = 'Error';
+			modalData.body = 'Please check your token.';
+			modalData.data = undefined;
+			modalData.statusCode = 2;
+			shown = true;
+		} else {
+			modalData.title = 'Something Went Wrong';
+			modalData.body =
+				'Please try again later. If this error persists, please contact petalss_tm on Discord.';
+			modalData.data = body;
+			modalData.statusCode = 2;
 			shown = true;
 		}
 	};
@@ -121,4 +147,4 @@
 	/>
 </form>
 
-<Modal title={modalTitle} body={modalBody} data={modalData} bind:shown />
+<Modal data={modalData} bind:shown />
