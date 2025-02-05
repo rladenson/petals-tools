@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
 	import '../app.css';
+	import { afterNavigate } from '$app/navigation';
 	let { children } = $props();
 
 	let showMenu = $state(false);
@@ -11,6 +12,8 @@
 
 	const modalShown = $state({ value: false });
 	setContext('modalShown', modalShown);
+
+	afterNavigate(() => (showMenu = false));
 </script>
 
 <div class="flex h-screen flex-col {modalShown.value ? 'overflow-hidden' : ''}">
