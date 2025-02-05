@@ -4,6 +4,7 @@
 	import { createToken } from '$lib/token.svelte';
 	import { setContext } from 'svelte';
 	let { children } = $props();
+	import { page } from '$app/state';
 
 	const token = createToken();
 	setContext('token', token);
@@ -69,9 +70,24 @@
 		<span class="mt-2 text-sm text-rose-700" id="serverIdError">{serverIdError}</span>
 	</form>
 	<nav class="m-4 flex">
-		<a href="/serverset/solo" class="m-2 rounded bg-blue-500 p-2 text-white">System and Member</a>
-		<a href="/serverset/bulk" class="m-2 rounded bg-blue-500 p-2 text-white">Bulk Member</a>
-		<a href="/serverset/templates" class="m-2 rounded bg-blue-500 p-2 text-white">Name Templates</a>
+		<a
+			href="/serverset/solo"
+			class="m-2 rounded {page.url.pathname.match(/\/solo$/)
+				? 'bg-blue-800/80'
+				: 'bg-blue-500'} p-2 text-white">System and Member</a
+		>
+		<a
+			href="/serverset/bulk"
+			class="m-2 rounded {page.url.pathname.match(/\/bulk$/)
+				? 'bg-blue-800/80'
+				: 'bg-blue-500'} p-2 text-white">Bulk Member</a
+		>
+		<a
+			href="/serverset/templates"
+			class="m-2 rounded {page.url.pathname.match(/\/templates$/)
+				? 'bg-blue-800/80'
+				: 'bg-blue-500'} p-2 text-white">Name Templates</a
+		>
 	</nav>
 
 	{@render children()}
