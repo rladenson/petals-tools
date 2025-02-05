@@ -52,7 +52,7 @@
 		if (res.ok) {
 			modalData.title = 'Success!';
 			modalData.body = `Member Settings for member ${memberSettings.memberId} changed in server ${serverId.id.toString()}`;
-			modalData.data = await res.json();
+			modalData.data = body;
 			modalData.statusCode = 1;
 			shown = true;
 		} else if (res.status == 404 && body.code == 20010) {
