@@ -2,7 +2,13 @@
 	import { AutoproxyEnum, baseURL } from '$lib';
 	import Modal from '$lib/Modal.svelte';
 	import { TokenValidation } from '$lib/token.svelte';
-	const { token, serverId } = $props();
+	import { getContext } from 'svelte';
+	const token: {
+		value: string | undefined;
+		readonly validate: TokenValidation;
+	} = getContext('token');
+	const serverId: { id: string } = getContext('serverId');
+
 	let modalTitle = $state(''),
 		modalBody = $state(''),
 		modalData = $state('');
@@ -13,7 +19,7 @@
 	});
 	let autoproxySettingsInvalid = $derived(
 		token.validate != TokenValidation.Valid ||
-			serverId == '' ||
+			serverId.id == '' ||
 			autoproxySettings.autoproxyMode == AutoproxyEnum.None ||
 			(autoproxySettings.autoproxyMode == AutoproxyEnum.Front &&
 				autoproxySettings.autoproxyMember == '') ||
@@ -23,12 +29,12 @@
 	);
 	let submitAutoproxy = async (e: Event) => {
 		e.preventDefault();
-		const res = await fetch(baseURL + `systems/@me/autoproxy?guild_id=${serverId}`, {
+		const res = await fetch(baseURL + `systems/@me/autoproxy?guild_id=${serverId.id}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: token.value,
 				'Content-Type': 'application/json'
-			},
+			} as unknown as Headers,
 			body: JSON.stringify({
 				autoproxy_mode: autoproxySettings.autoproxyMode,
 				autoproxy_member:
@@ -43,7 +49,7 @@
 		});
 		if (res.ok) {
 			modalTitle = 'Success!';
-			modalBody = 'Autoproxy Settings changed in server ' + serverId.toString();
+			modalBody = 'Autoproxy Settings changed in server ' + serverId.id.toString();
 			modalData = await res.json();
 			shown = true;
 		}

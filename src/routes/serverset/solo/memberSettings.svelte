@@ -2,7 +2,13 @@
 	import { baseURL, OnOffNone } from '$lib';
 	import Modal from '$lib/Modal.svelte';
 	import { TokenValidation } from '$lib/token.svelte';
-	const { token, serverId } = $props();
+	import { getContext } from 'svelte';
+	const token: {
+		value: string | undefined;
+		readonly validate: TokenValidation;
+	} = getContext('token');
+	const serverId: { id: string } = getContext('serverId');
+
 	let modalTitle = $state(''),
 		modalBody = $state(''),
 		modalData = $state('');
@@ -16,7 +22,7 @@
 	});
 	let memberSettingsInvalid = $derived(
 		token.validate != TokenValidation.Valid ||
-			serverId == '' ||
+			serverId.id == '' ||
 			memberSettings.memberId.match(/^(?:[A-Za-z][- ]*){5,6}$/) == null ||
 			(memberSettings.serverNameSelect == OnOffNone.None &&
 				memberSettings.serverAvatarSelect == OnOffNone.None) ||
@@ -25,12 +31,12 @@
 	);
 	let submitMember = async (e: Event) => {
 		e.preventDefault();
-		const res = await fetch(baseURL + `members/${memberSettings.memberId}/guilds/${serverId}`, {
+		const res = await fetch(baseURL + `members/${memberSettings.memberId}/guilds/${serverId.id}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: token.value,
 				'Content-Type': 'application/json'
-			},
+			} as unknown as Headers,
 			body: JSON.stringify({
 				display_name:
 					memberSettings.serverNameSelect == OnOffNone.Off
@@ -48,7 +54,7 @@
 		});
 		if (res.ok) {
 			modalTitle = 'Success!';
-			modalBody = `Member Settings for member ${memberSettings.memberId} changed in server ${serverId.toString()}`;
+			modalBody = `Member Settings for member ${memberSettings.memberId} changed in server ${serverId.id.toString()}`;
 			modalData = await res.json();
 			shown = true;
 		}

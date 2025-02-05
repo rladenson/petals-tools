@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { TokenValidation } from '$lib/token.svelte';
-	let { children, data } = $props();
+	import { createServerId } from "$lib/guildId.svelte";
+	import { createToken } from "$lib/token.svelte";
+	import { setContext } from 'svelte';
+	let { children } = $props();
 
-	const token = data.token;
+	const token = createToken();
+	setContext('token', token);
 	let tokenError = $state('');
 	$effect(() => {
 		switch (token.validate) {
@@ -22,7 +26,8 @@
 		tokenInput.setCustomValidity(tokenError);
 	});
 
-	const serverId = data.serverId;
+	const serverId = createServerId();
+	setContext('serverId', serverId);
 	let serverIdError = $state('');
 	$effect(() => {
 		if (serverId.id !== '') {

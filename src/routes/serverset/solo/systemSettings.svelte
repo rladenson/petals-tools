@@ -2,7 +2,13 @@
 	import { baseURL, OnOffNone } from '$lib';
 	import Modal from '$lib/Modal.svelte';
 	import { TokenValidation } from '$lib/token.svelte';
-	const { token, serverId } = $props();
+	import { getContext } from 'svelte';
+	const token: {
+		value: string | undefined;
+		readonly validate: TokenValidation;
+	} = getContext('token');
+	const serverId: { readonly id: string } = getContext('serverId');
+
 	let modalTitle = $state(''),
 		modalBody = $state(''),
 		modalData = $state('');
@@ -15,7 +21,7 @@
 	});
 	let systemSettingsInvalid = $derived(
 		token.validate != TokenValidation.Valid ||
-			serverId == '' ||
+			serverId.id == '' ||
 			(systemSettings.proxyingEnabled == OnOffNone.None &&
 				systemSettings.tagEnabled == OnOffNone.None &&
 				systemSettings.serverTagSelect == OnOffNone.None) ||
@@ -23,12 +29,12 @@
 	);
 	let submitSystem = async (e: Event) => {
 		e.preventDefault();
-		const res = await fetch(baseURL + `systems/@me/guilds/${serverId}`, {
+		const res = await fetch(baseURL + `systems/@me/guilds/${serverId.id}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: token.value,
 				'Content-Type': 'application/json'
-			},
+			} as unknown as Headers,
 			body: JSON.stringify({
 				tag:
 					systemSettings.serverTagSelect == OnOffNone.Off
@@ -52,7 +58,7 @@
 		});
 		if (res.ok) {
 			modalTitle = 'Success!';
-			modalBody = 'System Settings changed in server ' + serverId.toString();
+			modalBody = 'System Settings changed in server ' + serverId.id.toString();
 			modalData = await res.json();
 			shown = true;
 		}
