@@ -119,6 +119,10 @@
 	</div>
 </div>
 
+<svelte:head>
+	<title>Petal's Tools</title>
+</svelte:head>
+
 <style lang="postcss">
 	:global(body) {
 		@apply bg-blue-200;

@@ -92,3 +92,7 @@
 
 	{@render children()}
 </div>
+
+<svelte:head>
+	<title>Serverset | Petal's Tools</title>
+</svelte:head>
