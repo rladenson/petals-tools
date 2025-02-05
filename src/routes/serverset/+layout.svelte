@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TokenValidation } from '$lib/token.svelte';
-	import { createServerId } from "$lib/guildId.svelte";
-	import { createToken } from "$lib/token.svelte";
+	import { createServerId } from '$lib/guildId.svelte';
+	import { createToken } from '$lib/token.svelte';
 	import { setContext } from 'svelte';
 	let { children } = $props();
 
