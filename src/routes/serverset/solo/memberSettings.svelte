@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { baseURL, OnOffNone } from '$lib';
+	import type { ServerId } from '$lib/guildId.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { TokenValidation } from '$lib/token.svelte';
+	import { TokenValidation, type Token } from '$lib/token.svelte';
 	import { getContext } from 'svelte';
-	const token: {
-		value: string | undefined;
-		readonly validate: TokenValidation;
-	} = getContext('token');
-	const serverId: { id: string } = getContext('serverId');
+	const token: Token = getContext('token');
+	const serverId: ServerId = getContext('serverId');
 
 	let modalTitle = $state(''),
 		modalBody = $state(''),

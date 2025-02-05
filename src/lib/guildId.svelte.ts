@@ -1,4 +1,4 @@
-export function createServerId() {
+export function createServerId(): ServerId {
 	let serverIdRaw = $state('');
 	const serverId = $derived.by(() => {
 		const match = serverIdRaw.match(
@@ -19,3 +19,8 @@ export function createServerId() {
 		}
 	};
 }
+
+export type ServerId = {
+	readonly id: string;
+	raw: string;
+};
