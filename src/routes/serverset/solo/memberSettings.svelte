@@ -25,29 +25,44 @@
 			(memberSettings.serverNameSelect == OnOffNone.On && memberSettings.serverName == '') ||
 			(memberSettings.serverAvatarSelect == OnOffNone.On && memberSettings.serverAvatar == '')
 	);
+	$effect(() => {
+		if (
+			memberSettings.memberId != '' &&
+			memberSettings.memberId.match(/^(?:[A-Za-z][- ]*){5,6}$/) == null
+		) {
+			(document.getElementById('member') as HTMLObjectElement).setCustomValidity(
+				'Invalid Member ID'
+			);
+		} else {
+			(document.getElementById('member') as HTMLObjectElement).setCustomValidity('');
+		}
+	});
 	let submitMember = async (e: Event) => {
 		e.preventDefault();
-		const res = await fetch(baseURL + `members/${memberSettings.memberId}/guilds/${serverId.id}`, {
-			method: 'PATCH',
-			headers: {
-				Authorization: token.value,
-				'Content-Type': 'application/json'
-			} as unknown as Headers,
-			body: JSON.stringify({
-				display_name:
-					memberSettings.serverNameSelect == OnOffNone.Off
-						? null
-						: memberSettings.serverNameSelect == OnOffNone.On
-							? memberSettings.serverName
-							: undefined,
-				avatar_url:
-					memberSettings.serverAvatarSelect == OnOffNone.Off
-						? null
-						: memberSettings.serverAvatarSelect == OnOffNone.On
-							? memberSettings.serverAvatar
-							: undefined
-			})
-		});
+		const res = await fetch(
+			baseURL + `members/${memberSettings.memberId.trim()}/guilds/${serverId.id}`,
+			{
+				method: 'PATCH',
+				headers: {
+					Authorization: token.value,
+					'Content-Type': 'application/json'
+				} as unknown as Headers,
+				body: JSON.stringify({
+					display_name:
+						memberSettings.serverNameSelect == OnOffNone.Off
+							? null
+							: memberSettings.serverNameSelect == OnOffNone.On
+								? memberSettings.serverName
+								: undefined,
+					avatar_url:
+						memberSettings.serverAvatarSelect == OnOffNone.Off
+							? null
+							: memberSettings.serverAvatarSelect == OnOffNone.On
+								? memberSettings.serverAvatar
+								: undefined
+				})
+			}
+		);
 		const body = await res.json();
 		if (res.ok) {
 			modalData.title = 'Success!';
@@ -91,7 +106,7 @@
 	<label class="text-l text-gray-800" for="member">Member:</label>
 	<input
 		type="text"
-		class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
+		class="mt-1 block rounded-md border-gray-300 shadow-sm invalid:border-red-500 invalid:ring invalid:ring-red-500/50 focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
 		id="member"
 		name="member"
 		placeholder="Member ID"
