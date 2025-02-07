@@ -73,45 +73,50 @@
 				<div class="mt-3 table border-collapse border border-stone-300">
 					<div class="table-header-group">
 						<div class="table-row">
-							<div class="table-cell border border-stone-300">
-								<button onclick={() => (hideData = !hideData)} aria-label="Toggle Data Shown">
-									{#if hideData}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-											class="inline size-6"
-										>
-											<path
-												fill-rule="evenodd"
-												d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-												clip-rule="evenodd"
-											/>
-										</svg>
-									{:else}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 -6 24 24"
-											fill="currentColor"
-											class="size-6"
-										>
-											<path
-												fill-rule="evenodd"
-												d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z"
-												clip-rule="evenodd"
-											/>
-										</svg>
-									{/if}
-								</button>
+							<button
+								onclick={() => (hideData = !hideData)}
+								aria-label="Toggle Data Shown"
+								class="table-cell w-full border border-stone-300 text-left"
+							>
+								{#if hideData}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="inline size-6"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								{:else}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="inline size-6"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								{/if}
 								Data
-							</div>
+							</button>
 						</div>
 					</div>
 				</div>
 				<div class="table-row-group {hideData ? 'h-0 overflow-clip' : ''}">
 					<div class="table-row">
 						<div class="table-cell border border-stone-300">
-							{JSON.stringify(data.data).replaceAll(/(?<=(\"|null|true|false|\d+)[,:])(?=\")/g, ' ')}
+							{JSON.stringify(data.data).replaceAll(
+								/(?<=(\"|null|true|false|\d+)[,:])(?=\")/g,
+								' '
+							)}
 						</div>
 					</div>
 				</div>
