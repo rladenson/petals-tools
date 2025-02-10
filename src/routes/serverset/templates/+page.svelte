@@ -5,9 +5,11 @@
 	const templates: NameTemplateList = getContext('templates');
 </script>
 
-<h1 class="text-2xl">Templates</h1>
+<h2 class="text-2xl">Templates</h2>
 <div>(Note: These are specific to this site)</div>
-{#if templates.templates.length > 0}
+{#if templates.loading}
+	<span class="p-10 italic">Loading...</span>
+{:else if templates.templates.length > 0}
 	<div class="m-5 rounded-lg border-4 border-indigo-300">
 		{#each templates.templates as template, i}
 			<div
@@ -51,7 +53,7 @@
 	onclick={() => {
 		templates.addTemplate();
 	}}
-	class="p-2 rounded bg-blue-500 text-white"
+	class="rounded bg-blue-500 p-2 text-white"
 >
 	Add Template
 </button>

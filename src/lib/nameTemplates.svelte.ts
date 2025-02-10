@@ -7,9 +7,15 @@ export type NameTemplate = {
 
 export class NameTemplateList {
 	private _templates: Array<NameTemplate> = $state([]);
+	private _loading: boolean = $state(true);
 
 	public constructor() {
-		this._templates = browser ? JSON.parse(localStorage?.getItem('templates') ?? '[]') : [];
+		this.doConstruction();
+	}
+
+	private async doConstruction() {
+		this._templates = await (browser ? JSON.parse(localStorage?.getItem('templates') ?? '[]') : []);
+		this._loading = false;
 	}
 
 	public save() {
@@ -47,5 +53,9 @@ export class NameTemplateList {
 	public removeTemplate(index: number) {
 		this._templates.splice(index, 1);
 		this.save();
+	}
+
+	public get loading() {
+		return this._loading;
 	}
 }
