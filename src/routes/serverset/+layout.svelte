@@ -55,8 +55,9 @@
 			focus:ring-indigo-400 focus:ring-opacity-50"
 			id="token"
 			type="password"
-			placeholder="Token"
+			placeholder={token.loading ? 'Loading...' : 'Token'}
 			bind:value={token.value}
+			disabled={token.loading}
 		/>
 		<span class="mt-2 text-sm text-rose-700" id="tokenError">{tokenError}</span>
 		<label class="mb-0.5 mt-2 block text-sm font-bold text-gray-700" for="serverId">

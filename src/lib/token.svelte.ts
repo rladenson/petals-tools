@@ -11,6 +11,7 @@ export function createToken(): Token {
 		else if (token.length > 64) return TokenValidation.TooLong;
 		else return TokenValidation.Valid;
 	});
+	const loading = $derived(token === undefined);
 
 	return {
 		get value() {
@@ -22,6 +23,9 @@ export function createToken(): Token {
 		},
 		get validate() {
 			return validate;
+		},
+		get loading() {
+			return loading;
 		}
 	};
 }
@@ -29,6 +33,7 @@ export function createToken(): Token {
 export type Token = {
 	value: string | undefined;
 	readonly validate: TokenValidation;
+	readonly loading: boolean;
 };
 
 export enum TokenValidation {
