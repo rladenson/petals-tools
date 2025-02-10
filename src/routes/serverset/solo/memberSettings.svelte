@@ -2,10 +2,12 @@
 	import { baseURL, OnOffNone } from '$lib';
 	import type { ServerId } from '$lib/guildId.svelte';
 	import Modal, { type ModalData } from '$lib/Modal.svelte';
+	import type { NameTemplateList } from '$lib/nameTemplates.svelte';
 	import { TokenValidation, type Token } from '$lib/token.svelte';
 	import { getContext } from 'svelte';
 	const token: Token = getContext('token');
 	const serverId: ServerId = getContext('serverId');
+	const templates: NameTemplateList = getContext('templates');
 
 	let modalData = $state({} as ModalData);
 
@@ -99,6 +101,12 @@
 		}
 	};
 	let shown = $state(false);
+
+	let nameTemplateLoader = $state(-1);
+	const loadNameTemplate = () => {
+		memberSettings.serverName = templates.templates[nameTemplateLoader].template;
+		nameTemplateLoader = -1;
+	};
 </script>
 
 <form class="m-4 flex w-fit flex-col rounded bg-blue-100 p-6 pt-4" onsubmit={submitMember}>
@@ -136,6 +144,18 @@
 		class="text-l order-1 text-gray-800 peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
 		for="serverName">Server Name:</label
 	>
+	<select
+		aria-label="Select Name Template to Load"
+		class="order-3 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:text-gray-500 disabled:opacity-60"
+		onchange={loadNameTemplate}
+		bind:value={nameTemplateLoader}
+		disabled={memberSettings.serverNameSelect != OnOffNone.On}
+	>
+		<option value={-1}>Load Name Template</option>
+		{#each templates.templates as { name }, i}
+			<option value={i}>{name}</option>
+		{/each}
+	</select>
 	<label class="text-l order-3 text-gray-800" for="serverAvatarSelect">Server Avatar Action:</label>
 	<select
 		class="order-3 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-400 focus:ring-opacity-50"
