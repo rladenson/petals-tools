@@ -5,6 +5,7 @@
 	import { setContext } from 'svelte';
 	let { children } = $props();
 	import { page } from '$app/state';
+	import { NameTemplateList } from '$lib/nameTemplates.svelte';
 
 	const token = createToken();
 	setContext('token', token);
@@ -39,6 +40,9 @@
 		let serverIdInput: HTMLObjectElement = document.getElementById('serverId') as HTMLObjectElement;
 		serverIdInput.setCustomValidity(serverIdError);
 	});
+
+	const templates = $state(new NameTemplateList());
+	setContext('templates', templates);
 </script>
 
 <div class="flex flex-col items-center">
