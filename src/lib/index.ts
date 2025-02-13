@@ -13,5 +13,3 @@ export enum AutoproxyEnum {
 	Latch = 'latch',
 	Member = 'member'
 }
-
-export const baseURL = 'https://api.pluralkit.me/v2/';

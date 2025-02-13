@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { AutoproxyEnum, baseURL } from '$lib';
+	import { AutoproxyEnum } from '$lib';
+	import type { apiUrlObj } from '$lib/apiURL.svelte';
 	import type { ServerId } from '$lib/guildId.svelte';
 	import Modal, { type ModalData } from '$lib/Modal.svelte';
 	import { TokenValidation, type Token } from '$lib/token.svelte';
 	import { getContext } from 'svelte';
 	const token: Token = getContext('token');
 	const serverId: ServerId = getContext('serverId');
+	const apiURL: apiUrlObj = getContext('apiUrl');
 
 	let modalData = $state({} as ModalData);
 
@@ -25,7 +27,7 @@
 	);
 	let submitAutoproxy = async (e: Event) => {
 		e.preventDefault();
-		const res = await fetch(baseURL + `systems/@me/autoproxy?guild_id=${serverId.id}`, {
+		const res = await fetch(apiURL.value + `systems/@me/autoproxy?guild_id=${serverId.id}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: token.value,

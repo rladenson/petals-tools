@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { baseURL, OnOffNone } from '$lib';
+	import { OnOffNone } from '$lib';
+	import type { apiUrlObj } from '$lib/apiURL.svelte';
 	import type { ServerId } from '$lib/guildId.svelte';
 	import Modal, { type ModalData } from '$lib/Modal.svelte';
 	import type { NameTemplateList } from '$lib/nameTemplates.svelte';
@@ -8,6 +9,7 @@
 	const token: Token = getContext('token');
 	const serverId: ServerId = getContext('serverId');
 	const templates: NameTemplateList = getContext('templates');
+	const apiURL: apiUrlObj = getContext('apiUrl');
 
 	let modalData = $state({} as ModalData);
 
@@ -42,7 +44,7 @@
 	let submitMember = async (e: Event) => {
 		e.preventDefault();
 		const res = await fetch(
-			baseURL + `members/${memberSettings.memberId.trim()}/guilds/${serverId.id}`,
+			apiURL.value + `members/${memberSettings.memberId.trim()}/guilds/${serverId.id}`,
 			{
 				method: 'PATCH',
 				headers: {
