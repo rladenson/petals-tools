@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { createApiUrl } from '$lib/apiURL.svelte';
-	import { setContext } from 'svelte';
+	import type { apiUrlObj } from '$lib/apiURL.svelte';
+	import { getContext } from 'svelte';
 
-	const apiUrl = createApiUrl();
-	setContext('apiUrl', apiUrl);
+	const apiUrl: apiUrlObj = getContext('apiUrl');
 
 	let urlSelect = $state(apiUrl.whichUrl);
 
@@ -12,12 +11,12 @@
 	};
 
 	$effect(() => {
+		const el = document.getElementById('customURL');
+		if (!el) return;
 		if (apiUrl.customUrlValidity) {
-			(document.getElementById('customURL') as HTMLObjectElement).setCustomValidity('');
+			(el as HTMLObjectElement).setCustomValidity('');
 		} else {
-			(document.getElementById('customURL') as HTMLObjectElement).setCustomValidity(
-				'Invalid URL, falling back to Live URL'
-			);
+			(el as HTMLObjectElement).setCustomValidity('Invalid URL, falling back to Live URL');
 		}
 	});
 </script>

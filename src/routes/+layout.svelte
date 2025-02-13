@@ -2,6 +2,7 @@
 	import { setContext } from 'svelte';
 	import '../app.css';
 	import { afterNavigate } from '$app/navigation';
+	import { createApiUrl } from '$lib/apiURL.svelte';
 	let { children } = $props();
 
 	let showMenu = $state(false);
@@ -14,6 +15,9 @@
 	setContext('modalShown', modalShown);
 
 	afterNavigate(() => (showMenu = false));
+
+	const apiUrl = $state(createApiUrl());
+	setContext('apiUrl', apiUrl);
 </script>
 
 <div class="flex h-screen flex-col {modalShown.value ? 'overflow-hidden' : ''}">

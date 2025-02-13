@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 
-export function createApiUrl(): apiUrl {
+export function createApiUrl(): apiUrlObj {
 	let whichUrl: string | undefined = $state(
 		browser ? (localStorage.getItem('apiUrl') ?? 'liveUrl') : undefined
 	);
@@ -53,7 +53,7 @@ export function createApiUrl(): apiUrl {
 	};
 }
 
-export type apiUrl = {
+export type apiUrlObj = {
 	value: string | undefined;
 	readonly loading: boolean;
 	readonly whichUrl: string | undefined;
