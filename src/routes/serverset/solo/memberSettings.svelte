@@ -155,7 +155,9 @@
 	>
 		<option value={-1}>Load Name Template</option>
 		{#each templates.templates as { name }, i}
-			<option value={i}>{name}</option>
+			<option value={i}>
+				{typeof name == 'string' && name.trim().length > 0 ? name : `Template ${i + 1}`}
+			</option>
 		{/each}
 	</select>
 	<label class="text-l order-3 text-gray-800" for="serverAvatarSelect">Server Avatar Action:</label>
