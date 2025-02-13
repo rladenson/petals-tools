@@ -6,11 +6,11 @@
 </script>
 
 <h2 class="text-2xl">Templates</h2>
-<div>(Note: These are specific to this site)</div>
+<div class="m-2">(Note: These are specific to this site)</div>
 {#if templates.loading}
 	<span class="p-10 italic">Loading...</span>
 {:else if templates.templates.length > 0}
-	<div class="m-5 rounded-lg border-4 border-indigo-300">
+	<div class="m-5 mt-3 rounded-lg border-4 border-indigo-300">
 		{#each templates.templates as template, i}
 			<div
 				class="grid grid-cols-1 items-center sm:grid-cols-2 bg-indigo-{((i + 1) % 2) +
