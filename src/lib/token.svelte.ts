@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 
 export function createToken(): Token {
 	let token: string | undefined = $state(
-		browser ? (localStorage?.getItem('token') ?? undefined) : undefined
+		browser ? (localStorage?.getItem('token') ?? '') : undefined
 	);
 	const validate = $derived.by(() => {
 		if (token == '') return TokenValidation.IsEmpty;
