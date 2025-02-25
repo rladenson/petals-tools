@@ -61,7 +61,7 @@
 			<div class="hidden lg:flex lg:gap-x-12">
 				<a href="/serverset" class="text-sm/6 font-semibold">Server Settings</a>
 			</div>
-			<div class="hidden lg:flex lg:flex-1 lg:justify-end">
+			<div class="flex flex-1 justify-end">
 				<a href="/settings" class="text-sm/6 font-semibold" aria-label="Settings">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
