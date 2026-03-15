@@ -1,6 +1,7 @@
 <div class="p-5">
 	<h1 class="text-3xl">Petal's Tools</h1>
-	<a href="/serverset/solo" class="ml-3 text-blue-900 hover:text-blue-600">» Server Settings</a>
+	<a href="/serverset/solo" class="ml-3 text-blue-900 hover:text-blue-600">» Server Settings</a><br />
+	<a href="/avatar-download" class="ml-3 text-blue-900 hover:text-blue-600">» Avatar Download</a>
 	<p class="mt-5">
 		To review or suggest things message me on Discord (petalss_tm), to get help ask in the
 		<a
