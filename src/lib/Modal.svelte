@@ -4,13 +4,14 @@
 		body: string;
 		data: string | undefined;
 		statusCode: number;
+		useAltBody: unknown;
 	};
 </script>
 
 <script lang="ts">
 	import { getContext } from 'svelte';
 
-	let { data, shown = $bindable(false) } = $props();
+	let { data, shown = $bindable(false), altModalBody = $bindable() } = $props();
 
 	const modalShown: { value: boolean } = getContext('modalShown');
 
@@ -50,7 +51,7 @@
 		onclick={hideModal}
 	>
 		<div
-			class="flex h-fit w-fit max-w-96 flex-col rounded {data.statusCode == 1
+			class="flex h-fit w-fit max-w-2/3 flex-col rounded {data.statusCode == 1
 				? 'bg-green-100'
 				: data.statusCode == 2
 					? 'bg-red-100'
@@ -68,7 +69,10 @@
 				>
 			</button>
 			<h1 class="text-2xl">{data.title}</h1>
-			<div class="text-l">{data.body}</div>
+			<div class="text-l">
+				{#if data.useAltBody}{@render altModalBody(data.useAltBody)}
+				{:else}{data.body}{/if}
+			</div>
 			{#if data.data}
 				<div class="mt-3 table border-collapse border border-stone-300">
 					<div class="table-header-group">
@@ -114,7 +118,7 @@
 					<div class="table-row">
 						<div class="table-cell border border-stone-300">
 							{JSON.stringify(data.data).replaceAll(
-								/(?<=(\"|null|true|false|\d+)[,:])(?=\")/g,
+								/(?<=("|null|true|false|\d+)[,:])(?=")/g,
 								' '
 							)}
 						</div>

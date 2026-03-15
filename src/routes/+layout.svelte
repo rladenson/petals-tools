@@ -23,7 +23,7 @@
 <div class="flex h-screen flex-col {modalShown.value ? 'overflow-hidden' : ''}">
 	<header class="sticky top-0 z-50 bg-blue-500 text-white">
 		<nav class="mx-auto flex items-center justify-between p-2" aria-label="Global">
-			<div class="flex lg:flex-1">
+			<div class="flex flex-grow-0 justify-start">
 				<button onclick={toggleSidebar} class="-m-1.5 p-1.5">
 					<span class="sr-only">Your Company</span>
 					<svg
@@ -58,10 +58,15 @@
 					</svg>
 				</a>
 			</div>
-			<div class="hidden lg:flex lg:gap-x-12">
-				<a href="/serverset" class="text-sm/6 font-semibold">Server Settings</a>
+			<div class="hidden justify-around lg:flex lg:gap-x-12">
+				<div>
+					<a href="/serverset" class="text-sm/6 font-semibold">Server Settings</a>
+				</div>
+				<div>
+					<a href="/avatar-download" class="text-sm/6 font-semibold">Avatar Download</a>
+				</div>
 			</div>
-			<div class="flex flex-1 justify-end">
+			<div class="flex flex-grow-0 justify-end">
 				<a href="/settings" class="text-sm/6 font-semibold" aria-label="Settings">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -99,6 +104,11 @@
 						<li>
 							&nbsp;&nbsp;<a href="/serverset" class="text-sm/6 font-semibold"
 								>Server-Specific Settings</a
+							>
+						</li>
+						<li>
+							&nbsp;&nbsp;<a href="/avatar-download" class="text-sm/6 font-semibold"
+								>Avatar Downloader</a
 							>
 						</li>
 					</ul>
