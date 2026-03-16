@@ -104,6 +104,8 @@
 		loading = true;
 
 		images = [];
+		successful = [];
+		failed = [];
 
 		if (formatDetected === 'PluralKit') {
 			const systemImageFields = ['avatar_url', 'banner'];
@@ -352,7 +354,7 @@
 							if (e instanceof Error) {
 								//window.alert(e.message);
 								console.log(e.message);
-								successful.push({
+								failed.push({
 									imageType: field,
 									name: tupper.name,
 									id: tupper.id,
