@@ -172,17 +172,19 @@
 					{/if}
 				</div>
 			{/if}
-			<div id="buttons" class="mt-3">
-				<button
-					id="cancel"
-					class="m-1 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-					onclick={submitCancel}>Cancel</button
-				><button
-					id="submit"
-					class="m-1 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-					onclick={submitCancel}>Continue</button
-				>
-			</div>
+			{#if data.showSubmitCancel}
+				<div id="buttons" class="mt-3">
+					<button
+						id="cancel"
+						class="m-1 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+						onclick={submitCancel}>Cancel</button
+					><button
+						id="submit"
+						class="m-1 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+						onclick={submitCancel}>Continue</button
+					>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
