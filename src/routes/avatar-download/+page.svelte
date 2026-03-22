@@ -21,6 +21,7 @@
 	let avatarDownload: Blob | null | undefined = $state();
 	let successful = $state([] as successFail[]);
 	let failed = $state([] as successFail[]);
+	let cors = $state([] as successFail[]);
 
 	type successFail = {
 		imageType: string;
@@ -76,6 +77,7 @@
 			modalData.body = 'This tool can only accept one file at a time.';
 			modalData.statusCode = 2;
 			modalData.data = undefined;
+			modalData.useAltBody = undefined;
 			shown = true;
 		}
 		const list = new DataTransfer();
@@ -106,6 +108,7 @@
 		images = [];
 		successful = [];
 		failed = [];
+		cors = [];
 
 		if (formatDetected === 'PluralKit') {
 			const systemImageFields = ['avatar_url', 'banner'];
@@ -129,15 +132,25 @@
 						});
 					} catch (e) {
 						if (e instanceof Error) {
-							//window.alert(e.message);
-							console.log(e.message);
-							failed.push({
-								imageType: field,
-								name: fileContents.name,
-								id: fileContents.id,
-								url: fileContents[field],
-								ownerType: 'system'
-							});
+							if (e.message.includes('NetworkError')) {
+								cors.push({
+									imageType: field,
+									name: fileContents.name,
+									id: fileContents.id,
+									url: fileContents[field],
+									ownerType: 'system'
+								});
+							} else {
+								//window.alert(e.message);
+								console.log(e.message);
+								failed.push({
+									imageType: field,
+									name: fileContents.name,
+									id: fileContents.id,
+									url: fileContents[field],
+									ownerType: 'system'
+								});
+							}
 						}
 					}
 
@@ -175,15 +188,25 @@
 							});
 						} catch (e) {
 							if (e instanceof Error) {
-								//window.alert(e.message);
-								console.log(e.message);
-								failed.push({
-									imageType: field,
-									name: member.name,
-									id: member.id,
-									url: member[field],
-									ownerType: 'member'
-								});
+								if (e.message.includes('NetworkError')) {
+									cors.push({
+										imageType: field,
+										name: member.name,
+										id: member.id,
+										url: member[field],
+										ownerType: 'member'
+									});
+								} else {
+									//window.alert(e.message);
+									console.log(e.message);
+									failed.push({
+										imageType: field,
+										name: member.name,
+										id: member.id,
+										url: member[field],
+										ownerType: 'member'
+									});
+								}
 							}
 						}
 				}
@@ -223,15 +246,25 @@
 							});
 						} catch (e) {
 							if (e instanceof Error) {
-								//window.alert(e.message);
-								console.log(e.message);
-								failed.push({
-									imageType: field,
-									name: group.name,
-									id: group.id,
-									url: group[field],
-									ownerType: 'group'
-								});
+								if (e.message.includes('NetworkError')) {
+									cors.push({
+										imageType: field,
+										name: group.name,
+										id: group.id,
+										url: group[field],
+										ownerType: 'group'
+									});
+								} else {
+									//window.alert(e.message);
+									console.log(e.message);
+									failed.push({
+										imageType: field,
+										name: group.name,
+										id: group.id,
+										url: group[field],
+										ownerType: 'group'
+									});
+								}
 							}
 						}
 				}
@@ -258,15 +291,25 @@
 						});
 					} catch (e) {
 						if (e instanceof Error) {
-							//window.alert(e.message);
-							console.log(e.message);
-							failed.push({
-								imageType: field,
-								name: fileContents.user.name,
-								id: fileContents.user.id,
-								url: fileContents.user[field],
-								ownerType: 'user'
-							});
+							if (e.message.includes('NetworkError')) {
+								cors.push({
+									imageType: field,
+									name: fileContents.user.name,
+									id: fileContents.user.id,
+									url: fileContents.user[field],
+									ownerType: 'user'
+								});
+							} else {
+								//window.alert(e.message);
+								console.log(e.message);
+								failed.push({
+									imageType: field,
+									name: fileContents.user.name,
+									id: fileContents.user.id,
+									url: fileContents.user[field],
+									ownerType: 'user'
+								});
+							}
 						}
 					}
 
@@ -291,8 +334,9 @@
 							if (!res.ok) throw new Error(`Response status: ${res.status}`);
 							if (!res.headers.get('content-type')?.startsWith('image'))
 								throw new Error(`Received a ${res.type} instead of an image`);
+							console.log(fileNameSchema);
 							images.push({
-								name: `alters/${((alter[fileNameSchema] ?? alter.id) as string).replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `alters/${((alter[fileNameSchema] ?? alter.id) as string + "").replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -304,15 +348,25 @@
 							});
 						} catch (e) {
 							if (e instanceof Error) {
-								//window.alert(e.message);
-								console.log(e.message);
-								failed.push({
-									imageType: field,
-									name: alter.name,
-									id: alter.id,
-									url: alter[field],
-									ownerType: 'alter'
-								});
+								if (e.message.includes('NetworkError')) {
+									cors.push({
+										imageType: field,
+										name: alter.name,
+										id: alter.id,
+										url: alter[field],
+										ownerType: 'alter'
+									});
+								} else {
+									//window.alert(e.message);
+									console.log(e.message);
+									failed.push({
+										imageType: field,
+										name: alter.name,
+										id: alter.id,
+										url: alter[field],
+										ownerType: 'alter'
+									});
+								}
 							}
 						}
 				}
@@ -352,15 +406,25 @@
 							});
 						} catch (e) {
 							if (e instanceof Error) {
-								//window.alert(e.message);
-								console.log(e.message);
-								failed.push({
-									imageType: field,
-									name: tupper.name,
-									id: tupper.id,
-									url: tupper[field],
-									ownerType: 'tupper'
-								});
+								if (e.message.includes('NetworkError')) {
+									cors.push({
+										imageType: field,
+										name: tupper.name,
+										id: tupper.id,
+										url: tupper[field],
+										ownerType: 'tupper'
+									});
+								} else {
+									//window.alert(e.message);
+									console.log(e.message);
+									failed.push({
+										imageType: field,
+										name: tupper.name,
+										id: tupper.id,
+										url: tupper[field],
+										ownerType: 'tupper'
+									});
+								}
 							}
 						}
 				}
@@ -393,12 +457,41 @@
 		modalData.data = undefined;
 		shown = true;
 	};
+
+	const corsModal = () => {
+		modalData.title = 'CORS Error';
+		modalData.body = `The network request failed. This is likely due to the server your image is on not 
+		allowing requests from scripts (what this tool is). Possible alternatives that may work are 
+		https://github.com/greys-tools/pktools and https://irys.cc/pk/tiny/dlscript/`;
+		modalData.useAltBody = true;
+		altModalBody = corsModalBody;
+		modalData.statusCode = 0;
+		modalData.data = undefined;
+		shown = true;
+	};
 </script>
 
 {#snippet failedModalBody(target: successFail)}
 	Could not download {target.imageType} of {target.ownerType}
 	{target.name} ({target.id}) at the following URL:<br />
 	<a href={target.url} class="underline">{target.url}</a>
+{/snippet}
+
+{#snippet corsModalBody()}
+	The network request failed. This is likely due to the server your image is on not allowing
+	requests from scripts (what this tool is). Possible alternatives that may work are
+	<a href="https://github.com/greys-tools/pktools" class="underline"
+		>https://github.com/greys-tools/pktools</a
+	>
+	and
+	<a href="https://irys.cc/pk/tiny/dlscript/" class="underline">https://irys.cc/pk/tiny/dlscript/</a
+	>
+	<br /><br />
+	More information can be found
+	<a
+		href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS/Errors/CORSMissingAllowOrigin"
+		class="underline">here</a
+	>.
 {/snippet}
 
 <svelte:window on:drop={attachFileViaDrop} on:dragover={changeDropFunction} />
@@ -486,16 +579,25 @@
 			<button
 				class="m-5 w-fit rounded-md bg-blue-600 px-3 py-2 text-xl font-semibold text-white drop-shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:bg-blue-500/60"
 				name="download"
-				onclick={download}>Download Avatars</button
+				onclick={download}
+				disabled={successful.length === 0}
+				>Download Avatars<br /><span class="text-xs font-normal">
+					{#if successful.length > 0}Will download anything marked as "Successful"
+					{:else}Nothing successfully processed to download
+					{/if}
+				</span></button
 			>
 		{/if}
 	{/if}
-	{#if successful.length > 0 || failed.length > 0}
+	{#if successful.length > 0 || failed.length > 0 || cors.length > 0}
 		<table class="table-auto">
 			<thead>
 				<tr>
 					{#if successful.length > 0}<th>Successful</th>{/if}
 					{#if failed.length > 0}<th>Failed (click for link)</th>{/if}
+					{#if cors.length > 0}<th class="cursor-pointer" onclick={corsModal}
+							>CORS (Source declined this request, <br />click for more info)</th
+						>{/if}
 				</tr>
 			</thead>
 			<tbody>
@@ -514,6 +616,18 @@
 									<button data-line={JSON.stringify(fail)} onclick={showFailedModal}>
 										{fail.ownerType}
 										{fail.name} ({fail.id})'s {fail.imageType}
+									</button>
+								</div>
+							{/each}
+						</td>
+					{/if}
+					{#if cors.length > 0}
+						<td class="align-top">
+							{#each cors as cor}
+								<div>
+									<button data-line={JSON.stringify(cor)} onclick={showFailedModal}>
+										{cor.ownerType}
+										{cor.name} ({cor.id})'s {cor.imageType}
 									</button>
 								</div>
 							{/each}
