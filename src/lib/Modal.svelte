@@ -51,7 +51,7 @@
 		onclick={hideModal}
 	>
 		<div
-			class="flex h-fit w-fit max-w-2/3 flex-col rounded {data.statusCode == 1
+			class="max-w-2/3 flex h-fit w-fit flex-col rounded {data.statusCode == 1
 				? 'bg-green-100'
 				: data.statusCode == 2
 					? 'bg-red-100'
@@ -74,13 +74,23 @@
 				{:else}{data.body}{/if}
 			</div>
 			{#if data.data}
-				<div class="mt-3 table border-collapse border border-stone-300">
+				<div
+					class="mt-3 table border-collapse border {data.statusCode == 1
+						? 'border-green-300'
+						: data.statusCode == 2
+							? 'border-red-300'
+							: 'border-stone-300'}"
+				>
 					<div class="table-header-group">
 						<div class="table-row">
 							<button
 								onclick={() => (hideData = !hideData)}
 								aria-label="Toggle Data Shown"
-								class="table-cell w-full border border-stone-300 text-left"
+								class="table-cell w-full border {data.statusCode == 1
+									? 'border-green-300'
+									: data.statusCode == 2
+										? 'border-red-300'
+										: 'border-stone-300'} text-left"
 							>
 								{#if hideData}
 									<svg
@@ -113,16 +123,24 @@
 							</button>
 						</div>
 					</div>
-				</div>
-				<div class="table-row-group {hideData ? 'h-0 overflow-clip' : ''}">
-					<div class="table-row">
-						<div class="table-cell border border-stone-300">
-							{JSON.stringify(data.data).replaceAll(
-								/(?<=("|null|true|false|\d+)[,:])(?=")/g,
-								' '
-							)}
+					{#if !hideData}
+					<div class="table-row-group">
+						<div class="table-row">
+							<div
+								class="table-cell border {data.statusCode == 1
+									? 'border-green-300'
+									: data.statusCode == 2
+										? 'border-red-300'
+										: 'border-stone-300'} min-w-full"
+							>
+								{JSON.stringify(data.data).replaceAll(
+									/(?<=("|null|true|false|\d+)[,:])(?=")/g,
+									' '
+								)}
+							</div>
 						</div>
 					</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
