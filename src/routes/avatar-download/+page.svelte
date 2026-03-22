@@ -178,6 +178,13 @@
 	const processAvatars = async (e: SubmitEvent) => {
 		e.preventDefault();
 
+		const readableDict = new Map([
+			['avatar_url', 'avatar'],
+			['avatarUrl', 'avatar'],
+			['banner', 'banner'],
+			['webhook_avatar_url', 'proxy_avatar']
+		]);
+
 		if (!attachedFile) return window.alert('No file attached');
 
 		avatarDownload = null;
@@ -198,7 +205,7 @@
 						if (!res.headers.get('content-type')?.startsWith('image'))
 							throw new Error(`Received a ${res.type} instead of an image`);
 						images.push({
-							name: `system-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+							name: `system-${readableDict.get(field)}.${res.headers.get('content-type')?.split('/')[1]}`,
 							blob: await res.blob()
 						});
 						successful.push({
@@ -268,7 +275,7 @@
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `members/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `members/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -340,7 +347,7 @@
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `groups/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `groups/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -385,7 +392,7 @@
 						if (!res.headers.get('content-type')?.startsWith('image'))
 							throw new Error(`Received a ${res.type} instead of an image`);
 						images.push({
-							name: `user-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+							name: `user-${readableDict.get(field)}.${res.headers.get('content-type')?.split('/')[1]}`,
 							blob: await res.blob()
 						});
 						successful.push({
@@ -456,7 +463,7 @@
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `alters/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `alters/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -492,7 +499,17 @@
 				}
 			}
 		} else if (fileData.format === 'Tupperbox') {
-			const tupperImageFields = ['avatar_url'];
+			const readableDictOverride = new Map([
+				['avatar_url', 'avatar_full'],
+				['avatar', 'avatar'],
+				['banner', 'banner']
+			]);
+			const userIDMatchArr = fileData.rawContents.match(
+				/https:\/\/cdn.tupperbox.app\/avatars\/(\d+)/
+			);
+			let userID: string | null = null;
+			if (userIDMatchArr != null) userID = userIDMatchArr[1];
+			const tupperImageFields = ['avatar_url', 'avatar'];
 			const tupperNamesUsed = new Map<string, number>();
 			for (const tupper of fileData.contents.tuppers) {
 				// this block is making sure names aren't duplicated
@@ -509,7 +526,12 @@
 				for (const field of tupperImageFields) {
 					if (tupper[field])
 						try {
-							const res = await fetch(tupper[field]);
+							let url = tupper[field];
+							if (field === 'avatar') {
+								if (userID === null) continue;
+								url = `https://cdn.tupperbox.app/pfp/${userID}/${url}.webp`;
+							}
+							const res = await fetch(url);
 							if (!res.ok) throw new Error(`Response status: ${res.status}`);
 							if (!res.headers.get('content-type')?.startsWith('image'))
 								throw new Error(`Received a ${res.type} instead of an image`);
@@ -528,7 +550,7 @@
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `tupper/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `tupper/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDictOverride.get(field)}` : `${readableDictOverride.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -565,11 +587,7 @@
 			}
 			const groupImageFields = ['avatar'];
 			const groupNamesUsed = new Map<string, number>();
-			const userIDMatchArr = fileData.rawContents.match(
-				/https:\/\/cdn.tupperbox.app\/avatars\/(\d+)/
-			);
 			if (userIDMatchArr !== null) {
-				const userID = userIDMatchArr[1];
 				for (const group of fileData.contents.groups) {
 					// this block is making sure names aren't duplicated
 					// it's in a while in case the name we try to use to resolve a conflict is itself a conflict
@@ -606,7 +624,7 @@
 								}
 								identifier = identifier.replaceAll(/\s+/g, '-');
 								images.push({
-									name: `group/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+									name: `group/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 									blob: await res.blob()
 								});
 								successful.push({
@@ -801,14 +819,14 @@
 					for="file-upload"
 					class="relative cursor-pointer rounded-md text-indigo-500 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-400"
 				>
-					<div class="my-2 flex flex-grow-0 rounded-lg border border-dashed border-black px-6 py-5">
+					<div class="mb-2 flex flex-grow-0 rounded-lg border border-dashed border-black px-6 py-5">
 						<div class="text-center">
 							{#if attachedFile}
 								<div class="pb-3 text-black">
 									{attachedFile.name}
 								</div>
 							{/if}
-							<div class="flex text-sm/6 justify-center">
+							<div class="flex justify-center text-sm/6">
 								<span class="font-semibold"
 									>Upload a {#if attachedFile}different&nbsp;{/if}file</span
 								>
@@ -850,13 +868,12 @@
 						<option value="name">name</option>
 						<option value="id">ID</option>
 					</select><br />
-					{#if fileData.format === 'PluralKit'}
-						Show the <select bind:value={fileNamingOptions.firstInFileName} class="rounded-sm">
-							<option value="identifier">identifier (name or ID)</option>
-							<option value="type">type (avatar, banner, etc)</option>
-						</select>
-						first in file names<br />
-					{/if}
+					Show the
+					<select bind:value={fileNamingOptions.firstInFileName} class="rounded-sm">
+						<option value="identifier">identifier (name or ID)</option>
+						<option value="type">type (avatar, banner, etc)</option>
+					</select>
+					first in file names<br />
 					{#if fileData.hasSlashes}
 						Slashes in names: <select
 							disabled={fileNamingOptions.identifierSchema === 'id'}
