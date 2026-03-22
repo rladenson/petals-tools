@@ -880,12 +880,15 @@
 <svelte:window on:drop={attachFileViaDrop} on:dragover={changeDropFunction} />
 
 <div
-	class="mb-3 h-full w-full text-center {loading
+	class="mb-3 min-h-full w-full text-center pb-3 {loading
 		? 'cursor-progress'
 		: ''} flex flex-col items-center"
 >
 	<h1 class="text-2xl font-semibold">Download Avatars</h1>
-	<h2 class="text-md w-11/12 md:w-3/5 mb-3">This tool downloads all avatars from a given export file to your computer. All data is processed locally and no information is stored after you close the tab.</h2>
+	<h2 class="text-md mb-3 w-11/12 md:w-3/5">
+		This tool downloads all avatars from a given export file to your computer. All data is processed
+		locally and no information is stored after you close the tab.
+	</h2>
 	<br />
 	{#if loading}
 		<h2 class="text-3xl font-bold">Loading, keep this page open!</h2>
@@ -1037,6 +1040,19 @@
 				</tr>
 			</tbody>
 		</table>
+	{/if}
+	{#if avatarDownload}
+		<button
+			class="m-5 w-fit rounded-md bg-blue-600 px-3 py-2 text-xl font-semibold text-white drop-shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:bg-blue-500/60"
+			name="download"
+			onclick={download}
+			disabled={successful.length === 0}
+			>Download Avatars<br /><span class="text-xs font-normal">
+				{#if successful.length > 0}Will download anything marked as "Successful"
+				{:else}Nothing successfully processed to download
+				{/if}
+			</span></button
+		>
 	{/if}
 </div>
 
