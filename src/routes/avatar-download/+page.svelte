@@ -3,14 +3,24 @@
 	import JSZip from 'jszip';
 	import FileSaver from 'file-saver';
 
+	type fileData = {
+		formatDetected: boolean | undefined;
+		format: string;
+		rawContents: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		contents: any;
+		hasSlashes: boolean;
+	};
+	let fileData = $state({} as fileData);
 	let fileList: FileList | null | undefined = $state();
 	let attachedFile = $derived(fileList?.item(0));
-	let formatDetected = $state('none');
-	$effect(() => {
-		checkForKnownFormat(attachedFile);
-	});
 
-	let fileNameSchema = $state('name');
+	type fileNamingOptions = {
+		escapeSlashes: string;
+		identifierSchema: string;
+		firstInFileName: string;
+	};
+	let fileNamingOptions = $state({} as fileNamingOptions);
 
 	let modalData = $state({} as ModalData);
 	let shown = $state(false);
@@ -33,37 +43,53 @@
 		url: string;
 	};
 
-	const checkForKnownFormat = async (attachedFile: File | null | undefined) => {
+	const checkFileData = async () => {
+		fileData = {} as fileData;
+
 		if (attachedFile) {
 			const fileContents = JSON.parse(await attachedFile?.text());
 			let formatsDetected = 0;
 			if (fileContents.switches) {
-				formatDetected = 'PluralKit';
+				fileData.formatDetected = true;
+				fileData.format = 'PluralKit';
 				formatsDetected++;
 				showPKWarnings();
 			}
 			if (fileContents.fronts) {
-				formatDetected = 'Octocon';
+				fileData.formatDetected = true;
+				fileData.format = 'Octocon';
 				formatsDetected++;
 				showOctoWarnings();
 			}
 			if (fileContents.tuppers) {
-				formatDetected = 'Tupperbox';
+				fileData.formatDetected = true;
+				fileData.format = 'Tupperbox';
 				formatsDetected++;
 				showTBoxWarnings();
 			}
 			if (formatsDetected > 1) {
-				formatDetected = 'multiple';
+				fileData.formatDetected = false;
 				window.alert(
 					'Could not determine format. Please report to Petal in the #third-party-discussion channel of the PluralKit server.'
 				);
+				return;
 			}
 			if (formatsDetected === 0) {
-				formatDetected = 'failed';
+				fileData.formatDetected = false;
+				return;
 			}
-			console.log(fileContents);
+			fileData.rawContents = await attachedFile?.text();
+			fileData.contents = JSON.parse(fileData.rawContents);
+
+			if (fileData.rawContents.match(/"name":"[^"]*?[\\/][^"]*"/)) {
+				fileData.hasSlashes = true;
+			} else {
+				fileData.hasSlashes = false;
+			}
+
+			console.log(fileData.rawContents);
 		} else {
-			formatDetected = 'none';
+			fileData.formatDetected = undefined;
 		}
 	};
 
@@ -114,10 +140,12 @@
 			modalData.body = 'This tool can only accept one file at a time.';
 			modalData.statusCode = 2;
 			shown = true;
+			return;
 		}
 		const list = new DataTransfer();
 		for (const file of files) list.items.add(file!);
 		fileList = list.files;
+		checkFileData();
 	};
 	const changeDropFunction = (e: DragEvent) => {
 		const fileItems = [...e.dataTransfer!.items].filter((item) => item.kind === 'file');
@@ -136,7 +164,6 @@
 
 		if (!attachedFile) return window.alert('No file attached');
 
-		const fileContents = JSON.parse(await attachedFile?.text());
 		avatarDownload = null;
 		loading = true;
 
@@ -145,12 +172,12 @@
 		failed = [];
 		cors = [];
 
-		if (formatDetected === 'PluralKit') {
+		if (fileData.format === 'PluralKit') {
 			const systemImageFields = ['avatar_url', 'banner'];
 			for (const field of systemImageFields)
-				if (fileContents[field])
+				if (fileData.contents[field])
 					try {
-						const res = await fetch(fileContents[field]);
+						const res = await fetch(fileData.contents[field]);
 						if (!res.ok) throw new Error(`Response status: ${res.status}`);
 						if (!res.headers.get('content-type')?.startsWith('image'))
 							throw new Error(`Received a ${res.type} instead of an image`);
@@ -160,9 +187,9 @@
 						});
 						successful.push({
 							imageType: field,
-							name: fileContents.name,
-							id: fileContents.id,
-							url: fileContents[field],
+							name: fileData.contents.name,
+							id: fileData.contents.id,
+							url: fileData.contents[field],
 							ownerType: 'system'
 						});
 					} catch (e) {
@@ -170,9 +197,9 @@
 							if (e.message.includes('NetworkError')) {
 								cors.push({
 									imageType: field,
-									name: fileContents.name,
-									id: fileContents.id,
-									url: fileContents[field],
+									name: fileData.contents.name,
+									id: fileData.contents.id,
+									url: fileData.contents[field],
 									ownerType: 'system'
 								});
 							} else {
@@ -180,9 +207,9 @@
 								console.log(e.message);
 								failed.push({
 									imageType: field,
-									name: fileContents.name,
-									id: fileContents.id,
-									url: fileContents[field],
+									name: fileData.contents.name,
+									id: fileData.contents.id,
+									url: fileData.contents[field],
 									ownerType: 'system'
 								});
 							}
@@ -191,9 +218,9 @@
 
 			const memberImageFields = ['avatar_url', 'banner', 'webhook_avatar_url'];
 			const memberNamesUsed = new Map<string, number>();
-			for (const member of fileContents.members) {
+			for (const member of fileData.contents.members) {
 				// this block is making sure names aren't duplicated
-				// it's in a while in case the name we try to use to resolve a conflict is itself a conflict
+				// it's in a while loop in case the name we try to use to resolve a conflict is itself a conflict
 				let changed = false;
 				while (memberNamesUsed.get(member.name) !== undefined) {
 					if (changed) member.name = member.name.slice(0, member.name.lastIndexOf('-'));
@@ -210,8 +237,22 @@
 							if (!res.ok) throw new Error(`Response status: ${res.status}`);
 							if (!res.headers.get('content-type')?.startsWith('image'))
 								throw new Error(`Received a ${res.type} instead of an image`);
+							let identifier = (member[fileNamingOptions.identifierSchema] ?? member.id) + '';
+							switch (fileNamingOptions.escapeSlashes) {
+								case 'encode':
+									identifier = identifier.replaceAll(/\//g, '%2F').replaceAll(/\\/g, '%5C');
+									break;
+								case 'remove':
+									identifier = identifier.replaceAll(/[/\\]/g, '');
+									break;
+								default:
+									if (fileNamingOptions.firstInFileName !== 'identifier')
+										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
+							}
+							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `members/${((member[fileNameSchema] ?? member.id) as string).replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `members/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -249,7 +290,7 @@
 
 			const groupImageFields = ['icon', 'banner'];
 			const groupNamesUsed = new Map<string, number>();
-			for (const group of fileContents.groups) {
+			for (const group of fileData.contents.groups) {
 				// this block is making sure names aren't duplicated
 				// it's in a while in case the name we try to use to resolve a conflict is itself a conflict
 				let changed = false;
@@ -268,8 +309,22 @@
 							if (!res.ok) throw new Error(`Response status: ${res.status}`);
 							if (!res.headers.get('content-type')?.startsWith('image'))
 								throw new Error(`Received a ${res.type} instead of an image`);
+							let identifier = (group[fileNamingOptions.identifierSchema] ?? group.id) + '';
+							switch (fileNamingOptions.escapeSlashes) {
+								case 'encode':
+									identifier = identifier.replaceAll(/\//g, '%2F').replaceAll(/\\/g, '%5C');
+									break;
+								case 'remove':
+									identifier = identifier.replaceAll(/[/\\]/g, '');
+									break;
+								default:
+									if (fileNamingOptions.firstInFileName !== 'identifier')
+										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
+							}
+							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `groups/${((group[fileNameSchema] ?? group.id) as string).replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `groups/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -304,12 +359,12 @@
 						}
 				}
 			}
-		} else if (formatDetected === 'Octocon') {
+		} else if (fileData.format === 'Octocon') {
 			const userImageFields = ['avatar_url'];
 			for (const field of userImageFields)
-				if (fileContents[field])
+				if (fileData.contents[field])
 					try {
-						const res = await fetch(fileContents.user[field]);
+						const res = await fetch(fileData.contents.user[field]);
 						if (!res.ok) throw new Error(`Response status: ${res.status}`);
 						if (!res.headers.get('content-type')?.startsWith('image'))
 							throw new Error(`Received a ${res.type} instead of an image`);
@@ -319,9 +374,9 @@
 						});
 						successful.push({
 							imageType: field,
-							name: fileContents.user.name,
-							id: fileContents.user.id,
-							url: fileContents.user[field],
+							name: fileData.contents.user.name,
+							id: fileData.contents.user.id,
+							url: fileData.contents.user[field],
 							ownerType: 'user'
 						});
 					} catch (e) {
@@ -329,9 +384,9 @@
 							if (e.message.includes('NetworkError')) {
 								cors.push({
 									imageType: field,
-									name: fileContents.user.name,
-									id: fileContents.user.id,
-									url: fileContents.user[field],
+									name: fileData.contents.user.name,
+									id: fileData.contents.user.id,
+									url: fileData.contents.user[field],
 									ownerType: 'user'
 								});
 							} else {
@@ -339,9 +394,9 @@
 								console.log(e.message);
 								failed.push({
 									imageType: field,
-									name: fileContents.user.name,
-									id: fileContents.user.id,
-									url: fileContents.user[field],
+									name: fileData.contents.user.name,
+									id: fileData.contents.user.id,
+									url: fileData.contents.user[field],
 									ownerType: 'user'
 								});
 							}
@@ -350,7 +405,7 @@
 
 			const alterImageFields = ['avatar_url'];
 			const alterNamesUsed = new Map<string, number>();
-			for (const alter of fileContents.alters) {
+			for (const alter of fileData.contents.alters) {
 				// this block is making sure names aren't duplicated
 				// it's in a while in case the name we try to use to resolve a conflict is itself a conflict
 				let changed = false;
@@ -369,9 +424,23 @@
 							if (!res.ok) throw new Error(`Response status: ${res.status}`);
 							if (!res.headers.get('content-type')?.startsWith('image'))
 								throw new Error(`Received a ${res.type} instead of an image`);
-							console.log(fileNameSchema);
+							console.log(fileNamingOptions.identifierSchema);
+							let identifier = (alter[fileNamingOptions.identifierSchema] ?? alter.id) + '';
+							switch (fileNamingOptions.escapeSlashes) {
+								case 'encode':
+									identifier = identifier.replaceAll(/\//g, '%2F').replaceAll(/\\/g, '%5C');
+									break;
+								case 'remove':
+									identifier = identifier.replaceAll(/[/\\]/g, '');
+									break;
+								default:
+									if (fileNamingOptions.firstInFileName !== 'identifier')
+										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
+							}
+							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `alters/${(((alter[fileNameSchema] ?? alter.id) as string) + '').replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `alters/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -406,10 +475,10 @@
 						}
 				}
 			}
-		} else if (formatDetected === 'Tupperbox') {
+		} else if (fileData.format === 'Tupperbox') {
 			const tupperImageFields = ['avatar_url'];
 			const tupperNamesUsed = new Map<string, number>();
-			for (const tupper of fileContents.tuppers) {
+			for (const tupper of fileData.contents.tuppers) {
 				// this block is making sure names aren't duplicated
 				// it's in a while in case the name we try to use to resolve a conflict is itself a conflict
 				let changed = false;
@@ -428,8 +497,22 @@
 							if (!res.ok) throw new Error(`Response status: ${res.status}`);
 							if (!res.headers.get('content-type')?.startsWith('image'))
 								throw new Error(`Received a ${res.type} instead of an image`);
+							let identifier = (tupper[fileNamingOptions.identifierSchema] ?? tupper.id) + '';
+							switch (fileNamingOptions.escapeSlashes) {
+								case 'encode':
+									identifier = identifier.replaceAll(/\//g, '%2F').replaceAll(/\\/g, '%5C');
+									break;
+								case 'remove':
+									identifier = identifier.replaceAll(/[/\\]/g, '');
+									break;
+								default:
+									if (fileNamingOptions.firstInFileName !== 'identifier')
+										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
+							}
+							identifier = identifier.replaceAll(/\s+/g, '-');
 							images.push({
-								name: `tupper/${((tupper[fileNameSchema] ?? tupper.id) as string).replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `tupper/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -475,6 +558,8 @@
 			loading = false;
 			avatarDownload = content;
 		});
+
+		modalData.submitCancel = true;
 	};
 
 	const download = () => {
@@ -542,7 +627,7 @@
 		<h2 class="text-3xl font-bold">Loading, keep this page open!</h2>
 	{:else}
 		<form onsubmit={processAvatars}>
-			<label for="cover-photo" class="text-sm/6 font-medium">Attach your export file here</label>
+			<div class="text-sm/6 font-medium">Attach your export file here</div>
 			<div class="flex flex-row">
 				<div class="flex-grow"></div>
 				<label
@@ -567,6 +652,7 @@
 									class="sr-only"
 									accept="application/json"
 									bind:files={fileList}
+									onchange={checkFileData}
 								/>
 								<p class="pl-1 text-gray-400">or drag and drop</p>
 							</div>
@@ -577,29 +663,41 @@
 				<div class="flex-grow"></div>
 			</div>
 			<div class="m-1">
-				{#if formatDetected === 'PluralKit'}
-					Format detected as a PluralKit export file.<br />
-					Name files using a member's
-					<select bind:value={fileNameSchema}>
-						<option value="name">name</option>
-						<option value="id">ID</option>
-					</select>
-				{:else if formatDetected === 'Octocon'}
-					Format detected as an Octocon export file.<br />
-					Name files using an alter's
-					<select bind:value={fileNameSchema}>
-						<option value="name">name</option>
-						<option value="id">ID</option>
-					</select>
-				{:else if formatDetected === 'Tupperbox'}
-					Format detected as an Tupperbox export file.<br />
-					Name files using a tupper's
-					<select bind:value={fileNameSchema}>
-						<option value="name">name</option>
-						<option value="id">ID</option>
-					</select>
-				{:else if formatDetected === 'failed'}
+				{#if fileData.formatDetected === false}
 					File not in a format this site recognizes.
+				{:else if fileData.formatDetected === true}
+					{#if fileData.format === 'PluralKit'}
+						Format detected as a PluralKit export file.<br />
+						Name files using a member's
+					{:else if fileData.format === 'Octocon'}
+						Format detected as an Octocon export file.<br />
+						Name files using an alter's
+					{:else if fileData.format === 'Tupperbox'}
+						Format detected as an Tupperbox export file.<br />
+						Name files using a tupper's
+					{/if}
+					<select bind:value={fileNamingOptions.identifierSchema} class="rounded-sm">
+						<option value="name">name</option>
+						<option value="id">ID</option>
+					</select><br />
+					{#if fileData.format === 'PluralKit'}
+						Show the <select bind:value={fileNamingOptions.firstInFileName} class="rounded-sm">
+							<option value="identifier">identifier (name or ID)</option>
+							<option value="type">type (avatar, banner, etc)</option>
+						</select>
+						first in file names<br />
+					{/if}
+					{#if fileData.hasSlashes}
+						Slashes in names: <select
+							disabled={fileNamingOptions.identifierSchema === 'id'}
+							bind:value={fileNamingOptions.escapeSlashes}
+							class="rounded-sm disabled:opacity-70"
+						>
+							<option value="folder">treat as folder boundaries</option>
+							<option value="encode">use URL encoding (will show as %2F or %5C)</option>
+							<option value="remove">remove them</option>
+						</select>
+					{/if}
 				{/if}
 			</div>
 			<button
@@ -607,7 +705,7 @@
 				type="submit"
 				class="rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:bg-blue-500/60"
 				disabled={attachedFile == null ||
-					['none', 'multiple', 'failed'].indexOf(formatDetected) != -1 ||
+					fileData.formatDetected !== true ||
 					modalData.submitCancel !== true}>Process Avatars</button
 			>
 		</form>
