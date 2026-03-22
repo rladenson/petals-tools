@@ -3,21 +3,33 @@
 		title: string;
 		body: string;
 		data: string | undefined;
+		dataLabel: string;
 		statusCode: number;
 		useAltBody: unknown;
+		showSubmitCancel: boolean;
+		submitCancel: boolean | undefined;
 	};
 </script>
 
 <script lang="ts">
 	import { getContext } from 'svelte';
 
-	let { data, shown = $bindable(false), altModalBody = $bindable() } = $props();
+	let {
+		data = $bindable({} as ModalData),
+		shown = $bindable(false),
+		altModalBody = $bindable(),
+		resetModal = $bindable()
+	} = $props();
 
 	const modalShown: { value: boolean } = getContext('modalShown');
 
 	$effect(() => {
 		if (shown === true) showModal();
 	});
+
+	resetModal = () => {
+		data = {} as ModalData;
+	};
 
 	const hideModal = (e?: Event) => {
 		if (e?.target instanceof Element) {
@@ -119,30 +131,41 @@
 										/>
 									</svg>
 								{/if}
-								Data
+								{data.dataLabel ?? 'Data'}
 							</button>
 						</div>
 					</div>
 					{#if !hideData}
-					<div class="table-row-group">
-						<div class="table-row">
-							<div
-								class="table-cell border {data.statusCode == 1
-									? 'border-green-300'
-									: data.statusCode == 2
-										? 'border-red-300'
-										: 'border-stone-300'} min-w-full"
-							>
-								{JSON.stringify(data.data).replaceAll(
-									/(?<=("|null|true|false|\d+)[,:])(?=")/g,
-									' '
-								)}
+						<div class="table-row-group">
+							<div class="table-row">
+								<div
+									class="table-cell border {data.statusCode == 1
+										? 'border-green-300'
+										: data.statusCode == 2
+											? 'border-red-300'
+											: 'border-stone-300'} min-w-full"
+								>
+									{JSON.stringify(data.data).replaceAll(
+										/(?<=("|null|true|false|\d+)[,:])(?=")/g,
+										' '
+									)}
+								</div>
 							</div>
 						</div>
-					</div>
 					{/if}
 				</div>
 			{/if}
+			<div id="buttons" class="mt-3">
+				<button
+					id="cancel"
+					class="m-1 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+					onclick={submitCancel}>Cancel</button
+				><button
+					id="submit"
+					class="m-1 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+					onclick={submitCancel}>Continue</button
+				>
+			</div>
 		</div>
 	</div>
 {/if}
