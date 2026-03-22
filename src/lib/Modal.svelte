@@ -51,6 +51,19 @@
 	const onKeyDown = (e: KeyboardEvent) => {
 		if (e.key == 'Escape' && shown) hideModal();
 	};
+
+	const submitCancel = (e: Event) => {
+		if (e.target instanceof Element) {
+			if (e.target.id === 'submit') {
+				data.submitCancel = true;
+			} else if (e.target.id === 'cancel') {
+				data.submitCancel = false;
+			} else {
+				data.submitCancel = undefined;
+			}
+		}
+		hideModal();
+	};
 </script>
 
 <svelte:window on:keydown={onKeyDown} />
@@ -83,7 +96,11 @@
 			<h1 class="text-2xl">{data.title}</h1>
 			<div class="text-l">
 				{#if data.useAltBody}{@render altModalBody(data.useAltBody)}
-				{:else}{data.body}{/if}
+				{:else}
+					{#each data.body.split(/\n/) as bodyLine}
+						<p class="m-3">{bodyLine}</p>
+					{/each}
+				{/if}
 			</div>
 			{#if data.data}
 				<div
