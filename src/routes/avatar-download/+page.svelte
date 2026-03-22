@@ -23,6 +23,8 @@
 	let failed = $state([] as successFail[]);
 	let cors = $state([] as successFail[]);
 
+	let resetModal: (() => void) | undefined = $state();
+
 	type successFail = {
 		imageType: string;
 		ownerType: string;
@@ -38,18 +40,23 @@
 			if (fileContents.switches) {
 				formatDetected = 'PluralKit';
 				formatsDetected++;
+				showPKWarnings();
 			}
 			if (fileContents.fronts) {
 				formatDetected = 'Octocon';
 				formatsDetected++;
+				showOctoWarnings();
 			}
 			if (fileContents.tuppers) {
 				formatDetected = 'Tupperbox';
 				formatsDetected++;
+				showTBoxWarnings();
 			}
 			if (formatsDetected > 1) {
 				formatDetected = 'multiple';
-				window.alert('Could not determine format');
+				window.alert(
+					'Could not determine format. Please report to Petal in the #third-party-discussion channel of the PluralKit server.'
+				);
 			}
 			if (formatsDetected === 0) {
 				formatDetected = 'failed';
@@ -58,6 +65,35 @@
 		} else {
 			formatDetected = 'none';
 		}
+	};
+
+	const genericWarning =
+		'This site will get all avatars it can, however it cannot get avatars from every image host. When it runs you will be shown ' +
+		'a list of which images it successfully received and which it did not. Also note it is possible for this to run into issues if you have too many ' +
+		'images, please let me (Petalss_tm) know on discord in the #third-party-discussion channel of the PluralKit server if this happens to you.';
+
+	const showPKWarnings = () => {
+		if (resetModal) resetModal();
+		modalData.title = 'PluralKit File Warnings';
+		modalData.body = genericWarning;
+		modalData.showSubmitCancel = true;
+		shown = true;
+	};
+	const showOctoWarnings = () => {
+		if (resetModal) resetModal();
+		modalData.title = 'Octocon File Warnings';
+		modalData.body = genericWarning;
+		modalData.showSubmitCancel = true;
+		shown = true;
+	};
+	const showTBoxWarnings = () => {
+		if (resetModal) resetModal();
+		modalData.title = 'Tupperbox File Warnings';
+		modalData.body =
+			genericWarning +
+			'\n\nNote this tool is not currently able to get avatars from Tupperbox groups, it will only get member avatars.';
+		modalData.showSubmitCancel = true;
+		shown = true;
 	};
 
 	type image = {
@@ -73,11 +109,10 @@
 			.map((item) => item.getAsFile());
 		if (files.length == 0) return;
 		if (files.length > 1) {
+			if (resetModal) resetModal();
 			modalData.title = 'Error: Too Many Files';
 			modalData.body = 'This tool can only accept one file at a time.';
 			modalData.statusCode = 2;
-			modalData.data = undefined;
-			modalData.useAltBody = undefined;
 			shown = true;
 		}
 		const list = new DataTransfer();
@@ -336,7 +371,7 @@
 								throw new Error(`Received a ${res.type} instead of an image`);
 							console.log(fileNameSchema);
 							images.push({
-								name: `alters/${((alter[fileNameSchema] ?? alter.id) as string + "").replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `alters/${(((alter[fileNameSchema] ?? alter.id) as string) + '').replaceAll(/\s+/g, '-')}-${field}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -448,17 +483,18 @@
 
 	const showFailedModal = (e: MouseEvent) => {
 		const target = JSON.parse((e.target as HTMLElement).dataset['line'] ?? '') as successFail;
+		if (resetModal) resetModal();
 		modalData.title = 'Error: Could Not Download';
 		modalData.body = `Could not download ${target.imageType} of ${target.ownerType} ${target.name} (${target.id}) at the
 	following URL:\n${target.url}`;
 		modalData.useAltBody = target;
 		altModalBody = failedModalBody;
 		modalData.statusCode = 0;
-		modalData.data = undefined;
 		shown = true;
 	};
 
 	const corsModal = () => {
+		if (resetModal) resetModal();
 		modalData.title = 'CORS Error';
 		modalData.body = `The network request failed. This is likely due to the server your image is on not 
 		allowing requests from scripts (what this tool is). Possible alternatives that may work are 
@@ -466,7 +502,6 @@
 		modalData.useAltBody = true;
 		altModalBody = corsModalBody;
 		modalData.statusCode = 0;
-		modalData.data = undefined;
 		shown = true;
 	};
 </script>
@@ -572,7 +607,8 @@
 				type="submit"
 				class="rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:bg-blue-500/60"
 				disabled={attachedFile == null ||
-					['none', 'multiple', 'failed'].indexOf(formatDetected) != -1}>Process Avatars</button
+					['none', 'multiple', 'failed'].indexOf(formatDetected) != -1 ||
+					modalData.submitCancel !== true}>Process Avatars</button
 			>
 		</form>
 		{#if avatarDownload}
@@ -639,4 +675,4 @@
 	{/if}
 </div>
 
-<Modal data={modalData} bind:shown bind:altModalBody />
+<Modal bind:data={modalData} bind:shown bind:altModalBody bind:resetModal />
