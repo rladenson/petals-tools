@@ -47,25 +47,32 @@
 		fileData = {} as fileData;
 
 		if (attachedFile) {
-			const fileContents = JSON.parse(await attachedFile?.text());
+			fileData.rawContents = await attachedFile?.text();
+			fileData.contents = JSON.parse(fileData.rawContents);
 			let formatsDetected = 0;
-			if (fileContents.switches) {
+			if (fileData.contents.switches) {
 				fileData.formatDetected = true;
 				fileData.format = 'PluralKit';
 				formatsDetected++;
 				showPKWarnings();
 			}
-			if (fileContents.fronts) {
+			if (fileData.contents.fronts) {
 				fileData.formatDetected = true;
 				fileData.format = 'Octocon';
 				formatsDetected++;
 				showOctoWarnings();
 			}
-			if (fileContents.tuppers) {
+			if (fileData.contents.tuppers) {
 				fileData.formatDetected = true;
 				fileData.format = 'Tupperbox';
 				formatsDetected++;
 				showTBoxWarnings();
+			}
+			if (fileData.contents.securityLogs) {
+				fileData.formatDetected = true;
+				fileData.format = 'Simply Plural';
+				formatsDetected++;
+				showSPWarnings();
 			}
 			if (formatsDetected > 1) {
 				fileData.formatDetected = false;
@@ -118,6 +125,15 @@
 		modalData.body =
 			genericWarning +
 			'\n\nNote this tool has unknown reliability with Tupperbox group avatars, it may miss some or only get tupper avatars.';
+		modalData.showSubmitCancel = true;
+		shown = true;
+	};
+	const showSPWarnings = () => {
+		if (resetModal) resetModal();
+		modalData.title = 'Simply Plural File Warnings';
+		modalData.body =
+			genericWarning +
+			'\n\nNote this tool can only get avatars set using image URLs, it will not get images uploaded directly to Simply Plural or in-line images in fields.';
 		modalData.showSubmitCancel = true;
 		shown = true;
 	};
@@ -569,7 +585,9 @@
 					for (const field of groupImageFields) {
 						if (group[field])
 							try {
-								const res = await fetch(`https://cdn.tupperbox.app/group-pfp/${userID}/${group[field]}.webp`);
+								const res = await fetch(
+									`https://cdn.tupperbox.app/group-pfp/${userID}/${group[field]}.webp`
+								);
 								if (!res.ok) throw new Error(`Response status: ${res.status}`);
 								if (!res.headers.get('content-type')?.startsWith('image'))
 									throw new Error(`Received a ${res.type} instead of an image`);
@@ -622,6 +640,78 @@
 								}
 							}
 					}
+				}
+			}
+		} else if (fileData.format === 'Simply Plural') {
+			const memberImageFields = ['avatarUrl'];
+			const memberNamesUsed = new Map<string, number>();
+			for (const member of fileData.contents.members) {
+				// this block is making sure names aren't duplicated
+				// it's in a while loop in case the name we try to use to resolve a conflict is itself a conflict
+				let changed = false;
+				while (memberNamesUsed.get(member.name) !== undefined) {
+					if (changed) member.name = member.name.slice(0, member.name.lastIndexOf('-'));
+					memberNamesUsed.set(member.name, memberNamesUsed.get(member.name)! + 1);
+					member.name = member.name + '-' + (memberNamesUsed.get(member.name)! - 1);
+					changed = true;
+				}
+				memberNamesUsed.set(member.name, 1);
+
+				for (const field of memberImageFields) {
+					if (member[field] && member[field].length > 0)
+						try {
+							const res = await fetch(member[field]);
+							if (!res.ok) throw new Error(`Response status: ${res.status}`);
+							if (!res.headers.get('content-type')?.startsWith('image'))
+								throw new Error(`Received a ${res.type} instead of an image`);
+							let identifier = (member[fileNamingOptions.identifierSchema] ?? member.id) + '';
+							switch (fileNamingOptions.escapeSlashes) {
+								case 'encode':
+									identifier = identifier.replaceAll(/\//g, '%2F').replaceAll(/\\/g, '%5C');
+									break;
+								case 'remove':
+									identifier = identifier.replaceAll(/[/\\]/g, '');
+									break;
+								default:
+									if (fileNamingOptions.firstInFileName !== 'identifier')
+										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
+							}
+							identifier = identifier.replaceAll(/\s+/g, '-');
+							images.push({
+								name: `members/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								blob: await res.blob()
+							});
+							successful.push({
+								imageType: field,
+								name: member.name,
+								id: member.id,
+								url: member[field],
+								ownerType: 'member'
+							});
+						} catch (e) {
+							if (e instanceof Error) {
+								if (e.message.includes('NetworkError')) {
+									cors.push({
+										imageType: field,
+										name: member.name,
+										id: member.id,
+										url: member[field],
+										ownerType: 'member'
+									});
+								} else {
+									//window.alert(e.message);
+									console.log(e.message);
+									failed.push({
+										imageType: field,
+										name: member.name,
+										id: member.id,
+										url: member[field],
+										ownerType: 'member'
+									});
+								}
+							}
+						}
 				}
 			}
 		}
@@ -718,7 +808,7 @@
 									{attachedFile.name}
 								</div>
 							{/if}
-							<div class="flex text-sm/6">
+							<div class="flex text-sm/6 justify-center">
 								<span class="font-semibold"
 									>Upload a {#if attachedFile}different&nbsp;{/if}file</span
 								>
@@ -752,6 +842,9 @@
 					{:else if fileData.format === 'Tupperbox'}
 						Format detected as an Tupperbox export file.<br />
 						Name files using a tupper's
+					{:else if fileData.format === 'Simply Plural'}
+						Format detected as an Simply Plural export file.<br />
+						Name files using a member's
 					{/if}
 					<select bind:value={fileNamingOptions.identifierSchema} class="rounded-sm">
 						<option value="name">name</option>
