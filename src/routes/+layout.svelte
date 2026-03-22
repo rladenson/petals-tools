@@ -3,6 +3,7 @@
 	import '../app.css';
 	import { afterNavigate } from '$app/navigation';
 	import { createApiUrl } from '$lib/apiURL.svelte';
+	import { version } from '$app/environment';
 	let { children } = $props();
 
 	let showMenu = $state(false);
@@ -67,6 +68,9 @@
 				</div>
 			</div>
 			<div class="flex flex-grow-0 justify-end">
+				<a href="https://github.com/rladenson/petals-tools/commit/{version}" class="underline mx-1 text-sm/6"
+					>{version}</a
+				>
 				<a href="/settings" class="text-sm/6 font-semibold" aria-label="Settings">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
