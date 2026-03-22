@@ -182,7 +182,8 @@
 			['avatar_url', 'avatar'],
 			['avatarUrl', 'avatar'],
 			['banner', 'banner'],
-			['webhook_avatar_url', 'proxy_avatar']
+			['webhook_avatar_url', 'proxy_avatar'],
+			['icon', 'avatar']
 		]);
 
 		if (!attachedFile) return window.alert('No file attached');
@@ -271,11 +272,24 @@
 								default:
 									if (fileNamingOptions.firstInFileName !== 'identifier')
 										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									else identifier = identifier.replaceAll(/^[/\\]+/g, '');
 									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
+							let fileName = '';
+							switch (fileNamingOptions.firstInFileName) {
+								case 'identifier':
+									fileName = `${identifier}-${readableDict.get(field)}`;
+									break;
+								case 'folder':
+									fileName = `${readableDict.get(field)}s/${identifier}`;
+									break;
+								default:
+									fileName = `${readableDict.get(field)}-${identifier}`;
+									break;
+							}
 							images.push({
-								name: `members/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `members/${fileName}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -343,11 +357,24 @@
 								default:
 									if (fileNamingOptions.firstInFileName !== 'identifier')
 										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									else identifier = identifier.replaceAll(/^[/\\]+/g, '');
 									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
+							let fileName = '';
+							switch (fileNamingOptions.firstInFileName) {
+								case 'identifier':
+									fileName = `${identifier}-${readableDict.get(field)}`;
+									break;
+								case 'folder':
+									fileName = `${readableDict.get(field)}s/${identifier}`;
+									break;
+								default:
+									fileName = `${readableDict.get(field)}-${identifier}`;
+									break;
+							}
 							images.push({
-								name: `groups/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `groups/${fileName}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -459,11 +486,24 @@
 								default:
 									if (fileNamingOptions.firstInFileName !== 'identifier')
 										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									else identifier = identifier.replaceAll(/^[/\\]+/g, '');
 									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
+							let fileName = '';
+							switch (fileNamingOptions.firstInFileName) {
+								case 'identifier':
+									fileName = `${identifier}-${readableDict.get(field)}`;
+									break;
+								case 'folder':
+									fileName = `${readableDict.get(field)}s/${identifier}`;
+									break;
+								default:
+									fileName = `${readableDict.get(field)}-${identifier}`;
+									break;
+							}
 							images.push({
-								name: `alters/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `alters/${fileName}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -546,11 +586,24 @@
 								default:
 									if (fileNamingOptions.firstInFileName !== 'identifier')
 										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									else identifier = identifier.replaceAll(/^[/\\]+/g, '');
 									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
+							let fileName = '';
+							switch (fileNamingOptions.firstInFileName) {
+								case 'identifier':
+									fileName = `${identifier}-${readableDictOverride.get(field)}`;
+									break;
+								case 'folder':
+									fileName = `${readableDictOverride.get(field)}/${identifier}`;
+									break;
+								default:
+									fileName = `${readableDictOverride.get(field)}-${identifier}`;
+									break;
+							}
 							images.push({
-								name: `tupper/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDictOverride.get(field)}` : `${readableDictOverride.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `tupper/${fileName}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -623,8 +676,20 @@
 										identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
 								}
 								identifier = identifier.replaceAll(/\s+/g, '-');
+								let fileName = '';
+								switch (fileNamingOptions.firstInFileName) {
+									case 'identifier':
+										fileName = `${identifier}-${readableDict.get(field)}`;
+										break;
+									case 'folder':
+										fileName = `${readableDict.get(field)}s/${identifier}`;
+										break;
+									default:
+										fileName = `${readableDict.get(field)}-${identifier}`;
+										break;
+								}
 								images.push({
-									name: `group/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${readableDict.get(field)}` : `${readableDict.get(field)}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+									name: `group/${fileName}.${res.headers.get('content-type')?.split('/')[1]}`,
 									blob: await res.blob()
 								});
 								successful.push({
@@ -693,11 +758,24 @@
 								default:
 									if (fileNamingOptions.firstInFileName !== 'identifier')
 										identifier = identifier.replaceAll(/[/\\]+$/g, '');
+									else identifier = identifier.replaceAll(/^[/\\]+/g, '');
 									identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
 							}
 							identifier = identifier.replaceAll(/\s+/g, '-');
+							let fileName = '';
+							switch (fileNamingOptions.firstInFileName) {
+								case 'identifier':
+									fileName = `${identifier}-${readableDict.get(field)}`;
+									break;
+								case 'folder':
+									fileName = `${readableDict.get(field)}s/${identifier}`;
+									break;
+								default:
+									fileName = `${readableDict.get(field)}-${identifier}`;
+									break;
+							}
 							images.push({
-								name: `members/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+								name: `members/${fileName}.${res.headers.get('content-type')?.split('/')[1]}`,
 								blob: await res.blob()
 							});
 							successful.push({
@@ -872,6 +950,7 @@
 					<select bind:value={fileNamingOptions.firstInFileName} class="rounded-sm">
 						<option value="identifier">identifier (name or ID)</option>
 						<option value="type">type (avatar, banner, etc)</option>
+						<option value="folder">use folders instead</option>
 					</select>
 					first in file names<br />
 					{#if fileData.hasSlashes}
