@@ -21,7 +21,7 @@
 	setContext('apiUrl', apiUrl);
 </script>
 
-<div class="flex h-screen flex-col {modalShown.value ? 'overflow-hidden' : ''}">
+<div class="flex h-screen flex-col overflow-hidden">
 	<header class="sticky top-0 z-50 bg-blue-500 text-white">
 		<nav class="mx-auto flex items-center justify-between p-2" aria-label="Global">
 			<div class="flex flex-grow-0 justify-start">
@@ -95,7 +95,7 @@
 			</div>
 		</nav>
 	</header>
-	<div class="flex grow flex-col md:flex-row">
+	<div class="flex grow flex-col md:flex-row overflow-y-auto">
 		<nav
 			class="flex flex-col bg-blue-500 text-white transition-all motion-reduce:transition-none {showMenu
 				? 'w-full p-2 md:w-3/4 lg:w-1/3'
