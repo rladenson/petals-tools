@@ -117,7 +117,7 @@
 		modalData.title = 'Tupperbox File Warnings';
 		modalData.body =
 			genericWarning +
-			'\n\nNote this tool is not currently able to get avatars from Tupperbox groups, it will only get member avatars.';
+			'\n\nNote this tool has unknown reliability with Tupperbox group avatars, it may miss some or only get tupper avatars.';
 		modalData.showSubmitCancel = true;
 		shown = true;
 	};
@@ -545,6 +545,83 @@
 								}
 							}
 						}
+				}
+			}
+			const groupImageFields = ['avatar'];
+			const groupNamesUsed = new Map<string, number>();
+			const userIDMatchArr = fileData.rawContents.match(
+				/https:\/\/cdn.tupperbox.app\/avatars\/(\d+)/
+			);
+			if (userIDMatchArr !== null) {
+				const userID = userIDMatchArr[1];
+				for (const group of fileData.contents.groups) {
+					// this block is making sure names aren't duplicated
+					// it's in a while in case the name we try to use to resolve a conflict is itself a conflict
+					let changed = false;
+					while (groupNamesUsed.get(group.name) !== undefined) {
+						if (changed) group.name = group.name.slice(0, group.name.lastIndexOf('-'));
+						groupNamesUsed.set(group.name, groupNamesUsed.get(group.name)! + 1);
+						group.name = group.name + '-' + (groupNamesUsed.get(group.name)! - 1);
+						changed = true;
+					}
+					groupNamesUsed.set(group.name, 1);
+
+					for (const field of groupImageFields) {
+						if (group[field])
+							try {
+								const res = await fetch(`https://cdn.tupperbox.app/group-pfp/${userID}/${group[field]}.webp`);
+								if (!res.ok) throw new Error(`Response status: ${res.status}`);
+								if (!res.headers.get('content-type')?.startsWith('image'))
+									throw new Error(`Received a ${res.type} instead of an image`);
+								let identifier = (group[fileNamingOptions.identifierSchema] ?? group.id) + '';
+								switch (fileNamingOptions.escapeSlashes) {
+									case 'encode':
+										identifier = identifier.replaceAll(/\//g, '%2F').replaceAll(/\\/g, '%5C');
+										break;
+									case 'remove':
+										identifier = identifier.replaceAll(/[/\\]/g, '');
+										break;
+									default:
+										if (fileNamingOptions.firstInFileName !== 'identifier')
+											identifier = identifier.replaceAll(/[/\\]+$/g, '');
+										identifier = identifier.replaceAll(/(?<=[\\/])[\\/]+/g, '');
+								}
+								identifier = identifier.replaceAll(/\s+/g, '-');
+								images.push({
+									name: `group/${fileNamingOptions.firstInFileName === 'identifier' ? `${identifier}-${field}` : `${field}-${identifier}`}.${res.headers.get('content-type')?.split('/')[1]}`,
+									blob: await res.blob()
+								});
+								successful.push({
+									imageType: field,
+									name: group.name,
+									id: group.id,
+									url: group[field],
+									ownerType: 'group'
+								});
+							} catch (e) {
+								if (e instanceof Error) {
+									if (e.message.includes('NetworkError')) {
+										cors.push({
+											imageType: field,
+											name: group.name,
+											id: group.id,
+											url: group[field],
+											ownerType: 'group'
+										});
+									} else {
+										//window.alert(e.message);
+										console.log(e.message);
+										failed.push({
+											imageType: field,
+											name: group.name,
+											id: group.id,
+											url: group[field],
+											ownerType: 'group'
+										});
+									}
+								}
+							}
+					}
 				}
 			}
 		}
