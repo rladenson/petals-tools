@@ -72,11 +72,11 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
-		class="close absolute bottom-0 z-10 flex h-full w-full items-center justify-center bg-black/20"
+		class="close absolute left-0 bottom-0 top-[2.5em] z-10 flex w-full items-center justify-center bg-black/20"
 		onclick={hideModal}
 	>
 		<div
-			class="max-w-2/3 flex h-fit w-fit flex-col rounded {data.statusCode == 1
+			class="max-w-[90%] md:max-w-[67%] max-h-[80%] flex h-fit w-fit flex-col rounded {data.statusCode == 1
 				? 'bg-green-100'
 				: data.statusCode == 2
 					? 'bg-red-100'
@@ -94,7 +94,7 @@
 				>
 			</button>
 			<h1 class="text-2xl">{data.title}</h1>
-			<div class="text-l">
+			<div class="text-l overflow-y-auto">
 				{#if data.useAltBody}{@render altModalBody(data.useAltBody)}
 				{:else}
 					{#each data.body.split(/\n/) as bodyLine}
