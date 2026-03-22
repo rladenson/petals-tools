@@ -885,6 +885,7 @@
 		: ''} flex flex-col items-center"
 >
 	<h1 class="text-2xl font-semibold">Download Avatars</h1>
+	<h2 class="text-md w-11/12 md:w-3/5 mb-3">This tool downloads all avatars from a given export file to your computer. All data is processed locally and no information is stored after you close the tab.</h2>
 	<br />
 	{#if loading}
 		<h2 class="text-3xl font-bold">Loading, keep this page open!</h2>
