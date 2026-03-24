@@ -19,9 +19,9 @@
 		token.validate != TokenValidation.Valid ||
 			serverId.id == '' ||
 			autoproxySettings.autoproxyMode == AutoproxyEnum.None ||
-			(autoproxySettings.autoproxyMode == AutoproxyEnum.Front &&
+			(autoproxySettings.autoproxyMode == AutoproxyEnum.Member &&
 				autoproxySettings.autoproxyMember == '') ||
-			((autoproxySettings.autoproxyMode == AutoproxyEnum.Front ||
+			((autoproxySettings.autoproxyMode == AutoproxyEnum.Member ||
 				autoproxySettings.autoproxyMode == AutoproxyEnum.Latch) &&
 				autoproxySettings.autoproxyMember.match(/^(?:(?:[A-Za-z][- ]*){5,6})?$/) == null)
 	);
